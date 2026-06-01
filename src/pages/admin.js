@@ -163,7 +163,8 @@ export default function Admin() {
     );
   }
 
-  const isTextNode = title.toLowerCase().includes('[password]') || title.toLowerCase().includes('[note]') || title.toLowerCase().includes('[activation]') || title.toLowerCase().includes('[othersite]') || title.toLowerCase().includes('[lowertutorial]');
+  const isLowerGridRowBlock = title.toLowerCase().match(/\[activation\]|\[othersite\]|\[lowertutorial\]/);
+  const isTextNode = title.toLowerCase().includes('[password]') || title.toLowerCase().includes('[note]') || isLowerGridRowBlock;
 
   return (
     <div style={{ background: '#0a0a0f', color: '#fff', minHeight: '100vh', padding: '40px', boxSizing: 'border-box', fontFamily: 'sans-serif' }}>
@@ -190,12 +191,12 @@ export default function Admin() {
           <div style={{ background: '#0a0a0f', padding: '20px', borderRadius: '8px', border: '1px solid #222' }}>
             <div style={{ fontSize: '13px', color: '#a855f7', fontWeight: 'bold', marginBottom: '15px' }}>🛠️ Custom Grid Header Titles Config (Blocks 1-6)</div>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '15px' }}>
-              <div><label style={{ display: 'block', fontSize: '11px', color: '#64748b', marginBottom: '4px' }}>Block 1 Title Name (Upper Left)</label><input type="text" value={block1Name} onChange={(e) => setBlock1Name(e.target.value)} style={{ padding: '10px', width: '100%', boxSizing: 'border-box', background: '#13131a', border: '1px solid #222', color: '#fff', borderRadius: '4px' }} /></div>
-              <div><label style={{ display: 'block', fontSize: '11px', color: '#64748b', marginBottom: '4px' }}>Block 2 Title Name (Upper Mid)</label><input type="text" value={block2Name} onChange={(e) => setBlock2Name(e.target.value)} style={{ padding: '10px', width: '100%', boxSizing: 'border-box', background: '#13131a', border: '1px solid #222', color: '#fff', borderRadius: '4px' }} /></div>
-              <div><label style={{ display: 'block', fontSize: '11px', color: '#64748b', marginBottom: '4px' }}>Block 3 Title Name (Upper Right)</label><input type="text" value={block3Name} onChange={(e) => setBlock3Name(e.target.value)} style={{ padding: '10px', width: '100%', boxSizing: 'border-box', background: '#13131a', border: '1px solid #222', color: '#fff', borderRadius: '4px' }} /></div>
-              <div><label style={{ display: 'block', fontSize: '11px', color: '#64748b', marginBottom: '4px' }}>Block 4 Title Name (Lower Left)</label><input type="text" value={block4Name} onChange={(e) => setBlock4Name(e.target.value)} style={{ padding: '10px', width: '100%', boxSizing: 'border-box', background: '#13131a', border: '1px solid #222', color: '#fff', borderRadius: '4px' }} /></div>
-              <div><label style={{ display: 'block', fontSize: '11px', color: '#64748b', marginBottom: '4px' }}>Block 5 Title Name (Lower Mid)</label><input type="text" value={block5Name} onChange={(e) => setBlock5Name(e.target.value)} style={{ padding: '10px', width: '100%', boxSizing: 'border-box', background: '#13131a', border: '1px solid #222', color: '#fff', borderRadius: '4px' }} /></div>
-              <div><label style={{ display: 'block', fontSize: '11px', color: '#64748b', marginBottom: '4px' }}>Block 6 Title Name (Lower Right)</label><input type="text" value={block6Name} onChange={(e) => setBlock6Name(e.target.value)} style={{ padding: '10px', width: '100%', boxSizing: 'border-box', background: '#13131a', border: '1px solid #222', color: '#fff', borderRadius: '4px' }} /></div>
+              <div><label style={{ display: 'block', fontSize: '11px', color: '#64748b', marginBottom: '4px' }}>Block 1 Title Name</label><input type="text" value={block1Name} onChange={(e) => setBlock1Name(e.target.value)} style={{ padding: '10px', width: '100%', boxSizing: 'border-box', background: '#13131a', border: '1px solid #222', color: '#fff', borderRadius: '4px' }} /></div>
+              <div><label style={{ display: 'block', fontSize: '11px', color: '#64748b', marginBottom: '4px' }}>Block 2 Title Name</label><input type="text" value={block2Name} onChange={(e) => setBlock2Name(e.target.value)} style={{ padding: '10px', width: '100%', boxSizing: 'border-box', background: '#13131a', border: '1px solid #222', color: '#fff', borderRadius: '4px' }} /></div>
+              <div><label style={{ display: 'block', fontSize: '11px', color: '#64748b', marginBottom: '4px' }}>Block 3 Title Name</label><input type="text" value={block3Name} onChange={(e) => setBlock3Name(e.target.value)} style={{ padding: '10px', width: '100%', boxSizing: 'border-box', background: '#13131a', border: '1px solid #222', color: '#fff', borderRadius: '4px' }} /></div>
+              <div><label style={{ display: 'block', fontSize: '11px', color: '#64748b', marginBottom: '4px' }}>Block 4 Title Name</label><input type="text" value={block4Name} onChange={(e) => setBlock4Name(e.target.value)} style={{ padding: '10px', width: '100%', boxSizing: 'border-box', background: '#13131a', border: '1px solid #222', color: '#fff', borderRadius: '4px' }} /></div>
+              <div><label style={{ display: 'block', fontSize: '11px', color: '#64748b', marginBottom: '4px' }}>Block 5 Title Name</label><input type="text" value={block5Name} onChange={(e) => setBlock5Name(e.target.value)} style={{ padding: '10px', width: '100%', boxSizing: 'border-box', background: '#13131a', border: '1px solid #222', color: '#fff', borderRadius: '4px' }} /></div>
+              <div><label style={{ display: 'block', fontSize: '11px', color: '#64748b', marginBottom: '4px' }}>Block 6 Title Name</label><input type="text" value={block6Name} onChange={(e) => setBlock6Name(e.target.value)} style={{ padding: '10px', width: '100%', boxSizing: 'border-box', background: '#13131a', border: '1px solid #222', color: '#fff', borderRadius: '4px' }} /></div>
             </div>
           </div>
 
@@ -205,11 +206,11 @@ export default function Admin() {
           </div>
           <div style={{ display: 'flex', gap: '15px' }}>
             <div style={{ flex: 1 }}><label style={{ display: 'block', fontSize: '12px', color: '#64748b', marginBottom: '5px' }}>Avatar Photo Link URL</label><input type="url" value={avatarUrl} onChange={(e) => setAvatarUrl(e.target.value)} required style={{ padding: '12px', width: '100%', background: '#0a0a0f', border: '1px solid #222', color: '#fff', borderRadius: '6px' }} /></div>
-            <div style={{ flex: 1 }}><label style={{ display: 'block', fontSize: '12px', color: '#64748b', marginBottom: '5px' }}>Sound Action Effect URL</label><input type="url" value={audioHoverUrl} style={{ padding: '12px', width: '100%', background: '#0a0a0f', border: '1px solid #222', color: '#fff', borderRadius: '6px' }} /></div>
+            <div style={{ flex: 1 }}><label style={{ display: 'block', fontSize: '12px', color: '#64748b', marginBottom: '5px' }}>Sound Action Effect URL</label><input type="url" value={audioHoverUrl} onChange={(e) => setAudioHoverUrl(e.target.value)} style={{ padding: '12px', width: '100%', background: '#0a0a0f', border: '1px solid #222', color: '#fff', borderRadius: '6px' }} /></div>
           </div>
           <div style={{ background: '#0a0a0f', padding: '15px', borderRadius: '8px', border: '1px dashed #6366f1' }}>
             <label style={{ display: 'block', fontSize: '12px', color: '#6366f1', marginBottom: '5px', fontWeight: 'bold' }}>📰 Top Header Scrolling Announcement Text Strip</label>
-            <input type="text" value={announcement} onChange={(e) => setAnnouncement(e.target.value)} placeholder="e.g., PLUGINS LOADING IN SECTOR 2" style={{ padding: '12px', width: '100%', background: '#13131a', border: '1px solid #222', color: '#fff', borderRadius: '6px' }} />
+            <input type="text" value={announcement} onChange={(e) => setAnnouncement(e.target.value)} placeholder="e.g., SITE MAINTENANCE UNDERWAY" style={{ padding: '12px', width: '100%', background: '#13131a', border: '1px solid #222', color: '#fff', borderRadius: '6px' }} />
           </div>
           <div style={{ background: '#0a0a0f', padding: '15px', borderRadius: '8px', border: '1px solid #a855f7' }}>
             <label style={{ display: 'block', fontSize: '12px', color: '#a855f7', marginBottom: '5px', fontWeight: 'bold' }}>Main Website Background Video Link URL</label>
@@ -244,7 +245,6 @@ export default function Admin() {
             <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
               <input type="text" placeholder="e.g., Asset Name or Pass Key" value={title} onChange={(e) => setTitle(e.target.value)} required style={{ flex: 1, padding: '12px', background: '#0a0a0f', border: '1px solid #222', color: '#fff', borderRadius: '6px' }} />
               
-              {/* FIXED DYNAMIC SHIELD TRRAY: OS PREFIX BUTTONS ARE UNLOCKED FOR SOCIALS/ACTIVATIONS TOO NOW */}
               <div style={{ display: 'flex', gap: '4px', width: '100%', marginTop: '6px', flexWrap: 'wrap' }}>
                 <button type="button" onClick={() => injectOsPrefix('win')} style={{ padding: '8px 12px', background: '#0284c7', color: '#fff', border: 'none', borderRadius: '4px', fontSize: '11px', cursor: 'pointer', fontWeight: 'bold' }}>+ Windows App</button>
                 <button type="button" onClick={() => injectOsPrefix('mac')} style={{ padding: '8px 12px', background: '#be123c', color: '#fff', border: 'none', borderRadius: '4px', fontSize: '11px', cursor: 'pointer', fontWeight: 'bold' }}>+ Mac OS App</button>
@@ -279,7 +279,7 @@ export default function Admin() {
         <button type="submit" style={{ padding: '14px', background: '#10b981', color: '#fff', border: 'none', cursor: 'pointer', borderRadius: '8px', fontWeight: '600' }}>Publish Element Matrix Object</button>
       </form>
 
-      {/* VIEW DELETIONS */}
+      {/* RECORD DELETIONS */}
       <h3 style={{ borderBottom: '1px solid #222', paddingBottom: '10px', marginBottom: '15px' }}>Active Structured Portfolio Layout Architecture</h3>
       
       <h4 style={{ color: '#6366f1', margin: '20px 0 10px 0' }}>Matrix Base Bucket Stack 1: Socials Stack</h4>
