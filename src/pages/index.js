@@ -34,7 +34,6 @@ export default function Home() {
       });
   }, []);
 
-  // Frame tick cleanup loop for interactive particles
   useEffect(() => {
     if (particles.length === 0) return;
     const frame = requestAnimationFrame(() => {
@@ -100,11 +99,9 @@ export default function Home() {
       fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
     }}>
       
-      {/* Invisible Audio Players */}
       {profile.audioHoverUrl && <audio ref={hoverAudioRef} src={profile.audioHoverUrl} preload="auto" />}
       {profile.audioBgUrl && <audio ref={bgAudioRef} src={profile.audioBgUrl} loop preload="auto" />}
 
-      {/* Global CSS Style Injector for Keyframe Sweeps */}
       <style dangerouslySetInnerHTML={{__html: `
         @keyframes borderSweep {
           0% { background-position: 0% 50%; }
@@ -125,14 +122,12 @@ export default function Home() {
         }
       `}} />
 
-      {/* Particle Overlay Canvas Context */}
       {particles.map((p) => (
         <div key={p.id} style={{
           position: 'absolute', left: p.x, top: p.y, width: p.size, height: p.size, borderRadius: '50%', backgroundColor: p.color, opacity: p.alpha, pointerEvents: 'none', transform: 'translate(-50%, -50%)', boxShadow: `0 0 10px ${p.color}`, zIndex: 9999
         }} />
       ))}
 
-      {/* Persistent Audio Loop Floating Controller Option */}
       {profile.audioBgUrl && (
         <button onClick={toggleBackgroundAudioTrack} style={{
           position: 'fixed', bottom: '24px', right: '24px', background: 'rgba(255,255,255,0.06)', backdropFilter: 'blur(12px)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', borderRadius: '50%', width: '48px', height: '48px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, transition: 'all 0.2s'
@@ -141,7 +136,6 @@ export default function Home() {
         </button>
       )}
       
-      {/* Bio Identity Block Elements */}
       <div style={{ textAlign: 'center', marginBottom: '35px', userSelect: 'none' }}>
         <div onClick={triggerSparkParticles} style={{ position: 'relative', display: 'inline-block', cursor: 'pointer' }}>
           <div style={{ position: 'absolute', top: '-4px', left: '-4px', right: '-4px', bottom: '-4px', borderRadius: '50%', background: 'linear-gradient(45deg, #6366f1, #a855f7, #ec4899)', opacity: '0.6', filter: 'blur(8px)', zIndex: 0 }}></div>
@@ -149,7 +143,7 @@ export default function Home() {
         </div>
 
         <h1 onClick={triggerSparkParticles} style={{ cursor: 'pointer', fontSize: '26px', fontWeight: '700', margin: '15px 0 5px 0', letterSpacing: '-0.02em', background: 'linear-gradient(to right, #fff, #cbd5e1)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-          @{profile.username}
+          {profile.username}
         </h1>
         <p style={{ color: '#6366f1', fontSize: '12px', margin: '0', textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: '700' }}>
           {profile.subtitle}
@@ -158,19 +152,16 @@ export default function Home() {
 
       <div style={{ width: '100%', maxWidth: '440px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
         
-        {/* Clickable Interactive Bio Summary Card */}
         <div onClick={triggerSparkParticles} style={{ cursor: 'pointer', background: 'rgba(255, 255, 255, 0.03)', backdropFilter: 'blur(16px)', border: '1px solid rgba(255, 255, 255, 0.08)', borderRadius: '16px', padding: '20px', textAlign: 'center', fontSize: '14px', color: '#94a3b8', lineHeight: '1.6' }}>
           {profile.bio || 'Click me or profile units to trigger particle bursts.'}
         </div>
 
-        {/* Dynamic Main Showreel Video Asset (If uploaded) */}
         {profile.videoUrl && (
           <div style={{ width: '100%', background: 'rgba(255, 255, 255, 0.02)', backdropFilter: 'blur(16px)', border: '1px solid rgba(255, 255, 255, 0.06)', borderRadius: '16px', overflow: 'hidden' }}>
             <video key={profile.videoUrl} src={profile.videoUrl} controls autoPlay muted loop playsInline style={{ width: '100%', display: 'block', aspectRatio: '16/9', objectFit: 'cover' }} />
           </div>
         )}
 
-        {/* WORK SAMPLES VIDEO SECTION */}
         {videoProjects.length > 0 && (
           <div style={{ marginTop: '10px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
             <h3 style={{ fontSize: '14px', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em', margin: '0 0 -4px 4px' }}>Recent Edits / Works</h3>
@@ -183,7 +174,6 @@ export default function Home() {
           </div>
         )}
 
-        {/* STANDARD NAVIGATION LINKS ARRAY */}
         {links.length > 0 && (
           <div style={{ marginTop: '10px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
             <h3 style={{ fontSize: '14px', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em', margin: '0 0 -4px 4px' }}>Links</h3>
