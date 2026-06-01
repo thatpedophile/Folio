@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { upload } from '@vercel/blob/client'; // <-- Fixed to use the correct client-side module
+import { upload } from '@vercel/blob/client';
 
 export default function Admin() {
   const [password, setPassword] = useState('');
@@ -23,7 +23,7 @@ export default function Admin() {
   const [entryType, setEntryType] = useState('standard');
 
   // File Upload Interface UI Tracking States
-  const [uploadingTarget, setUploadingTarget] = useState(null); // 'hero_video', 'bg_audio', 'portfolio_unit'
+  const [uploadingTarget, setUploadingTarget] = useState(null);
   const [uploadProgress, setUploadProgress] = useState(0);
 
   const heroVideoInputRef = useRef(null);
@@ -58,23 +58,20 @@ export default function Admin() {
     fetchDashboardData();
   }, []);
 
-  // Universal Direct Binary File Upload Engine Handler
   const processFileUploadAction = async (file, targetContext) => {
     if (!file) return;
     setUploadingTarget(targetContext);
     setUploadProgress(10);
 
     try {
-      // Fixed to run the secure browser-to-storage stream pipeline
       const newBlob = await upload(file.name, file, {
         access: 'public',
-        handleUploadUrl: '/api/links?type=blob_upload_handshake',
+        handleUploadUrl: '/api/upload', // <-- FIXED URL (Clean path)
         onUploadProgress: (progressEvent) => {
           setUploadProgress(Math.round(progressEvent.percentage));
         }
       });
 
-      // Map upload URLs directly to the right form field
       if (targetContext === 'hero_video') setVideoUrl(newBlob.url);
       if (targetContext === 'bg_audio') setAudioBgUrl(newBlob.url);
       if (targetContext === 'portfolio_unit') setUrl(newBlob.url);
@@ -82,7 +79,7 @@ export default function Admin() {
       setUploadProgress(100);
       setTimeout(() => setUploadingTarget(null), 1000);
     } catch (error) {
-      alert(`File processing structural layout upload failure: ${error.message}`);
+      alert(`File processing upload failure: ${error.message}`);
       setUploadingTarget(null);
     }
   };
@@ -115,7 +112,6 @@ export default function Admin() {
     if (res.ok) fetchDashboardData();
   };
 
-  // Reusable Component UI Drop Zone Constructor
   const renderFileDropperBox = (targetContext, labelText, acceptedFormats, clickRef) => {
     const isCurrentUploading = uploadingTarget === targetContext;
     return (
@@ -160,7 +156,6 @@ export default function Admin() {
     <div style={{ background: '#0a0a0f', color: '#fff', minHeight: '100vh', padding: '40px', boxSizing: 'border-box', fontFamily: 'sans-serif' }}>
       <h2 style={{ marginBottom: '30px' }}>Global Customizer Dash</h2>
       
-      {/* CORE BRANDING SETTINGS FORM FRAME */}
       <div style={{ background: '#13131a', padding: '25px', borderRadius: '12px', border: '1px solid #1e1e24', marginBottom: '40px' }}>
         <h3 style={{ margin: '0 0 20px 0', color: '#a855f7' }}>Branding, Presets & Audio System Variables</h3>
         <form onSubmit={handleUpdateProfile} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
@@ -197,7 +192,6 @@ export default function Admin() {
             </div>
           </div>
 
-          {/* MAIN HERO ASSETS PIPELINE SLOTS DROP ZONES */}
           <div style={{ display: 'flex', gap: '15px', background: '#0a0a0f', padding: '15px', borderRadius: '8px' }}>
             <div style={{ flex: 1 }}>
               <label style={{ display: 'block', fontSize: '12px', color: '#a855f7', marginBottom: '5px', fontWeight: '600' }}>1. Main Intro Showreel Video (.mp4)</label>
@@ -220,7 +214,6 @@ export default function Admin() {
         </form>
       </div>
 
-      {/* RECENT PORTFOLIO LOG ENTRIES MANAGER FORM */}
       <h3 style={{ margin: '0 0 15px 0', color: '#6366f1' }}>Publish Portfolio Content Units</h3>
       <form onSubmit={handleCreateElement} style={{ display: 'flex', flexDirection: 'column', gap: '15px', background: '#13131a', padding: '25px', borderRadius: '12px', border: '1px solid #1e1e24', marginBottom: '40px' }}>
         <div style={{ display: 'flex', gap: '15px' }}>
@@ -252,7 +245,6 @@ export default function Admin() {
         <button type="submit" style={{ padding: '14px', background: '#6366f1', color: '#fff', border: 'none', cursor: 'pointer', borderRadius: '8px', fontWeight: '600' }}>Publish Content Unit Asset</button>
       </form>
 
-      {/* RENDER ACTIVE DATABASE RECORD ENTRIES COMPONENTS */}
       <h3 style={{ borderBottom: '1px solid #222', paddingBottom: '10px', marginBottom: '15px' }}>Active Portfolio Elements</h3>
       
       <h4 style={{ color: '#a855f7', margin: '0 0 10px 0' }}>Embedded Video Projects</h4>
