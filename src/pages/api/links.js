@@ -8,7 +8,7 @@ export default async function handler(req, res) {
   const password = req.headers['admin-password'];
   const isAdminRequest = req.headers['admin-password'] !== undefined;
 
-  // 1. GET: Fetch data buckets
+  // 1. GET: Fetch data buckets categorized cleanly
   if (req.method === 'GET') {
     if (isAdminRequest && password !== process.env.ADMIN_PASSWORD) {
       return res.status(401).json({ message: 'Unauthorized' });
@@ -28,7 +28,8 @@ export default async function handler(req, res) {
         subtitle: config?.subtitle || 'VFX PORTFOLIO ENGINE',
         bgVideoUrl: config?.bgVideoUrl || '',
         audioBgUrl: config?.audioBgUrl || '',
-        audioHoverUrl: config?.audioHoverUrl || ''
+        audioHoverUrl: config?.audioHoverUrl || '',
+        announcement: config?.announcement || '' // Tracks your new scrolling announcement bar text
       };
 
       return res.status(200).json({ socials, assets, myWork, profile });
@@ -37,23 +38,23 @@ export default async function handler(req, res) {
     }
   }
 
-  // Security Access Barrier
+  // Security Verification Guard
   if (password !== process.env.ADMIN_PASSWORD) {
     return res.status(401).json({ message: 'Unauthorized' });
   }
 
-  // 2. POST: Handle Creation
+  // 2. POST: Process Asset Creation & Identity Matrix Saving
   if (req.method === 'POST') {
-    const { title, url, blockType, note, type, username, bio, avatarUrl, videoUrl, subtitle, bgVideoUrl, audioBgUrl, audioHoverUrl } = req.body;
+    const { title, url, blockType, note, type, username, bio, avatarUrl, videoUrl, subtitle, bgVideoUrl, audioBgUrl, audioHoverUrl, announcement } = req.body;
 
     if (type === 'update_profile') {
       try {
         await db.collection('config').updateOne(
           { key: 'profile_settings' },
-          { $set: { username, bio, avatarUrl, videoUrl, subtitle, bgVideoUrl, audioBgUrl, audioHoverUrl, updatedAt: new Date() } },
+          { $set: { username, bio, avatarUrl, videoUrl, subtitle, bgVideoUrl, audioBgUrl, audioHoverUrl, announcement, updatedAt: new Date() } },
           { upsert: true }
         );
-        return res.status(200).json({ message: 'Saved successfully.' });
+        return res.status(200).json({ message: 'Identity settings synchronized successfully.' });
       } catch (err) {
         return res.status(500).json({ error: err.message });
       }
@@ -64,7 +65,7 @@ export default async function handler(req, res) {
         title, 
         url, 
         blockType: blockType || 'socials', 
-        note: note || '', // SAVES THE FILE PASSWORDS / INFO METADATA CLEANLY
+        note: note || '', 
         createdAt: new Date() 
       };
       await db.collection('links').insertOne(entry);
@@ -74,7 +75,7 @@ export default async function handler(req, res) {
     }
   }
 
-  // 3. DELETE: Drop data
+  // 3. DELETE: Drop data records out of collection slots
   if (req.method === 'DELETE') {
     const { id } = req.query;
     await db.collection('links').deleteOne({ _id: new ObjectId(id) });
