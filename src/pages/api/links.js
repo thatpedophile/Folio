@@ -1,30 +1,7 @@
 import clientPromise from '../../../lib/mongodb';
 import { ObjectId } from 'mongodb';
-import { handleUpload } from '@vercel/blob/client';
 
 export default async function handler(req, res) {
-  // Catch incoming file streams traveling to Vercel Blob Storage
-  if (req.query.type === 'blob_upload_handshake') {
-    try {
-      const jsonResponse = await handleUpload({
-        body: req.body,
-        request: req,
-        onBeforeGenerateToken: async (pathname) => {
-          return {
-            allowedContentTypes: ['video/mp4', 'video/webm', 'audio/mpeg', 'audio/wav', 'audio/mp3'],
-            maximumSizeInBytes: 50 * 1024 * 1024, // 50MB Maximum Video Asset Cap
-          };
-        },
-        onUploadCompleted: async ({ blob, tokenPayload }) => {
-          // Handshake complete, Vercel Blob successfully hosts asset
-        },
-      });
-      return res.status(200).json(jsonResponse);
-    } catch (error) {
-      return res.status(400).json({ error: error.message });
-    }
-  }
-
   const client = await clientPromise;
   const db = client.db('biolink');
 
