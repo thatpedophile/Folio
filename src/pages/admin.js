@@ -53,12 +53,12 @@ export default function Admin() {
           setAudioHoverUrl(data.profile.audioHoverUrl || '');
           setAnnouncement(data.profile.announcement || '');
           
-          setBlock1Name(data.profile.block1Name);
-          setBlock2Name(data.profile.block2Name);
-          setBlock3Name(data.profile.block3Name);
-          setBlock4Name(data.profile.block4Name);
-          setBlock5Name(data.profile.block5Name);
-          setBlock6Name(data.profile.block6Name);
+          setBlock1Name(data.profile.block1Name || 'Socials');
+          setBlock2Name(data.profile.block2Name || 'Assets & Presets');
+          setBlock3Name(data.profile.block3Name || 'My Work');
+          setBlock4Name(data.profile.block4Name || 'System Activation');
+          setBlock5Name(data.profile.block5Name || 'Other Sites');
+          setBlock6Name(data.profile.block6Name || 'Tutorials');
         }
         setIsAuthorized(true);
       } else {
@@ -158,7 +158,7 @@ export default function Admin() {
       <form onSubmit={handleLoginSubmit} style={{ background: '#0a0a0f', color: '#fff', height: '100vh', display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column', fontFamily: 'sans-serif' }}>
         <h3>Master Console Authorization</h3>
         <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required style={{ padding: '12px', width: '240px', background: '#13131a', border: '1px solid #222', borderRadius: '8px', color: '#fff', marginBottom: '15px', textAlign: 'center' }} placeholder="••••••••" />
-        <form><button type="submit" style={{ padding: '12px 24px', borderRadius: '8px', cursor: 'pointer', background: '#6366f1', color: '#fff', border: 'none', fontWeight: '600' }}>Access Panel</button></form>
+        <button type="submit" style={{ padding: '12px 24px', borderRadius: '8px', cursor: 'pointer', background: '#6366f1', color: '#fff', border: 'none', fontWeight: '600' }}>Access Panel</button>
       </form>
     );
   }
@@ -229,7 +229,7 @@ export default function Admin() {
         </form>
       </div>
 
-      {/* MASTER CREATOR FORM PANEL */}
+      {/* MASTER CREATOR PANEL */}
       <h3 style={{ margin: '0 0 15px 0', color: '#10b981' }}>Publish Portfolio Elements</h3>
       <form onSubmit={handleCreateElement} style={{ display: 'flex', flexDirection: 'column', gap: '15px', background: '#13131a', padding: '25px', borderRadius: '12px', border: '1px solid #1e1e24', marginBottom: '40px' }}>
         <div style={{ display: 'flex', gap: '15px' }}>
