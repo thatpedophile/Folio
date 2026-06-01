@@ -4,7 +4,7 @@ export default function Home() {
   const [data, setData] = useState(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [hasEntered, setHasEntered] = useState(false);
-  const [activeDropdownId, setActiveDropdownId] = useState(null); // Tracks the active expanded card section
+  const [activeDropdownId, setActiveDropdownId] = useState(null);
   const audioRef = useRef(null);
 
   useEffect(() => {
@@ -55,7 +55,6 @@ export default function Home() {
   const totalActivationNodes = allLinksCombined.filter(item => item.title.toLowerCase().includes('[activation]') && !item.title.toLowerCase().includes('[password for') && !item.title.toLowerCase().includes('[note for'));
   const windowsActivation = totalActivationNodes.filter(item => item.title.toLowerCase().includes('windows'));
   const macActivation = totalActivationNodes.filter(item => item.title.toLowerCase().includes('mac'));
-  const untaggedActivation = totalActivationNodes.filter(item => !item.title.toLowerCase().includes('windows') && !item.title.toLowerCase().includes('mac'));
 
   const block5OtherSites = allLinksCombined.filter(item => item.title.toLowerCase().includes('[othersite]') && !item.title.toLowerCase().includes('[password for') && !item.title.toLowerCase().includes('[note for'));
   const block6Tutorials = allLinksCombined.filter(item => item.title.toLowerCase().includes('[lowertutorial]') && !item.title.toLowerCase().includes('[password for') && !item.title.toLowerCase().includes('[note for'));
@@ -69,7 +68,6 @@ export default function Home() {
     catch (_) { return false; }
   };
 
-  // ADVANCED URL PARSER EXPRESSION: Scans raw block text instructions and safely hyper-links web URLs seamlessly
   const renderTextWithLinks = (text) => {
     const urlRegex = /(https?:\/\/[^\s]+)/g;
     const parts = text.split(urlRegex);
@@ -197,7 +195,6 @@ export default function Home() {
           gap: 25px; align-items: start;
         }
 
-        /* --- HORIZONTAL ACCORDION MATRIX WRAPPERS --- */
         .accordion-interactive-trigger {
           display: flex; justify-content: space-between; align-items: center;
           width: 100%; padding: 14px 18px; background: rgba(255, 255, 255, 0.02);
@@ -218,7 +215,6 @@ export default function Home() {
           max-height: 2000px; opacity: 1; margin-top: 12px;
         }
         
-        /* FIXED: Arranges methods side-by-side horizontally across the panel screen canvas */
         .horizontal-methods-lane {
           display: flex; gap: 15px; overflow-x: auto; padding-bottom: 10px;
           flex-flow: row nowrap; scroll-snap-type: x mandatory;
@@ -243,12 +239,10 @@ export default function Home() {
         }
       `}</style>
       
-      {/* 0. INTRO CURTAIN GATE */}
       <div className={`intro-curtain ${hasEntered ? 'hidden' : ''}`}>
         <button className="entry-glow-btn" onClick={handleSystemEntry}>DOMAIN EXPANSION</button>
       </div>
 
-      {/* ANNOUNCEMENT TICKER */}
       {profile.announcement && hasEntered && (
         <div className="marquee-strip-line">
           <div className="marquee-inner-scroll">
@@ -257,26 +251,21 @@ export default function Home() {
         </div>
       )}
       
-      {/* BACKGROUND VIDEO */}
       {profile.bgVideoUrl && (
         <video src={profile.bgVideoUrl} autoPlay loop muted playsInline style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', objectFit: 'cover', zIndex: -3, pointerEvents: 'none' }} />
       )}
       <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(10, 10, 15, 0.55)', backdropFilter: 'blur(8px)', zIndex: -2, pointerEvents: 'none' }} />
 
-      {/* AUDIO ELEMENT */}
       {profile.audioBgUrl && <audio ref={audioRef} src={profile.audioBgUrl} loop />}
 
-      {/* FLOATING CORNER CONTROLLER */}
       {profile.audioBgUrl && hasEntered && (
         <button onClick={toggleAudioPlayback} style={{ position: 'fixed', bottom: '25px', right: '25px', zIndex: 100, background: 'rgba(15, 15, 20, 0.6)', border: '1px solid rgba(168, 85, 247, 0.4)', borderRadius: '50%', width: '46px', height: '46px', color: '#fff', cursor: 'pointer', display: 'flex', justifyContent: 'center', alignItems: 'center', backdropFilter: 'blur(10px)', boxShadow: '0 4px 20px rgba(0,0,0,0.6)' }}>
           {isPlaying ? '⏸️' : '🎵'}
         </button>
       )}
 
-      {/* RENDER GRID MATRIX BOX BOUNDS */}
       <div style={{ maxWidth: '1200px', margin: '0 auto', position: 'relative', zIndex: 1 }}>
         
-        {/* BRAND CONFIGURATOR INFO SECTION */}
         <div className="animate-fade-in" style={{ textAlign: 'center', marginBottom: '50px' }}>
           {profile.avatarUrl && (
             <div className="pfp-wrapper">
@@ -293,7 +282,6 @@ export default function Home() {
            ======================================================== */}
         <div className="matrix-row-wrapper">
           
-          {/* BLOCK 1: SOCIALS */}
           <div className="animate-fade-in column-delay-1 grid-block-panel" style={{ borderLeft: '3px solid #6366f1' }}>
             <h3 style={{ margin: '0 0 20px 0', fontSize: '14px', color: '#6366f1', letterSpacing: '1px', textTransform: 'uppercase', fontWeight: '700' }}>{profile.block1Name}</h3>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
@@ -308,7 +296,6 @@ export default function Home() {
             </div>
           </div>
 
-          {/* BLOCK 2: ASSETS & PRESETS */}
           <div className="animate-fade-in column-delay-2 grid-block-panel" style={{ borderLeft: '3px solid #a855f7' }}>
             <h3 style={{ margin: '0 0 20px 0', fontSize: '14px', color: '#a855f7', letterSpacing: '1px', textTransform: 'uppercase', fontWeight: '700' }}>{profile.block2Name}</h3>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
@@ -344,7 +331,6 @@ export default function Home() {
             </div>
           </div>
 
-          {/* BLOCK 3: MY WORK */}
           <div className="animate-fade-in column-delay-3 grid-block-panel" style={{ borderLeft: '3px solid #10b981' }}>
             <h3 style={{ margin: '0 0 20px 0', fontSize: '14px', color: '#10b981', letterSpacing: '1px', textTransform: 'uppercase', fontWeight: '700' }}>{profile.block3Name}</h3>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
@@ -371,7 +357,6 @@ export default function Home() {
            ======================================================== */}
         <div className="matrix-row-wrapper">
           
-          {/* BLOCK 4: ACTIVATION (COLLAPSED DROP MODE MATRIX) */}
           <div className="animate-fade-in column-delay-1 grid-block-panel" style={{ borderLeft: '3px solid #7c3aed' }}>
             <button className="accordion-interactive-trigger" onClick={() => toggleSectionDropdown('block4')}>
               <span>⚡ {profile.block4Name}</span>
@@ -381,9 +366,8 @@ export default function Home() {
             <div className={`dropdown-collapsible-wrapper ${activeDropdownId === 'block4' ? 'expanded' : ''}`}>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', padding: '5px 0' }}>
                 
-                {/* Windows Segment */}
                 <div>
-                  <div style={{ fontSize: '11px', color: '#38bdf8', fontWeight: 'bold', mb: '8px', textTransform: 'uppercase' }}>🪟 Windows Setup</div>
+                  <div style={{ fontSize: '11px', color: '#38bdf8', fontWeight: 'bold', marginBottom: '8px', textTransform: 'uppercase' }}>🪟 Windows Setup</div>
                   <div className="horizontal-methods-lane">
                     {windowsActivation.map(item => (
                       <div key={item._id} className="markdown-doc-card">
@@ -396,9 +380,8 @@ export default function Home() {
                   </div>
                 </div>
 
-                {/* Mac OS Segment */}
                 <div>
-                  <div style={{ fontSize: '11px', color: '#fb7185', fontWeight: 'bold', mb: '8px', textTransform: 'uppercase' }}>🍎 Mac OS Setup</div>
+                  <div style={{ fontSize: '11px', color: '#fb7185', fontWeight: 'bold', marginBottom: '8px', textTransform: 'uppercase' }}>🍎 Mac OS Setup</div>
                   <div className="horizontal-methods-lane">
                     {macActivation.map(item => (
                       <div key={item._id} className="markdown-doc-card">
@@ -415,7 +398,6 @@ export default function Home() {
             </div>
           </div>
 
-          {/* BLOCK 5: OTHER SITES (HORIZONTAL CLICK EXPANSE) */}
           <div className="animate-fade-in column-delay-2 grid-block-panel" style={{ borderLeft: '3px solid #0ea5e9' }}>
             <button className="accordion-interactive-trigger" onClick={() => toggleSectionDropdown('block5')}>
               <span>🔗 {profile.block5Name}</span>
@@ -457,7 +439,6 @@ export default function Home() {
             </div>
           </div>
 
-          {/* BLOCK 6: TUTORIALS (HORIZONTAL STREAM AREA) */}
           <div className="animate-fade-in column-delay-3 grid-block-panel" style={{ borderLeft: '3px solid #059669' }}>
             <button className="accordion-interactive-trigger" onClick={() => toggleSectionDropdown('block6')}>
               <span>🧠 {profile.block6Name}</span>
@@ -471,7 +452,7 @@ export default function Home() {
                     {isUrlOnly(item.url) && (item.url.endsWith('.mp4') || item.url.includes('raw.githubusercontent.com')) ? (
                       <div className="video-card-container" style={{ borderStyle: 'dashed' }}>
                         <div style={{ width: '100%', aspectRatio: '16/9', background: '#000', position: 'relative' }}>
-                          <video src={item.url} controls muted playsInline style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
+                          <video src={item.url} controls muted playsInline style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                         </div>
                         <div style={{ padding: '10px', background: 'rgba(20,20,25,0.4)', fontSize: '13px' }}>{cleanTitle(item.title)}</div>
                       </div>
