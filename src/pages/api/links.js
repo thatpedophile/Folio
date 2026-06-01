@@ -5,48 +5,57 @@ export default async function handler(req, res) {
   const client = await clientPromise;
   const db = client.db('biolink');
 
-  // 1. GET: Fetch links, videos, and master design settings
+  const password = req.headers['admin-password'];
+  const isAdminRequest = req.headers['admin-password'] !== undefined;
+
+  // 1. GET: Fetch elements organized by structural blocks
   if (req.method === 'GET') {
+    if (isAdminRequest && password !== process.env.ADMIN_PASSWORD) {
+      return res.status(401).json({ message: 'Unauthorized' });
+    }
+
     try {
-      const links = await db.collection('links').find({ type: { $ne: 'video_project' } }).sort({ createdAt: -1 }).toArray();
-      const videoProjects = await db.collection('links').find({ type: 'video_project' }).sort({ createdAt: -1 }).toArray();
+      // Pull and sort items into separate array buckets
+      const socials = await db.collection('links').find({ blockType: 'socials' }).sort({ createdAt: -1 }).toArray();
+      const assets = await db.collection('links').find({ blockType: 'assets' }).sort({ createdAt: -1 }).toArray();
+      const myWork = await db.collection('links').find({ blockType: 'my_work' }).sort({ createdAt: -1 }).toArray();
+      
       const config = await db.collection('config').findOne({ key: 'profile_settings' });
       
       const profile = {
         username: config?.username || 'sh1vx',
-        bio: config?.bio || 'Welcome to my biolink platform. Check out my latest presets, project mirrors, and socials below.',
+        bio: config?.bio || 'Welcome to my portfolio. Check out my latest edits and assets below.',
         avatarUrl: config?.avatarUrl || '',
-        videoUrl: config?.videoUrl || '',
+        videoUrl: config?.videoUrl || '', // Main showreel / introduction edit
         subtitle: config?.subtitle || 'VFX PORTFOLIO ENGINE',
-        bgPreset: config?.bgPreset || 'cosmic_purple',
+        bgVideoUrl: config?.bgVideoUrl || '', // Custom dynamic video background
         audioBgUrl: config?.audioBgUrl || '',
         audioHoverUrl: config?.audioHoverUrl || 'https://assets.mixkit.co/active_storage/sfx/2568/2568-84.wav'
       };
 
-      return res.status(200).json({ links, videoProjects, profile });
+      return res.status(200).json({ socials, assets, myWork, profile });
     } catch (err) {
       return res.status(500).json({ error: err.message });
     }
   }
 
-  // Admin Security Gateway
-  const password = req.headers['admin-password'];
+  // Security Access Wall for Data Modifications
   if (password !== process.env.ADMIN_PASSWORD) {
     return res.status(401).json({ message: 'Unauthorized' });
   }
 
-  // 2. POST: Handle Settings, Custom Links, and Showcase Videos
+  // 2. POST: Process Framework Configurations and Card Elements
   if (req.method === 'POST') {
-    const { title, url, type, username, bio, avatarUrl, videoUrl, subtitle, bgPreset, audioBgUrl, audioHoverUrl } = req.body;
+    const { title, url, blockType, type, username, bio, avatarUrl, videoUrl, subtitle, bgVideoUrl, audioBgUrl, audioHoverUrl } = req.body;
 
     if (type === 'update_profile') {
       try {
         await db.collection('config').updateOne(
           { key: 'profile_settings' },
-          { $set: { username, bio, avatarUrl, videoUrl, subtitle, bgPreset, audioBgUrl, audioHoverUrl, updatedAt: new Date() } },
+          { $set: { username, bio, avatarUrl, videoUrl, subtitle, bgVideoUrl, audioBgUrl, audioHoverUrl, updatedAt: new Date() } },
           { upsert: true }
         );
-        return res.status(200).json({ message: 'Configuration saved!' });
+        return res.status(200).json({ message: 'Layout engine saved perfectly!' });
       } catch (err) {
         return res.status(500).json({ error: err.message });
       }
@@ -56,7 +65,7 @@ export default async function handler(req, res) {
       const entry = { 
         title, 
         url, 
-        type: type === 'video_project' ? 'video_project' : 'standard', 
+        blockType: blockType || 'socials', // Default block assignment
         createdAt: new Date() 
       };
       await db.collection('links').insertOne(entry);
@@ -66,7 +75,7 @@ export default async function handler(req, res) {
     }
   }
 
-  // 3. DELETE: Drop database objects
+  // 3. DELETE: Wipe asset objects out of database records
   if (req.method === 'DELETE') {
     const { id } = req.query;
     await db.collection('links').deleteOne({ _id: new ObjectId(id) });
