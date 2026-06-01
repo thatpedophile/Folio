@@ -8,7 +8,6 @@ export default async function handler(req, res) {
   const password = req.headers['admin-password'];
   const isAdminRequest = req.headers['admin-password'] !== undefined;
 
-  // 1. GET: Fetch data buckets categorized cleanly
   if (req.method === 'GET') {
     if (isAdminRequest && password !== process.env.ADMIN_PASSWORD) {
       return res.status(401).json({ message: 'Unauthorized' });
@@ -29,7 +28,14 @@ export default async function handler(req, res) {
         bgVideoUrl: config?.bgVideoUrl || '',
         audioBgUrl: config?.audioBgUrl || '',
         audioHoverUrl: config?.audioHoverUrl || '',
-        announcement: config?.announcement || '' // Tracks your new scrolling announcement bar text
+        announcement: config?.announcement || '',
+        // DYNAMIC BLOCK NAME RECORDS
+        block1Name: config?.block1Name || 'Socials',
+        block2Name: config?.block2Name || 'Assets & Presets',
+        block3Name: config?.block3Name || 'My Work',
+        block4Name: config?.block4Name || 'System Activation',
+        block5Name: config?.block5Name || 'Other Sites',
+        block6Name: config?.block6Name || 'Tutorials'
       };
 
       return res.status(200).json({ socials, assets, myWork, profile });
@@ -38,36 +44,35 @@ export default async function handler(req, res) {
     }
   }
 
-  // Security Verification Guard
   if (password !== process.env.ADMIN_PASSWORD) {
     return res.status(401).json({ message: 'Unauthorized' });
   }
 
-  // 2. POST: Process Asset Creation & Identity Matrix Saving
   if (req.method === 'POST') {
-    const { title, url, blockType, note, type, username, bio, avatarUrl, videoUrl, subtitle, bgVideoUrl, audioBgUrl, audioHoverUrl, announcement } = req.body;
+    const { 
+      title, url, blockType, type, username, bio, avatarUrl, videoUrl, subtitle, bgVideoUrl, audioBgUrl, audioHoverUrl, announcement,
+      block1Name, block2Name, block3Name, block4Name, block5Name, block6Name
+    } = req.body;
 
     if (type === 'update_profile') {
       try {
         await db.collection('config').updateOne(
           { key: 'profile_settings' },
-          { $set: { username, bio, avatarUrl, videoUrl, subtitle, bgVideoUrl, audioBgUrl, audioHoverUrl, announcement, updatedAt: new Date() } },
+          { $set: { 
+            username, bio, avatarUrl, videoUrl, subtitle, bgVideoUrl, audioBgUrl, audioHoverUrl, announcement,
+            block1Name, block2Name, block3Name, block4Name, block5Name, block6Name,
+            updatedAt: new Date() 
+          } },
           { upsert: true }
         );
-        return res.status(200).json({ message: 'Identity settings synchronized successfully.' });
+        return res.status(200).json({ message: 'Identity and custom block names synchronized successfully.' });
       } catch (err) {
         return res.status(500).json({ error: err.message });
       }
     }
 
     try {
-      const entry = { 
-        title, 
-        url, 
-        blockType: blockType || 'socials', 
-        note: note || '', 
-        createdAt: new Date() 
-      };
+      const entry = { title, url: url || '', blockType: blockType || 'socials', createdAt: new Date() };
       await db.collection('links').insertOne(entry);
       return res.status(201).json(entry);
     } catch (err) {
@@ -75,7 +80,6 @@ export default async function handler(req, res) {
     }
   }
 
-  // 3. DELETE: Drop data records out of collection slots
   if (req.method === 'DELETE') {
     const { id } = req.query;
     await db.collection('links').deleteOne({ _id: new ObjectId(id) });
