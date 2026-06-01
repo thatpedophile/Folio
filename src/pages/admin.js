@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { upload } from '@vercel/blob';
+import { put } from '@vercel/blob';
 
 export default function Admin() {
   const [password, setPassword] = useState('');
@@ -65,7 +65,8 @@ export default function Admin() {
     setUploadProgress(10);
 
     try {
-      const newBlob = await upload(file.name, file, {
+      // FIX applied here: changed upload to put
+      const newBlob = await put(file.name, file, {
         access: 'public',
         handleUploadUrl: '/api/links?type=blob_upload_handshake',
         onUploadProgress: (progressEvent) => {
