@@ -21,7 +21,7 @@ export default function Admin() {
   const [url, setUrl] = useState('');
   const [targetBlock, setTargetBlock] = useState('socials');
 
-  // URL Parser State
+  // URL Converter Input State
   const [rawInputUrl, setRawInputUrl] = useState('');
 
   const fetchDashboardData = async (token = password) => {
@@ -77,11 +77,16 @@ export default function Admin() {
         .replace('github.com', 'raw.githubusercontent.com')
         .replace('/blob/', '/');
       
+      // Auto-populate both form location targets for zero-friction publishing
       setUrl(processedUrl);
+      setBgVideoUrl(processedUrl);
+      
+      // Clear converter widget search box
       setRawInputUrl('');
-      alert('Link parsed to Raw secure streaming CDN format successfully!');
+      
+      alert(`Link parsed to Raw secure streaming CDN format successfully!\n\nIt has been auto-filled into your form inputs below:\n${processedUrl}`);
     } else {
-      alert('Invalid structure format. Please enter a valid standard GitHub file location address.');
+      alert('Invalid structure format. Please enter a valid standard GitHub file location address from your browser bar.');
     }
   };
 
@@ -105,7 +110,7 @@ export default function Admin() {
       headers: { 'Content-Type': 'application/json', 'admin-password': password },
       body: JSON.stringify({ type: 'update_profile', username, bio, avatarUrl, videoUrl, subtitle, bgVideoUrl, audioBgUrl, audioHoverUrl }),
     });
-    if (res.ok) alert('Layout core variables saved.');
+    if (res.ok) alert('Core design properties updated successfully!');
   };
 
   const handleCreateElement = async (e) => {
@@ -180,8 +185,8 @@ export default function Admin() {
             </div>
           </div>
 
-          <div style={{ background: '#0a0a0f', padding: '15px', borderRadius: '8px', border: '1px solid #222' }}>
-            <label style={{ display: 'block', fontSize: '12px', color: '#a855f7', marginBottom: '5px', fontWeight: 'bold' }}>Main Website Background Video Link URL (Paste Converted Raw GitHub URL)</label>
+          <div style={{ background: '#0a0a0f', padding: '15px', borderRadius: '8px', border: '1px solid #a855f7' }}>
+            <label style={{ display: 'block', fontSize: '12px', color: '#a855f7', marginBottom: '5px', fontWeight: 'bold' }}>Main Website Background Video Link URL (Populated automatically via converter widget)</label>
             <input type="url" value={bgVideoUrl} onChange={(e) => setBgVideoUrl(e.target.value)} placeholder="e.g., https://raw.githubusercontent.com/username/repo/main/file.mp4" style={{ padding: '12px', width: '100%', boxSizing: 'border-box', background: '#13131a', border: '1px solid #222', color: '#fff', borderRadius: '6px' }} />
           </div>
 
@@ -224,14 +229,14 @@ export default function Admin() {
         </div>
 
         <div>
-          <label style={{ display: 'block', fontSize: '12px', color: '#64748b', marginBottom: '5px' }}>Asset Location Link URL (Paste text links or converted Raw GitHub link from widget above)</label>
+          <label style={{ display: 'block', fontSize: '12px', color: '#64748b', marginBottom: '5px' }}>Asset Location Link URL (Populated automatically via converter widget above)</label>
           <input type="url" placeholder="https://..." value={url} onChange={(e) => setUrl(e.target.value)} required style={{ padding: '12px', width: '100%', boxSizing: 'border-box', background: '#0a0a0f', border: '1px solid #222', color: '#fff', borderRadius: '6px' }} />
         </div>
 
         <button type="submit" style={{ padding: '14px', background: '#10b981', color: '#fff', border: 'none', cursor: 'pointer', borderRadius: '8px', fontWeight: '600' }}>Publish Element to Selected Column</button>
       </form>
 
-      {/* LOG DELETION TABLES ARCHITECTURE */}
+      {/* LOG DELETION ARCHITECTURE */}
       <h3 style={{ borderBottom: '1px solid #222', paddingBottom: '10px', marginBottom: '15px' }}>Active Structured Portfolio Layout Architecture</h3>
       
       <h4 style={{ color: '#6366f1', margin: '20px 0 10px 0' }}>Column 1: Social Links</h4>
