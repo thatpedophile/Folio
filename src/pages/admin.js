@@ -16,10 +16,10 @@ export default function Admin() {
   const [bgVideoUrl, setBgVideoUrl] = useState('');
   const [audioBgUrl, setAudioBgUrl] = useState('');
   const [audioHoverUrl, setAudioHoverUrl] = useState('');
+  const [announcement, setAnnouncement] = useState(''); // Tracking state for the ticker line text
 
   const [title, setTitle] = useState('');
   const [url, setUrl] = useState('');
-  const [note, setNote] = useState('');
   const [targetBlock, setTargetBlock] = useState('socials');
 
   const [rawInputUrl, setRawInputUrl] = useState('');
@@ -43,6 +43,7 @@ export default function Admin() {
           setBgVideoUrl(data.profile.bgVideoUrl || '');
           setAudioBgUrl(data.profile.audioBgUrl || '');
           setAudioHoverUrl(data.profile.audioHoverUrl || '');
+          setAnnouncement(data.profile.announcement || '');
         }
         setIsAuthorized(true);
       } else {
@@ -70,7 +71,6 @@ export default function Admin() {
     }
   }, []);
 
-  // Defined strictly inside the component block scope before rendering
   const handleLoginSubmit = (e) => {
     e.preventDefault();
     if (typeof window !== 'undefined') {
@@ -97,9 +97,11 @@ export default function Admin() {
   };
 
   const injectOsPrefix = (systemType) => {
-    let baseTitle = title.replace(/\[windows\]/i, '').replace(/\[mac\]/i, '').trim();
+    let baseTitle = title.replace(/\[windows\]/i, '').replace(/\[mac\]/i, '').replace(/\[password\]/i, '').replace(/\[note\]/i, '').trim();
     if (systemType === 'win') setTitle(`[Windows] ${baseTitle}`);
-    else if (systemType === 'mac') setTitle(`[Mac] ${baseTitle}`);
+    if (systemType === 'mac') setTitle(`[Mac] ${baseTitle}`);
+    if (systemType === 'pass') setTitle(`[Password] ${baseTitle}`);
+    if (systemType === 'note') setTitle(`[Note] ${baseTitle}`);
   };
 
   const handleUpdateProfile = async (e) => {
@@ -107,9 +109,9 @@ export default function Admin() {
     const res = await fetch('/api/links', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'admin-password': password },
-      body: JSON.stringify({ type: 'update_profile', username, bio, avatarUrl, videoUrl, subtitle, bgVideoUrl, audioBgUrl, audioHoverUrl }),
+      body: JSON.stringify({ type: 'update_profile', username, bio, avatarUrl, videoUrl, subtitle, bgVideoUrl, audioBgUrl, audioHoverUrl, announcement }),
     });
-    if (res.ok) alert('Identity variables saved safely.');
+    if (res.ok) alert('Identity and Announcement properties saved safely.');
   };
 
   const handleCreateElement = async (e) => {
@@ -117,9 +119,9 @@ export default function Admin() {
     const res = await fetch('/api/links', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'admin-password': password },
-      body: JSON.stringify({ title, url, blockType: targetBlock, note }),
+      body: JSON.stringify({ title, url, blockType: targetBlock }),
     });
-    if (res.ok) { setTitle(''); setUrl(''); setNote(''); fetchDashboardData(password); }
+    if (res.ok) { setTitle(''); setUrl(''); fetchDashboardData(password); }
   };
 
   const handleDelete = async (id) => {
@@ -148,7 +150,7 @@ export default function Admin() {
         <button onClick={() => { if (typeof window !== 'undefined') { sessionStorage.removeItem('admin_session_pass'); } setIsAuthorized(false); }} style={{ padding: '10px 20px', background: '#ef4444', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: '600' }}>Sign Out</button>
       </div>
 
-      {/* UTILITY WIDGET */}
+      {/* PARSER UTILITY WIDGET */}
       <div style={{ background: '#13131a', padding: '20px', borderRadius: '12px', border: '1px solid #a855f7', marginBottom: '35px' }}>
         <h3 style={{ margin: '0 0 10px 0', color: '#a855f7', fontSize: '15px' }}>⚡ Core GitHub Raw URL Converter Widget</h3>
         <div style={{ display: 'flex', gap: '12px' }}>
@@ -157,7 +159,7 @@ export default function Admin() {
         </div>
       </div>
       
-      {/* PROFILE CREATOR */}
+      {/* IDENTITY CONFIG MATRIX */}
       <div style={{ background: '#13131a', padding: '25px', borderRadius: '12px', border: '1px solid #1e1e24', marginBottom: '40px' }}>
         <h3 style={{ margin: '0 0 20px 0', color: '#6366f1' }}>Branding, Design Presets & Core Configurations</h3>
         <form onSubmit={handleUpdateProfile} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
@@ -169,9 +171,16 @@ export default function Admin() {
             <div style={{ flex: 1 }}><label style={{ display: 'block', fontSize: '12px', color: '#64748b', marginBottom: '5px' }}>Avatar Photo Link URL</label><input type="url" value={avatarUrl} onChange={(e) => setAvatarUrl(e.target.value)} required style={{ padding: '12px', width: '100%', background: '#0a0a0f', border: '1px solid #222', color: '#fff', borderRadius: '6px' }} /></div>
             <div style={{ flex: 1 }}><label style={{ display: 'block', fontSize: '12px', color: '#64748b', marginBottom: '5px' }}>Sound Action Effect URL</label><input type="url" value={audioHoverUrl} style={{ padding: '12px', width: '100%', background: '#0a0a0f', border: '1px solid #222', color: '#fff', borderRadius: '6px' }} /></div>
           </div>
+
+          {/* DYNAMIC ANNOUNCEMENT MATRIC INPUT BLOCK PANEL */}
+          <div style={{ background: '#0a0a0f', padding: '15px', borderRadius: '8px', border: '1px dashed #6366f1' }}>
+            <label style={{ display: 'block', fontSize: '12px', color: '#6366f1', marginBottom: '5px', fontWeight: 'bold' }}>📰 Top Header Scrolling Announcement Text Strip (Leaves blank to disable ticker entirely)</label>
+            <input type="text" value={announcement} onChange={(e) => setAnnouncement(e.target.value)} placeholder="e.g., SITE MAINTENANCE UNDERWAY PRESETS PACK VOL 5 DROPPING TONIGHT AT 9 PM" style={{ padding: '12px', width: '100%', boxSizing: 'border-box', background: '#13131a', border: '1px solid #222', color: '#fff', borderRadius: '6px', fontFamily: 'monospace' }} />
+          </div>
+
           <div style={{ background: '#0a0a0f', padding: '15px', borderRadius: '8px', border: '1px solid #a855f7' }}>
             <label style={{ display: 'block', fontSize: '12px', color: '#a855f7', marginBottom: '5px', fontWeight: 'bold' }}>Main Website Background Video Link URL</label>
-            <input type="url" value={bgVideoUrl} onChange={(e) => setBgVideoUrl(e.target.value)} style={{ padding: '12px', width: '100%', background: '#13131a', border: '1px solid #222', color: '#fff', borderRadius: '6px' }} />
+            <input type="url" value={bgVideoUrl} onChange={(e) => setBgVideoUrl(e.target.value)} style={{ padding: '12px', width: '100%', boxSizing: 'border-box', background: '#13131a', border: '1px solid #222', color: '#fff', borderRadius: '6px' }} />
           </div>
           <div style={{ display: 'flex', gap: '15px' }}>
             <div style={{ flex: 1 }}><label style={{ display: 'block', fontSize: '12px', color: '#64748b', marginBottom: '5px' }}>Main Intro Showreel Video URL</label><input type="url" value={videoUrl} style={{ padding: '12px', width: '100%', background: '#0a0a0f', border: '1px solid #222', color: '#fff', borderRadius: '6px' }} /></div>
@@ -185,46 +194,43 @@ export default function Admin() {
         </form>
       </div>
 
-      {/* CORE GENERATOR FORM DESIGN BLOCK */}
+      {/* CORE FORM ELEMENT ARCHITECTURE */}
       <h3 style={{ margin: '0 0 15px 0', color: '#10b981' }}>Publish Portfolio Elements</h3>
       <form onSubmit={handleCreateElement} style={{ display: 'flex', flexDirection: 'column', gap: '15px', background: '#13131a', padding: '25px', borderRadius: '12px', border: '1px solid #1e1e24', marginBottom: '40px' }}>
         <div style={{ display: 'flex', gap: '15px' }}>
           <div style={{ flex: 1 }}>
             <label style={{ display: 'block', fontSize: '12px', color: '#64748b', marginBottom: '5px' }}>Choose Target Column Destination</label>
-            <select value={targetBlock} onChange={(e) => setTargetBlock(e.target.value)} style={{ padding: '12px', width: '100%', background: '#0a0a0f', border: '1px solid #10b981', color: '#fff', borderRadius: '6px', fontWeight: 'bold' }}>
+            <select value={targetBlock} onChange={(e) => setTargetBlock(e.target.value)} style={{ padding: '12px', width: '100%', boxSizing: 'border-box', background: '#0a0a0f', border: '1px solid #10b981', color: '#fff', borderRadius: '6px', fontWeight: 'bold' }}>
               <option value="socials">Column 1: Socials Section Block</option>
               <option value="assets">Column 2: Assets & Presets Section Block</option>
               <option value="my_work">Column 3: My Work (Video Showcases) Block</option>
             </select>
           </div>
           <div style={{ flex: 1 }}>
-            <label style={{ display: 'block', fontSize: '12px', color: '#64748b', marginBottom: '5px' }}>Display Label Title / Edit Description</label>
-            <div style={{ display: 'flex', gap: '8px', marginBottom: '6px' }}>
-              <input type="text" placeholder="e.g., Motion Presets v4" value={title} onChange={(e) => setTitle(e.target.value)} required style={{ flex: 1, padding: '12px', background: '#0a0a0f', border: '1px solid #222', color: '#fff', borderRadius: '6px' }} />
+            <label style={{ display: 'block', fontSize: '12px', color: '#64748b', marginBottom: '5px' }}>Display Label Title / Key Descriptor Box</label>
+            <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+              <input type="text" placeholder="e.g., Velocity Shake Plugin or Zip File Password" value={title} onChange={(e) => setTitle(e.target.value)} required style={{ flex: 1, padding: '12px', background: '#0a0a0f', border: '1px solid #222', color: '#fff', borderRadius: '6px' }} />
               {targetBlock === 'assets' && (
-                <>
-                  <button type="button" onClick={() => injectOsPrefix('win')} style={{ padding: '0 12px', background: '#0284c7', color: '#fff', border: 'none', borderRadius: '6px', fontSize: '11px', cursor: 'pointer', fontWeight: 'bold' }}>+ Win OS Tag</button>
-                  <button type="button" onClick={() => injectOsPrefix('mac')} style={{ padding: '0 12px', background: '#be123c', color: '#fff', border: 'none', borderRadius: '6px', fontSize: '11px', cursor: 'pointer', fontWeight: 'bold' }}>+ Mac OS Tag</button>
-                </>
+                <div style={{ display: 'flex', gap: '4px', width: '100%', marginTop: '6px' }}>
+                  <button type="button" onClick={() => injectOsPrefix('win')} style={{ padding: '8px 12px', background: '#0284c7', color: '#fff', border: 'none', borderRadius: '6px', fontSize: '11px', cursor: 'pointer', fontWeight: 'bold' }}>+ Windows App</button>
+                  <button type="button" onClick={() => injectOsPrefix('mac')} style={{ padding: '8px 12px', background: '#be123c', color: '#fff', border: 'none', borderRadius: '6px', fontSize: '11px', cursor: 'pointer', fontWeight: 'bold' }}>+ Mac OS App</button>
+                  <button type="button" onClick={() => injectOsPrefix('pass')} style={{ padding: '8px 12px', background: '#a855f7', color: '#fff', border: 'none', borderRadius: '6px', fontSize: '11px', cursor: 'pointer', fontWeight: 'bold' }}>+ Password Node</button>
+                  <button type="button" onClick={() => injectOsPrefix('note')} style={{ padding: '8px 12px', background: '#64748b', color: '#fff', border: 'none', borderRadius: '6px', fontSize: '11px', cursor: 'pointer', fontWeight: 'bold' }}>+ Note Node</button>
+                </div>
               )}
             </div>
           </div>
         </div>
 
         <div>
-          <label style={{ display: 'block', fontSize: '12px', color: '#64748b', marginBottom: '5px' }}>File Password / Info Notes (Optional)</label>
-          <input type="text" placeholder="e.g., Pass: sh1vx or Requires CC 2024" value={note} onChange={(e) => setNote(e.target.value)} style={{ padding: '12px', width: '100%', boxSizing: 'border-box', background: '#0a0a0f', border: '1px solid #222', color: '#fff', borderRadius: '6px' }} />
-        </div>
-
-        <div>
-          <label style={{ display: 'block', fontSize: '12px', color: '#64748b', marginBottom: '5px' }}>Asset Location Link URL</label>
-          <input type="url" placeholder="https://..." value={url} onChange={(e) => setUrl(e.target.value)} required style={{ padding: '12px', width: '100%', background: '#0a0a0f', border: '1px solid #222', color: '#fff', borderRadius: '6px' }} />
+          <label style={{ display: 'block', fontSize: '12px', color: '#64748b', marginBottom: '5px' }}>Resource Location target value (Paste plain text for Passwords/Notes, or web URLs for file downloads)</label>
+          <input type="text" placeholder="Enter target URL or raw password/information text note values here..." value={url} onChange={(e) => setUrl(e.target.value)} required style={{ padding: '12px', width: '100%', boxSizing: 'border-box', background: '#0a0a0f', border: '1px solid #222', color: '#fff', borderRadius: '6px' }} />
         </div>
 
         <button type="submit" style={{ padding: '14px', background: '#10b981', color: '#fff', border: 'none', cursor: 'pointer', borderRadius: '8px', fontWeight: '600' }}>Publish Element to Selected Column</button>
       </form>
 
-      {/* Structured Deletion Sections */}
+      {/* RECORD DELETION LOG */}
       <h3 style={{ borderBottom: '1px solid #222', paddingBottom: '10px', marginBottom: '15px' }}>Active Structured Portfolio Layout Architecture</h3>
       
       <h4 style={{ color: '#6366f1', margin: '20px 0 10px 0' }}>Column 1: Social Links</h4>
@@ -241,7 +247,7 @@ export default function Admin() {
       <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
         {assets.map(item => (
           <div key={item._id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#13131a', padding: '14px', borderRadius: '10px', border: '1px solid #1e1e24' }}>
-            <div><strong>{item.title}</strong>{item.note && <span style={{ color: '#a855f7', fontSize: '12px', display: 'block' }}>Note: {item.note}</span>}<br/><span style={{ fontSize: '12px', color: '#64748b' }}>{item.url}</span></div>
+            <div><strong>{item.title}</strong><br/><span style={{ fontSize: '12px', color: '#64748b' }}>{item.url}</span></div>
             <button onClick={() => handleDelete(item._id)} style={{ background: '#ef4444', color: '#fff', border: 'none', padding: '8px 14px', cursor: 'pointer', borderRadius: '6px' }}>Delete</button>
           </div>
         ))}
