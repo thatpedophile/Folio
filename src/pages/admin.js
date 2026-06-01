@@ -76,22 +76,20 @@ export default function Admin() {
       setUrl(processedUrl);
       setBgVideoUrl(processedUrl);
       setRawInputUrl('');
-      alert(`Link successfully parsed to raw streaming CDN address format:\n\n${processedUrl}`);
+      alert(`Link successfully parsed to raw content streaming address:\n\n${processedUrl}`);
     } else {
       alert('Invalid URL structure. Ensure it contains /blob/ from the repository window branch.');
     }
   };
 
-  const handleLoginSubmit = (e) => {
-    e.preventDefault();
-    sessionStorage.setItem('admin_session_pass', password);
-    fetchDashboardData(password);
-  };
-
-  const handleLogOutAction = () => {
-    sessionStorage.removeItem('admin_session_pass');
-    setPassword('');
-    setIsAuthorized(false);
+  const injectOsPrefix = (systemType) => {
+    // Strips any existing tags out first to avoid duplication bugs
+    let baseTitle = title.replace(/\[windows\]/i, '').replace(/\[mac\]/i, '').trim();
+    if (systemType === 'win') {
+      setTitle(`[Windows] ${baseTitle}`);
+    } else if (systemType === 'mac') {
+      setTitle(`[Mac] ${baseTitle}`);
+    }
   };
 
   const handleUpdateProfile = async (e) => {
@@ -137,10 +135,10 @@ export default function Admin() {
       
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '30px' }}>
         <h2 style={{ margin: 0 }}>Global Customizer Dash</h2>
-        <button onClick={handleLogOutAction} style={{ padding: '10px 20px', background: '#ef4444', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: '600' }}>Sign Out</button>
+        <button onClick={() => { sessionStorage.removeItem('admin_session_pass'); setIsAuthorized(false); }} style={{ padding: '10px 20px', background: '#ef4444', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: '600' }}>Sign Out</button>
       </div>
 
-      {/* PARSER WORKBENCH */}
+      {/* PARSER UTILITY WORKBENCH */}
       <div style={{ background: '#13131a', padding: '20px', borderRadius: '12px', border: '1px solid #a855f7', marginBottom: '35px' }}>
         <h3 style={{ margin: '0 0 10px 0', color: '#a855f7', fontSize: '15px' }}>⚡ Core GitHub Raw URL Converter Widget</h3>
         <p style={{ margin: '0 0 15px 0', fontSize: '12px', color: '#64748b' }}>Paste a standard webpage link from your GitHub repo browser bar here, and convert it instantly into a secure streamable raw asset address.</p>
@@ -150,7 +148,7 @@ export default function Admin() {
         </div>
       </div>
       
-      {/* BRAND PROPERTIES MAP FORM */}
+      {/* BRAND SETUP PANEL CONFIGURATION CARD */}
       <div style={{ background: '#13131a', padding: '25px', borderRadius: '12px', border: '1px solid #1e1e24', marginBottom: '40px' }}>
         <h3 style={{ margin: '0 0 20px 0', color: '#6366f1' }}>Branding, Design Presets & Core Configurations</h3>
         <form onSubmit={handleUpdateProfile} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
@@ -195,14 +193,14 @@ export default function Admin() {
 
           <div>
             <label style={{ display: 'block', fontSize: '12px', color: '#64748b', marginBottom: '5px' }}>Bio Summary Text Field</label>
-            <textarea value={bio} onChange={(e) => setBio(e.target.value)} required rows="2" style={{ padding: '12px', width: '100%', boxSizing: 'border-box', background: '#0a0a0f', border: '1px solid #222', color: '#fff', borderRadius: '6px', resize: 'vertical', fontFamily: 'sans-serif' }} />
+            <textarea value={bio} onChange={(e) => setBio(e.target.value)} required rows="2" style={{ padding: '12px', width: '100%', boxSizing: 'border-box', background: '#0a0a0f', border: '1px solid #222', color: '#fff', borderRadius: '6px', resize: 'vertical' }} />
           </div>
 
           <button type="submit" style={{ padding: '14px', background: '#6366f1', color: '#fff', border: 'none', cursor: 'pointer', borderRadius: '8px', fontWeight: '600' }}>Save Core Framework Matrix</button>
         </form>
       </div>
 
-      {/* CONTENT MANAGEMENT FORM WRAPPER */}
+      {/* ITEM PUBLICATION ROUTING BLOCK WRAPPER */}
       <h3 style={{ margin: '0 0 15px 0', color: '#10b981' }}>Publish Portfolio Elements</h3>
       <form onSubmit={handleCreateElement} style={{ display: 'flex', flexDirection: 'column', gap: '15px', background: '#13131a', padding: '25px', borderRadius: '12px', border: '1px solid #1e1e24', marginBottom: '40px' }}>
         <div style={{ display: 'flex', gap: '15px' }}>
@@ -216,7 +214,17 @@ export default function Admin() {
           </div>
           <div style={{ flex: 1 }}>
             <label style={{ display: 'block', fontSize: '12px', color: '#64748b', marginBottom: '5px' }}>Display Label Title / Edit Description</label>
-            <input type="text" placeholder="e.g., Follow my Instagram, Editing Preset, Valorant AMV Edit" value={title} onChange={(e) => setTitle(e.target.value)} required style={{ padding: '12px', width: '100%', boxSizing: 'border-box', background: '#0a0a0f', border: '1px solid #222', color: '#fff', borderRadius: '6px' }} />
+            <div style={{ display: 'flex', gap: '8px', marginBottom: '6px' }}>
+              <input type="text" placeholder="e.g., Velocity Shake Plugin" value={title} onChange={(e) => setTitle(e.target.value)} required style={{ flex: 1, padding: '12px', background: '#0a0a0f', border: '1px solid #222', color: '#fff', borderRadius: '6px' }} />
+              
+              {/* OPERATING SYSTEM CONDITIONAL QUICK INJECTION ROUTERS */}
+              {targetBlock === 'assets' && (
+                <>
+                  <button type="button" onClick={() => injectOsPrefix('win')} style={{ padding: '0 12px', background: '#0284c7', color: '#fff', border: 'none', borderRadius: '6px', fontSize: '11px', cursor: 'pointer', fontWeight: 'bold' }}>+ Win OS Tag</button>
+                  <button type="button" onClick={() => injectOsPrefix('mac')} style={{ padding: '0 12px', background: '#be123c', color: '#fff', border: 'none', borderRadius: '6px', fontSize: '11px', cursor: 'pointer', fontWeight: 'bold' }}>+ Mac OS Tag</button>
+                </>
+              )}
+            </div>
           </div>
         </div>
 
@@ -228,7 +236,7 @@ export default function Admin() {
         <button type="submit" style={{ padding: '14px', background: '#10b981', color: '#fff', border: 'none', cursor: 'pointer', borderRadius: '8px', fontWeight: '600' }}>Publish Element to Selected Column</button>
       </form>
 
-      {/* RECORD DELETION LOG PREVIEWS VIEW */}
+      {/* RECORD DELETION RENDERING BOUNDS */}
       <h3 style={{ borderBottom: '1px solid #222', paddingBottom: '10px', marginBottom: '15px' }}>Active Structured Portfolio Layout Architecture</h3>
       
       <h4 style={{ color: '#6366f1', margin: '20px 0 10px 0' }}>Column 1: Social Links</h4>
