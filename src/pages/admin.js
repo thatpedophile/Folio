@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { upload } from '@vercel/blob/client/upload';
+import { upload } from '@vercel/blob';
 
 export default function Admin() {
   const [password, setPassword] = useState('');
@@ -7,7 +7,7 @@ export default function Admin() {
   const [links, setLinks] = useState([]);
   const [videoProjects, setVideoProjects] = useState([]);
   
-  // Settings Form States
+  // Custom Settings State Matrix Setup
   const [username, setUsername] = useState('');
   const [bio, setBio] = useState('');
   const [avatarUrl, setAvatarUrl] = useState('');
@@ -232,7 +232,7 @@ export default function Admin() {
           </div>
           <div style={{ flex: 1 }}>
             <label style={{ display: 'block', fontSize: '12px', color: '#64748b', marginBottom: '5px' }}>Title Label / Edit Caption Description</label>
-            <input type="text" placeholder="e.g., Glitch Transition Pack or Edits Showreel" value={title} onChange={(e) => setTitle(e.target.value)} required style={{ padding: '12px', width: '100%', boxSizing: 'border-box', background: '#0a0a0f', border: '1px solid #222', color: '#fff', borderRadius: '6px' }} />
+            <input type="text" placeholder="e.g., After Effects Presets Pack or TikTok Edit" value={title} onChange={(e) => setTitle(e.target.value)} required style={{ padding: '12px', width: '100%', boxSizing: 'border-box', background: '#0a0a0f', border: '1px solid #222', color: '#fff', borderRadius: '6px' }} />
           </div>
         </div>
 
