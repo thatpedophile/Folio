@@ -66,7 +66,7 @@ export default function Admin() {
     try {
       const newBlob = await upload(file.name, file, {
         access: 'public',
-        handleUploadUrl: '/api/upload', // <-- FIXED URL (Clean path)
+        handleUploadUrl: '/api/upload',
         onUploadProgress: (progressEvent) => {
           setUploadProgress(Math.round(progressEvent.percentage));
         }
@@ -269,7 +269,3 @@ export default function Admin() {
     </div>
   );
 }
-);
-}
-
-// forced cache clear for blob token
