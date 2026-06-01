@@ -1,6 +1,6 @@
 {
   "name": "sh1vx-premium-portfolio",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -11,6 +11,7 @@
     "next": "latest",
     "react": "latest",
     "react-dom": "latest",
-    "mongodb": "^6.0.0"
+    "mongodb": "^6.0.0",
+    "@vercel/blob": "^0.23.4"
   }
 }
