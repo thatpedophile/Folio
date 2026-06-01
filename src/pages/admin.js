@@ -19,7 +19,7 @@ export default function Admin() {
 
   const [title, setTitle] = useState('');
   const [url, setUrl] = useState('');
-  const [note, setNote] = useState(''); // Tracking state for the metadata string pass
+  const [note, setNote] = useState('');
   const [targetBlock, setTargetBlock] = useState('socials');
 
   const [rawInputUrl, setRawInputUrl] = useState('');
@@ -47,7 +47,9 @@ export default function Admin() {
         setIsAuthorized(true);
       } else {
         setIsAuthorized(false);
-        sessionStorage.removeItem('admin_session_pass');
+        if (typeof window !== 'undefined') {
+          sessionStorage.removeItem('admin_session_pass');
+        }
       }
     } catch (err) {
       console.error(err);
@@ -59,12 +61,23 @@ export default function Admin() {
     document.body.style.padding = "0";
     document.body.style.backgroundColor = "#0a0a0f";
     
-    const savedPass = sessionStorage.getItem('admin_session_pass');
-    if (savedPass) {
-      setPassword(savedPass);
-      fetchDashboardData(savedPass);
+    if (typeof window !== 'undefined') {
+      const savedPass = sessionStorage.getItem('admin_session_pass');
+      if (savedPass) {
+        setPassword(savedPass);
+        fetchDashboardData(savedPass);
+      }
     }
   }, []);
+
+  // Defined strictly inside the component block scope before rendering
+  const handleLoginSubmit = (e) => {
+    e.preventDefault();
+    if (typeof window !== 'undefined') {
+      sessionStorage.setItem('admin_session_pass', password);
+    }
+    fetchDashboardData(password);
+  };
 
   const handleUrlConversionAction = () => {
     if (!rawInputUrl) return alert('Please enter a GitHub URL link first.');
@@ -77,7 +90,7 @@ export default function Admin() {
       setUrl(processedUrl);
       setBgVideoUrl(processedUrl);
       setRawInputUrl('');
-      alert(`Link successfully parsed to raw content streaming address:\n\n${processedUrl}`);
+      alert(`Link successfully parsed to raw streaming CDN address format:\n\n${processedUrl}`);
     } else {
       alert('Invalid URL structure. Ensure it contains /blob/ from the repository window branch.');
     }
@@ -132,7 +145,7 @@ export default function Admin() {
       
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '30px' }}>
         <h2>Global Customizer Dash</h2>
-        <button onClick={() => { sessionStorage.removeItem('admin_session_pass'); setIsAuthorized(false); }} style={{ padding: '10px 20px', background: '#ef4444', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: '600' }}>Sign Out</button>
+        <button onClick={() => { if (typeof window !== 'undefined') { sessionStorage.removeItem('admin_session_pass'); } setIsAuthorized(false); }} style={{ padding: '10px 20px', background: '#ef4444', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: '600' }}>Sign Out</button>
       </div>
 
       {/* UTILITY WIDGET */}
@@ -154,14 +167,14 @@ export default function Admin() {
           </div>
           <div style={{ display: 'flex', gap: '15px' }}>
             <div style={{ flex: 1 }}><label style={{ display: 'block', fontSize: '12px', color: '#64748b', marginBottom: '5px' }}>Avatar Photo Link URL</label><input type="url" value={avatarUrl} onChange={(e) => setAvatarUrl(e.target.value)} required style={{ padding: '12px', width: '100%', background: '#0a0a0f', border: '1px solid #222', color: '#fff', borderRadius: '6px' }} /></div>
-            <div style={{ flex: 1 }}><label style={{ display: 'block', fontSize: '12px', color: '#64748b', marginBottom: '5px' }}>Sound Action Effect URL</label><input type="url" value={audioHoverUrl} onChange={(e) => setAudioHoverUrl(e.target.value)} style={{ padding: '12px', width: '100%', background: '#0a0a0f', border: '1px solid #222', color: '#fff', borderRadius: '6px' }} /></div>
+            <div style={{ flex: 1 }}><label style={{ display: 'block', fontSize: '12px', color: '#64748b', marginBottom: '5px' }}>Sound Action Effect URL</label><input type="url" value={audioHoverUrl} style={{ padding: '12px', width: '100%', background: '#0a0a0f', border: '1px solid #222', color: '#fff', borderRadius: '6px' }} /></div>
           </div>
           <div style={{ background: '#0a0a0f', padding: '15px', borderRadius: '8px', border: '1px solid #a855f7' }}>
             <label style={{ display: 'block', fontSize: '12px', color: '#a855f7', marginBottom: '5px', fontWeight: 'bold' }}>Main Website Background Video Link URL</label>
             <input type="url" value={bgVideoUrl} onChange={(e) => setBgVideoUrl(e.target.value)} style={{ padding: '12px', width: '100%', background: '#13131a', border: '1px solid #222', color: '#fff', borderRadius: '6px' }} />
           </div>
           <div style={{ display: 'flex', gap: '15px' }}>
-            <div style={{ flex: 1 }}><label style={{ display: 'block', fontSize: '12px', color: '#64748b', marginBottom: '5px' }}>Main Intro Showreel Video URL</label><input type="url" value={videoUrl} onChange={(e) => setVideoUrl(e.target.value)} style={{ padding: '12px', width: '100%', background: '#0a0a0f', border: '1px solid #222', color: '#fff', borderRadius: '6px' }} /></div>
+            <div style={{ flex: 1 }}><label style={{ display: 'block', fontSize: '12px', color: '#64748b', marginBottom: '5px' }}>Main Intro Showreel Video URL</label><input type="url" value={videoUrl} style={{ padding: '12px', width: '100%', background: '#0a0a0f', border: '1px solid #222', color: '#fff', borderRadius: '6px' }} /></div>
             <div style={{ flex: 1 }}><label style={{ display: 'block', fontSize: '12px', color: '#64748b', marginBottom: '5px' }}>Looping Background Music Track URL</label><input type="url" value={audioBgUrl} onChange={(e) => setAudioBgUrl(e.target.value)} style={{ padding: '12px', width: '100%', background: '#0a0a0f', border: '1px solid #222', color: '#fff', borderRadius: '6px' }} /></div>
           </div>
           <div>
@@ -198,9 +211,8 @@ export default function Admin() {
           </div>
         </div>
 
-        {/* INTEGRATED DYNAMIC FILE META NOTE FIELD FORM BOX */}
         <div>
-          <label style={{ display: 'block', fontSize: '12px', color: '#64748b', marginBottom: '5px' }}>File Password / Info Notes (Optional — Only shows up on the Assets section blocks)</label>
+          <label style={{ display: 'block', fontSize: '12px', color: '#64748b', marginBottom: '5px' }}>File Password / Info Notes (Optional)</label>
           <input type="text" placeholder="e.g., Pass: sh1vx or Requires CC 2024" value={note} onChange={(e) => setNote(e.target.value)} style={{ padding: '12px', width: '100%', boxSizing: 'border-box', background: '#0a0a0f', border: '1px solid #222', color: '#fff', borderRadius: '6px' }} />
         </div>
 
@@ -212,7 +224,7 @@ export default function Admin() {
         <button type="submit" style={{ padding: '14px', background: '#10b981', color: '#fff', border: 'none', cursor: 'pointer', borderRadius: '8px', fontWeight: '600' }}>Publish Element to Selected Column</button>
       </form>
 
-      {/* RECORD DELETION LOG PREVIEWS VIEW */}
+      {/* Structured Deletion Sections */}
       <h3 style={{ borderBottom: '1px solid #222', paddingBottom: '10px', marginBottom: '15px' }}>Active Structured Portfolio Layout Architecture</h3>
       
       <h4 style={{ color: '#6366f1', margin: '20px 0 10px 0' }}>Column 1: Social Links</h4>
