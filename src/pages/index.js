@@ -3,7 +3,7 @@ import { useEffect, useState, useRef } from 'react';
 export default function Home() {
   const [data, setData] = useState(null);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [hasEntered, setHasEntered] = useState(false); // Controls the premium intro curtain
+  const [hasEntered, setHasEntered] = useState(false);
   const audioRef = useRef(null);
 
   useEffect(() => {
@@ -41,6 +41,16 @@ export default function Home() {
 
   const { profile, socials, assets, myWork } = data;
 
+  // SYSTEM FILTER INTERFACES FOR WINDOWS & MAC OS PRESETS
+  const windowsAssets = assets?.filter(item => item.title.toLowerCase().includes('[windows]')) || [];
+  const macAssets = assets?.filter(item => item.title.toLowerCase().includes('[mac]')) || [];
+  const untaggedAssets = assets?.filter(item => !item.title.toLowerCase().includes('[windows]') && !item.title.toLowerCase().includes('[mac]')) || [];
+
+  // Strips the sorting bracket tags out so your visitors only see the clean file name
+  const cleanTitle = (title) => {
+    return title.replace(/\[windows\]/i, '').replace(/\[mac\]/i, '').trim();
+  };
+
   return (
     <div style={{ position: 'relative', minHeight: '100vh', color: '#fff', fontFamily: 'sans-serif', padding: '60px 20px', boxSizing: 'border-box', overflowX: 'hidden' }}>
       
@@ -55,10 +65,6 @@ export default function Home() {
           50% { opacity: 0.5; }
           100% { transform: translateY(-40px) translateX(10px); opacity: 0; }
         }
-        @keyframes pulseGlow {
-          0%, 100% { opacity: 0.3; transform: scale(1); }
-          50% { opacity: 0.6; transform: scale(1.02); }
-        }
 
         .animate-fade-in {
           animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
@@ -72,14 +78,14 @@ export default function Home() {
           position: fixed;
           top: 0; left: 0;
           width: 100vw; height: 100vh;
-          background: rgba(7, 7, 10, 0.85);
-          backdrop-filter: blur(20px);
+          background: rgba(6, 6, 9, 0.93);
+          backdrop-filter: blur(24px);
           z-index: 9999;
           display: flex;
           flex-direction: column;
           justify-content: center;
           align-items: center;
-          transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.6s;
+          transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.7s;
         }
         .intro-curtain.hidden {
           opacity: 0;
@@ -87,24 +93,26 @@ export default function Home() {
           pointer-events: none;
         }
         .entry-glow-btn {
-          background: rgba(255, 255, 255, 0.03);
+          background: rgba(255, 255, 255, 0.02);
           border: 1px solid rgba(168, 85, 247, 0.4);
-          padding: 16px 36px;
-          border-radius: 30px;
+          padding: 18px 44px;
+          border-radius: 4px;
           color: #fff;
-          font-weight: 700;
-          letter-spacing: 2px;
+          font-weight: 800;
+          letter-spacing: 4px;
           cursor: pointer;
-          font-size: 13px;
+          font-size: 14px;
           text-transform: uppercase;
-          box-shadow: 0 0 20px rgba(168, 85, 247, 0.1);
-          transition: all 0.3s ease;
+          box-shadow: 0 0 30px rgba(168, 85, 247, 0.1);
+          transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+          font-family: monospace;
         }
         .entry-glow-btn:hover {
-          background: rgba(168, 85, 247, 0.1);
+          background: rgba(168, 85, 247, 0.15);
           border-color: #a855f7;
-          box-shadow: 0 0 30px rgba(168, 85, 247, 0.35);
-          transform: translateY(-2px);
+          box-shadow: 0 0 40px rgba(168, 85, 247, 0.45);
+          letter-spacing: 6px;
+          padding: 18px 50px;
         }
 
         /* --- INTERNAL EMBEDDED PFP PARTICLES --- */
@@ -171,16 +179,14 @@ export default function Home() {
         }
       `}</style>
       
-      {/* 0. SECURE INTERACTIVE INTRO GATE CURTAIN (Saves audio mapping clearance state) */}
+      {/* 0. DOMAIN EXPANSION ENTRANCE GATE OPENER OVERLAY */}
       <div className={`intro-curtain ${hasEntered ? 'hidden' : ''}`}>
-        <div style={{ textAlign: 'center', animation: 'pulseGlow 3s infinite ease-in-out', marginBottom: '25px' }}>
-          <h2 style={{ fontSize: '15px', letterSpacing: '3px', color: '#a855f7', textTransform: 'uppercase', margin: 0 }}>Initializing Sound Module</h2>
-          <p style={{ fontSize: '11px', color: '#444', margin: '5px 0 0 0' }}>CDN PIPELINE STATUS // ONLINE</p>
-        </div>
-        <button className="entry-glow-btn" onClick={handleSystemEntry}>Enter Portfolio</button>
+        <button className="entry-glow-btn" onClick={handleSystemEntry}>
+          DOMAIN EXPANSION
+        </button>
       </div>
       
-      {/* 1. MASTER WALLPAPER SYSTEM LINK VIEW */}
+      {/* 1. MASTER LIVE BACKGROUND VIDEO */}
       {profile.bgVideoUrl && (
         <video 
           src={profile.bgVideoUrl} 
@@ -192,15 +198,15 @@ export default function Home() {
         />
       )}
       
-      {/* 2. BASE WINDOW TINT MASK OVERLAY */}
+      {/* 2. BASE WINDOW GLASS BLUR SCREEN TINY OVERLAY */}
       <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(10, 10, 15, 0.55)', backdropFilter: 'blur(8px)', zIndex: -2, pointerEvents: 'none' }} />
 
-      {/* 3. CORE AUDIO TRACK ELEMENT LOG */}
+      {/* 3. CORE AUDIO RESOURCE PIPE */}
       {profile.audioBgUrl && (
         <audio ref={audioRef} src={profile.audioBgUrl} loop />
       )}
 
-      {/* FLOATING CORNER CONTROLLER SYSTEM NODE */}
+      {/* FLOATING AUDIO CONTROLLER MIX PANEL */}
       {profile.audioBgUrl && hasEntered && (
         <button 
           onClick={toggleAudioPlayback}
@@ -212,10 +218,10 @@ export default function Home() {
         </button>
       )}
 
-      {/* RENDER PROFILE FRAME LAYOUT ARCHITECTURE CONTAINER */}
+      {/* PROFILE CONTENT HUB VIEW AREA BOUNDS CONTAINER */}
       <div style={{ maxWidth: '1200px', margin: '0 auto', position: 'relative', zIndex: 1 }}>
         
-        {/* HEADER TARGET SECTOR COMPONENTS */}
+        {/* AVATAR BIO LOG BRAND INFO SECTOR */}
         <div className="animate-fade-in" style={{ textAlign: 'center', marginBottom: '50px' }}>
           {profile.avatarUrl && (
             <div className="pfp-wrapper">
@@ -227,10 +233,10 @@ export default function Home() {
           <p style={{ fontSize: '14px', color: '#cbd5e1', maxWidth: '500px', margin: '0 auto', lineHeight: '1.6', textShadow: '0 2px 4px rgba(0,0,0,0.4)' }}>{profile.bio}</p>
         </div>
 
-        {/* 3 COLUMN GRID SPLIT ARRAYS */}
+        {/* THREE HORIZONTAL GRID COLUMNS ENGINE ARRAYS */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '25px', alignItems: 'start' }}>
           
-          {/* COLUMN 1: NETWORKS LIST SECTION */}
+          {/* COLUMN BLOCK 1: SOCIAL PORTS LIST */}
           <div className="animate-fade-in column-delay-1" style={{ background: 'rgba(15,15,20,0.4)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '16px', padding: '20px', backdropFilter: 'blur(12px)' }}>
             <h3 style={{ margin: '0 0 20px 0', fontSize: '14px', color: '#6366f1', letterSpacing: '1px', textTransform: 'uppercase', borderLeft: '3px solid #6366f1', paddingLeft: '10px', fontWeight: '700' }}>Socials</h3>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
@@ -242,19 +248,58 @@ export default function Home() {
             </div>
           </div>
 
-          {/* COLUMN 2: UTILITY PLUGINS AND PACKS SECTION */}
+          {/* COLUMN BLOCK 2: HORIZONTAL PLATFORM SPLIT ASSETS SEGMENT */}
           <div className="animate-fade-in column-delay-2" style={{ background: 'rgba(15,15,20,0.4)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '16px', padding: '20px', backdropFilter: 'blur(12px)' }}>
             <h3 style={{ margin: '0 0 20px 0', fontSize: '14px', color: '#a855f7', letterSpacing: '1px', textTransform: 'uppercase', borderLeft: '3px solid #a855f7', paddingLeft: '10px', fontWeight: '700' }}>Assets & Presets</h3>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-              {assets.length === 0 ? <p style={{ color: '#64748b', fontSize: '13px' }}>Empty.</p> : assets.map(item => (
-                <a key={item._id} href={item.url} target="_blank" rel="noreferrer" className="particle-btn" style={{ padding: '14px 18px', borderRadius: '10px', color: '#fff', textDecoration: 'none', fontWeight: '600', fontSize: '14px', display: 'block' }}>
-                  {item.title}
-                </a>
-              ))}
+            
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '25px' }}>
+              
+              {/* SUB BLOCK ROW: WINDOWS LIST ARRAYS */}
+              <div>
+                <div style={{ fontSize: '11px', color: '#38bdf8', fontWeight: 'bold', letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  🪟 Windows System Apps
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                  {windowsAssets.length === 0 ? <p style={{ color: '#444855', fontSize: '12px', margin: '4px 0 0 0' }}>No Windows builds loaded.</p> : windowsAssets.map(item => (
+                    <a key={item._id} href={item.url} target="_blank" rel="noreferrer" className="particle-btn" style={{ padding: '12px 16px', borderRadius: '8px', color: '#fff', textDecoration: 'none', fontWeight: '600', fontSize: '13px', display: 'block' }}>
+                      {cleanTitle(item.title)}
+                    </a>
+                  ))}
+                </div>
+              </div>
+
+              {/* SUB BLOCK ROW: MAC OS LIST ARRAYS */}
+              <div>
+                <div style={{ fontSize: '11px', color: '#fb7185', fontWeight: 'bold', letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  🍎 Mac OS System Apps
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                  {macAssets.length === 0 ? <p style={{ color: '#444855', fontSize: '12px', margin: '4px 0 0 0' }}>No Mac OS builds loaded.</p> : macAssets.map(item => (
+                    <a key={item._id} href={item.url} target="_blank" rel="noreferrer" className="particle-btn" style={{ padding: '12px 16px', borderRadius: '8px', color: '#fff', textDecoration: 'none', fontWeight: '600', fontSize: '13px', display: 'block' }}>
+                      {cleanTitle(item.title)}
+                    </a>
+                  ))}
+                </div>
+              </div>
+
+              {/* GENERAL EXTRA LINKS FALLBACK LIST LOOP */}
+              {untaggedAssets.length > 0 && (
+                <div>
+                  <div style={{ fontSize: '11px', color: '#64748b', fontWeight: 'bold', letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '10px' }}>📂 General Assets</div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                    {untaggedAssets.map(item => (
+                      <a key={item._id} href={item.url} target="_blank" rel="noreferrer" className="particle-btn" style={{ padding: '12px 16px', borderRadius: '8px', color: '#fff', textDecoration: 'none', fontWeight: '600', fontSize: '13px', display: 'block' }}>
+                        {item.title}
+                      </a>
+                    ))}
+                  </div>
+                </div>
+              )}
+
             </div>
           </div>
 
-          {/* COLUMN 3: CINEMATIC REELS SECTION */}
+          {/* COLUMN BLOCK 3: CINEMATIC SHOWCASE EDITS */}
           <div className="animate-fade-in column-delay-3" style={{ background: 'rgba(15,15,20,0.4)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '16px', padding: '20px', backdropFilter: 'blur(12px)' }}>
             <h3 style={{ margin: '0 0 20px 0', fontSize: '14px', color: '#10b981', letterSpacing: '1px', textTransform: 'uppercase', borderLeft: '3px solid #10b981', paddingLeft: '10px', fontWeight: '700' }}>My Work</h3>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
