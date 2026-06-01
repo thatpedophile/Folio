@@ -19,7 +19,7 @@ export default function Home() {
     if (audioRef.current) {
       audioRef.current.play()
         .then(() => setIsPlaying(true))
-        .catch(err => console.log("Audio block bypass:", err));
+        .catch(err => console.log("Audio pipeline block bypassed.", err));
     }
   };
 
@@ -37,14 +37,14 @@ export default function Home() {
     setActiveDropdownId(activeDropdownId === id ? null : id);
   };
 
-  if (!data) return <div style={{ background: '#0a0a0f', color: '#fff', height: '100vh', display: 'flex', justifyContent: 'center', alignItems: 'center', fontFamily: 'sans-serif' }}>LOADING ENGINE...</div>;
+  if (!data) return <div style={{ background: '#0a0a0f', color: '#fff', height: '100vh', display: 'flex', justifyContent: 'center', alignItems: 'center', fontFamily: 'sans-serif' }}>LOADING ENGINE NODE...</div>;
 
   const { profile, socials, assets, myWork } = data;
 
   const allLinksCombined = [...(socials || []), ...(assets || []), ...(myWork || [])];
 
   const cleanTitle = (title) => {
-    return title.replace(/\[windows\]/i, '').replace(/\[mac\]/i, '').replace(/\[activation\]/i, '').replace(/\[othersite\]/i, '').replace(/\[lowertutorial\]/i, '').trim();
+    return title.replace(/\[windows\]/i, '').replace(/\[mac\]/i, '').replace(/\[activation\]/i, '').replace(/\[othersite\]/i, '').replace(/\[lowertutorial\]/i).trim();
   };
 
   const isUrlOnly = (string) => {
@@ -63,7 +63,6 @@ export default function Home() {
     });
   };
 
-  {/* FIXED RELATIONAL RENDER: Locates sub-nodes directly tied to parent elements via direct ID keys */}
   const RenderAttachedSubNodes = ({ parentId }) => {
     const matchingNodes = allLinksCombined.filter(item => item.parentId === parentId);
     if (matchingNodes.length === 0) return null;
@@ -79,15 +78,11 @@ export default function Home() {
     );
   };
 
-  {/* ================= DATA ROW 1 MATRIX GROUPS ================= */}
   const block1Socials = socials?.filter(item => !item.title.toLowerCase().match(/\[activation\]|\[othersite\]|\[lowertutorial\]/) && !item.parentId) || [];
-  
   const windowsAssets = assets?.filter(item => item.title.toLowerCase().includes('[windows]') && !item.parentId) || [];
   const macAssets = assets?.filter(item => item.title.toLowerCase().includes('[mac]') && !item.parentId) || [];
-
   const block3Work = myWork?.filter(item => !item.title.toLowerCase().match(/\[activation\]|\[othersite\]|\[lowertutorial\]/) && !item.parentId) || [];
 
-  {/* ================= DATA ROW 2 MATRIX GROUPS ================= */}
   const totalActivationNodes = allLinksCombined.filter(item => item.title.toLowerCase().includes('[activation]') && !item.parentId);
   const windowsActivation = totalActivationNodes.filter(item => item.title.toLowerCase().includes('windows'));
   const macActivation = totalActivationNodes.filter(item => item.title.toLowerCase().includes('mac'));
@@ -181,11 +176,6 @@ export default function Home() {
           display: inline-block; padding-left: 100%; animation: scrollTicker 25s linear infinite;
           font-family: monospace; font-size: 12px; font-weight: bold; letter-spacing: 2px; color: #f8fafc; text-transform: uppercase;
         }
-        
-        .secure-data-info-box {
-          background: rgba(168, 85, 247, 0.04); border: 1px dashed rgba(168, 85, 247, 0.3);
-          border-radius: 10px; padding: 14px; margin-top: 15px; box-shadow: inset 0 0 15px rgba(168, 85, 247, 0.05);
-        }
 
         .grid-block-panel {
           background: rgba(15,15,20,0.4); border: 1px solid rgba(255,255,255,0.05);
@@ -278,12 +268,9 @@ export default function Home() {
           <p style={{ fontSize: '14px', color: '#cbd5e1', maxWidth: '500px', margin: '0 auto', lineHeight: '1.6' }}>{profile.bio}</p>
         </div>
 
-        {/* ========================================================
-            ROW MATRIX GRID 1: UPPER LAYER THREE COLS (1, 2, 3)
-           ======================================================== */}
+        {/* ROW 1 SPLIT GRID */}
         <div className="matrix-row-wrapper">
           
-          {/* BLOCK 1 */}
           <div className="animate-fade-in column-delay-1 grid-block-panel" style={{ borderLeft: '3px solid #6366f1' }}>
             <h3 style={{ margin: '0 0 20px 0', fontSize: '14px', color: '#6366f1', letterSpacing: '1px', textTransform: 'uppercase', fontWeight: '700' }}>{profile.block1Name}</h3>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
@@ -298,11 +285,9 @@ export default function Home() {
             </div>
           </div>
 
-          {/* BLOCK 2 */}
           <div className="animate-fade-in column-delay-2 grid-block-panel" style={{ borderLeft: '3px solid #a855f7' }}>
             <h3 style={{ margin: '0 0 20px 0', fontSize: '14px', color: '#a855f7', letterSpacing: '1px', textTransform: 'uppercase', fontWeight: '700' }}>{profile.block2Name}</h3>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-              
               <div>
                 <div style={{ fontSize: '11px', color: '#38bdf8', fontWeight: 'bold', letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '10px' }}>🪟 Windows System Apps</div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
@@ -316,7 +301,6 @@ export default function Home() {
                   ))}
                 </div>
               </div>
-
               <div>
                 <div style={{ fontSize: '11px', color: '#fb7185', fontWeight: 'bold', letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '10px' }}>🍎 Mac OS System Apps</div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
@@ -330,11 +314,9 @@ export default function Home() {
                   ))}
                 </div>
               </div>
-
             </div>
           </div>
 
-          {/* BLOCK 3 */}
           <div className="animate-fade-in column-delay-3 grid-block-panel" style={{ borderLeft: '3px solid #10b981' }}>
             <h3 style={{ margin: '0 0 20px 0', fontSize: '14px', color: '#10b981', letterSpacing: '1px', textTransform: 'uppercase', fontWeight: '700' }}>{profile.block3Name}</h3>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
@@ -356,21 +338,16 @@ export default function Home() {
 
         <div style={{ margin: '40px 0' }} />
 
-        {/* ========================================================
-            ROW MATRIX GRID 2: INTERACTIVE COLLAPSIBLE ACCORDIONS (4, 5, 6)
-           ======================================================== */}
+        {/* ROW 2 DYNAMIC DROP GRIDS */}
         <div className="matrix-row-wrapper">
           
-          {/* BLOCK 4 */}
           <div className="animate-fade-in column-delay-1 grid-block-panel" style={{ borderLeft: '3px solid #7c3aed' }}>
             <button className="accordion-interactive-trigger" onClick={() => toggleSectionDropdown('block4')}>
               <span>⚡ {profile.block4Name}</span>
               <span>{activeDropdownId === 'block4' ? '▲' : '▼'}</span>
             </button>
-            
             <div className={`dropdown-collapsible-wrapper ${activeDropdownId === 'block4' ? 'expanded' : ''}`}>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', padding: '5px 0' }}>
-                
                 <div>
                   <div style={{ fontSize: '11px', color: '#38bdf8', fontWeight: 'bold', marginBottom: '8px', textTransform: 'uppercase' }}>🪟 Windows Setup</div>
                   <div className="horizontal-methods-lane">
@@ -384,7 +361,6 @@ export default function Home() {
                     {windowsActivation.length === 0 && <p style={{ color: '#444855', fontSize: '12px', margin: 0 }}>Empty.</p>}
                   </div>
                 </div>
-
                 <div>
                   <div style={{ fontSize: '11px', color: '#fb7185', fontWeight: 'bold', marginBottom: '8px', textTransform: 'uppercase' }}>🍎 Mac OS Setup</div>
                   <div className="horizontal-methods-lane">
@@ -398,18 +374,15 @@ export default function Home() {
                     {macActivation.length === 0 && <p style={{ color: '#444855', fontSize: '12px', margin: 0 }}>Empty.</p>}
                   </div>
                 </div>
-
               </div>
             </div>
           </div>
 
-          {/* BLOCK 5 */}
           <div className="animate-fade-in column-delay-2 grid-block-panel" style={{ borderLeft: '3px solid #0ea5e9' }}>
             <button className="accordion-interactive-trigger" onClick={() => toggleSectionDropdown('block5')}>
               <span>🔗 {profile.block5Name}</span>
               <span>{activeDropdownId === 'block5' ? '▲' : '▼'}</span>
             </button>
-            
             <div className={`dropdown-collapsible-wrapper ${activeDropdownId === 'block5' ? 'expanded' : ''}`}>
               <div className="horizontal-methods-lane" style={{ padding: '5px 0' }}>
                 {block5OtherSites.map(item => (
@@ -432,13 +405,11 @@ export default function Home() {
             </div>
           </div>
 
-          {/* BLOCK 6 */}
           <div className="animate-fade-in column-delay-3 grid-block-panel" style={{ borderLeft: '3px solid #059669' }}>
             <button className="accordion-interactive-trigger" onClick={() => toggleSectionDropdown('block6')}>
               <span>🧠 {profile.block6Name}</span>
               <span>{activeDropdownId === 'block6' ? '▲' : '▼'}</span>
             </button>
-            
             <div className={`dropdown-collapsible-wrapper ${activeDropdownId === 'block6' ? 'expanded' : ''}`}>
               <div className="horizontal-methods-lane" style={{ padding: '5px 0' }}>
                 {block6Tutorials.map(item => (
