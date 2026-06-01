@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { put } from '@vercel/blob';
+import { upload } from '@vercel/blob/client'; // <-- Fixed to use the correct client-side module
 
 export default function Admin() {
   const [password, setPassword] = useState('');
@@ -65,8 +65,8 @@ export default function Admin() {
     setUploadProgress(10);
 
     try {
-      // FIX applied here: changed upload to put
-      const newBlob = await put(file.name, file, {
+      // Fixed to run the secure browser-to-storage stream pipeline
+      const newBlob = await upload(file.name, file, {
         access: 'public',
         handleUploadUrl: '/api/links?type=blob_upload_handshake',
         onUploadProgress: (progressEvent) => {
