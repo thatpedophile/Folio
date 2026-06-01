@@ -18,7 +18,6 @@ export default function Admin() {
   const [audioHoverUrl, setAudioHoverUrl] = useState('');
   const [announcement, setAnnouncement] = useState('');
 
-  // BLOCK HEADER NAMES STATE HOOKS
   const [block1Name, setBlock1Name] = useState('');
   const [block2Name, setBlock2Name] = useState('');
   const [block3Name, setBlock3Name] = useState('');
@@ -32,6 +31,7 @@ export default function Admin() {
   const [parentId, setParentId] = useState('');
 
   const [rawInputUrl, setRawInputUrl] = useState('');
+  const [draggedItemId, setDraggedItemId] = useState(null);
 
   const fetchDashboardData = async (token = password) => {
     try {
@@ -131,6 +131,41 @@ export default function Admin() {
     if (res.ok) fetchDashboardData(password);
   };
 
+  // ================= HTML5 NATIVE DRAG AND DROP HANDLERS =================
+  const handleDragStart = (id) => {
+    setDraggedItemId(id);
+  };
+
+  const handleDragOver = (e, targetId, listType, currentList) => {
+    e.preventDefault();
+    if (draggedItemId === null || draggedItemId === targetId) return;
+
+    const draggedIndex = currentList.findIndex(item => item._id === draggedItemId);
+    const targetIndex = currentList.findIndex(item => item._id === targetId);
+
+    if (draggedIndex === -1 || targetIndex === -1) return;
+
+    const updatedList = [...currentList];
+    const [draggedItem] = updatedList.splice(draggedIndex, 1);
+    updatedList.splice(targetIndex, 0, draggedItem);
+
+    if (listType === 'socials') setSocials(updatedList);
+    if (listType === 'assets') setAssets(updatedList);
+    if (listType === 'my_work') setMyWork(updatedList);
+  };
+
+  const handleDragEnd = async (listType, currentList) => {
+    setDraggedItemId(null);
+    const orderedIds = currentList.map(item => item._id);
+    
+    // Mass push new layout index positions to DB pipeline
+    await fetch('/api/links', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'admin-password': password },
+      body: JSON.stringify({ type: 'update_order', orderedIds })
+    });
+  };
+
   if (!isAuthorized) {
     return (
       <form onSubmit={handleLoginSubmit} style={{ background: '#0a0a0f', color: '#fff', height: '100vh', display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column', fontFamily: 'sans-serif' }}>
@@ -152,11 +187,21 @@ export default function Admin() {
   return (
     <div style={{ background: '#0a0a0f', color: '#fff', minHeight: '100vh', padding: '40px', boxSizing: 'border-box', fontFamily: 'sans-serif' }}>
       
+      <style jsx>{`
+        .drag-tile-row {
+          display: flex; justify-content: space-between; align-items: center; 
+          background: #13131a; padding: 14px; border-radius: 10px; 
+          border: 1px solid #1e1e24; cursor: grab; transition: background 0.2s ease;
+        }
+        .drag-tile-row:active { cursor: grabbing; background: #1a1a24; }
+      `}</style>
+
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '30px' }}>
         <h2>Global Customizer Dash</h2>
         <button onClick={() => setIsAuthorized(false)} style={{ padding: '10px 20px', background: '#ef4444', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer' }}>Sign Out</button>
       </div>
 
+      {/* PARSER UTILITY WIDGET */}
       <div style={{ background: '#13131a', padding: '20px', borderRadius: '12px', border: '1px solid #a855f7', marginBottom: '35px' }}>
         <h3 style={{ margin: '0 0 10px 0', color: '#a855f7', fontSize: '15px' }}>Core GitHub Raw URL Converter</h3>
         <div style={{ display: 'flex', gap: '12px' }}>
@@ -165,6 +210,7 @@ export default function Admin() {
         </div>
       </div>
       
+      {/* IDENTITY CONFIG MATRIX */}
       <div style={{ background: '#13131a', padding: '25px', borderRadius: '12px', border: '1px solid #1e1e24', marginBottom: '40px' }}>
         <h3 style={{ margin: '0 0 20px 0', color: '#6366f1' }}>Core Presets & Header Customizations</h3>
         <form onSubmit={handleUpdateProfile} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
@@ -191,7 +237,6 @@ export default function Admin() {
           </div>
           <div style={{ background: '#0a0a0f', padding: '15px', borderRadius: '8px', border: '1px dashed #6366f1' }}>
             <label style={{ display: 'block', fontSize: '12px', color: '#6366f1', marginBottom: '5px', fontWeight: 'bold' }}>📰 Top Header Scrolling Announcement Text</label>
-            {/* FIXED: Binding loop syntax corrected to value handler parameter stream */}
             <input type="text" value={announcement || ''} onChange={(e) => setAnnouncement(e.target.value)} style={{ padding: '12px', width: '100%', background: '#13131a', border: '1px solid #222', color: '#fff', borderRadius: '6px' }} />
           </div>
           <div style={{ background: '#0a0a0f', padding: '15px', borderRadius: '8px', border: '1px solid #a855f7' }}>
@@ -269,18 +314,71 @@ export default function Admin() {
         <button type="submit" style={{ padding: '14px', background: '#10b981', color: '#fff', border: 'none', cursor: 'pointer', borderRadius: '8px', fontWeight: '600' }}>Publish Element Matrix Object</button>
       </form>
 
-      {/* VIEW LAYOUT ROW SLOTS */}
-      <h3 style={{ borderBottom: '1px solid #222', paddingBottom: '10px', marginBottom: '15px' }}>Active Structured Portfolio Layout Architecture</h3>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
-        {[...socials, ...assets, ...myWork].map(item => (
-          <div key={item._id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#13131a', padding: '14px', borderRadius: '10px', border: item.parentId ? '1px dashed #a855f7' : '1px solid #1e1e24', marginLeft: item.parentId ? '25px' : '0' }}>
-            <div>
-              <strong>{item.parentId ? '↳ ' : ''}{item.title}</strong>
-              <br/><span style={{ fontSize: '12px', color: '#64748b' }}>{item.url}</span>
-            </div>
-            <button onClick={() => handleDelete(item._id)} style={{ background: '#ef4444', color: '#fff', border: 'none', padding: '8px 14px', cursor: 'pointer', borderRadius: '6px' }}>Delete</button>
+      {/* DYNAMIC DRAG AND DROP REORDER LISTS CONTAINER */}
+      <h3 style={{ borderBottom: '1px solid #222', paddingBottom: '10px', marginBottom: '15px' }}>Active Structured Portfolio Layout Architecture (Drag elements to change position)</h3>
+      
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '30px' }}>
+        
+        {/* SOCIALS STACK TRACK */}
+        <div>
+          <h4 style={{ color: '#6366f1', margin: '0 0 10px 0' }}>Lane 1 Layout Blocks (Socials & Activations)</h4>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+            {socials.map(item => (
+              <div 
+                key={item._id} 
+                className="drag-tile-row"
+                draggable
+                onDragStart={() => handleDragStart(item._id)}
+                onDragOver={(e) => handleDragOver(e, item._id, 'socials', socials)}
+                onDragEnd={() => handleDragEnd('socials', socials)}
+              >
+                <div><strong>{item.parentId ? '↳ ' : ''}{item.title}</strong><br/><span style={{ fontSize: '11px', color: '#64748b' }}>{item.url.substring(0, 60)}</span></div>
+                <button onClick={() => handleDelete(item._id)} style={{ background: '#ef4444', color: '#fff', border: 'none', padding: '6px 12px', cursor: 'pointer', borderRadius: '4px' }}>Delete</button>
+              </div>
+            ))}
           </div>
-        ))}
+        </div>
+
+        {/* ASSETS STACK TRACK */}
+        <div>
+          <h4 style={{ color: '#a855f7', margin: '0 0 10px 0' }}>Lane 2 Layout Blocks (Assets, Presets & Passwords)</h4>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+            {assets.map(item => (
+              <div 
+                key={item._id} 
+                className="drag-tile-row"
+                draggable
+                onDragStart={() => handleDragStart(item._id)}
+                onDragOver={(e) => handleDragOver(e, item._id, 'assets', assets)}
+                onDragEnd={() => handleDragEnd('assets', assets)}
+              >
+                <div><strong>{item.parentId ? '↳ ' : ''}{item.title}</strong><br/><span style={{ fontSize: '11px', color: '#64748b' }}>{item.url.substring(0, 60)}</span></div>
+                <button onClick={() => handleDelete(item._id)} style={{ background: '#ef4444', color: '#fff', border: 'none', padding: '6px 12px', cursor: 'pointer', borderRadius: '4px' }}>Delete</button>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* MY WORK STACK TRACK */}
+        <div>
+          <h4 style={{ color: '#10b981', margin: '0 0 10px 0' }}>Lane 3 Layout Blocks (Showcases & Video Tutorials)</h4>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+            {myWork.map(item => (
+              <div 
+                key={item._id} 
+                className="drag-tile-row"
+                draggable
+                onDragStart={() => handleDragStart(item._id)}
+                onDragOver={(e) => handleDragOver(e, item._id, 'my_work', myWork)}
+                onDragEnd={() => handleDragEnd('my_work', myWork)}
+              >
+                <div><strong>{item.parentId ? '↳ ' : ''}{item.title}</strong><br/><span style={{ fontSize: '11px', color: '#64748b' }}>{item.url.substring(0, 60)}</span></div>
+                <button onClick={() => handleDelete(item._id)} style={{ background: '#ef4444', color: '#fff', border: 'none', padding: '6px 12px', cursor: 'pointer', borderRadius: '4px' }}>Delete</button>
+              </div>
+            ))}
+          </div>
+        </div>
+
       </div>
 
     </div>
