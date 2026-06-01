@@ -132,7 +132,7 @@ export default function Admin() {
         block1Name, block2Name, block3Name, block4Name, block5Name, block6Name
       }),
     });
-    if (res.ok) alert('Identity and Matrix Block Label updates synchronized safely.');
+    if (res.ok) alert('Identity variables saved safely.');
   };
 
   const handleCreateElement = async (e) => {
@@ -163,8 +163,7 @@ export default function Admin() {
     );
   }
 
-  const isLowerGridRowBlock = title.toLowerCase().match(/\[activation\]|\[othersite\]|\[lowertutorial\]/);
-  const isTextNode = title.toLowerCase().includes('[password]') || title.toLowerCase().includes('[note]') || isLowerGridRowBlock;
+  const isTextNode = title.toLowerCase().includes('[password]') || title.toLowerCase().includes('[note]') || title.toLowerCase().includes('[activation]') || title.toLowerCase().includes('[othersite]') || title.toLowerCase().includes('[lowertutorial]');
 
   return (
     <div style={{ background: '#0a0a0f', color: '#fff', minHeight: '100vh', padding: '40px', boxSizing: 'border-box', fontFamily: 'sans-serif' }}>
@@ -188,7 +187,6 @@ export default function Admin() {
         <h3 style={{ margin: '0 0 20px 0', color: '#6366f1' }}>Branding, Design Presets & Core Configurations</h3>
         <form onSubmit={handleUpdateProfile} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
           
-          {/* THE 6 COLUMN DYNAMIC LABELING TRUNK CONTROL BOX PANEL */}
           <div style={{ background: '#0a0a0f', padding: '20px', borderRadius: '8px', border: '1px solid #222' }}>
             <div style={{ fontSize: '13px', color: '#a855f7', fontWeight: 'bold', marginBottom: '15px' }}>🛠️ Custom Grid Header Titles Config (Blocks 1-6)</div>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '15px' }}>
@@ -246,11 +244,13 @@ export default function Admin() {
             <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
               <input type="text" placeholder="e.g., Asset Name or Pass Key" value={title} onChange={(e) => setTitle(e.target.value)} required style={{ flex: 1, padding: '12px', background: '#0a0a0f', border: '1px solid #222', color: '#fff', borderRadius: '6px' }} />
               
+              {/* FIXED DYNAMIC SHIELD TRRAY: OS PREFIX BUTTONS ARE UNLOCKED FOR SOCIALS/ACTIVATIONS TOO NOW */}
               <div style={{ display: 'flex', gap: '4px', width: '100%', marginTop: '6px', flexWrap: 'wrap' }}>
+                <button type="button" onClick={() => injectOsPrefix('win')} style={{ padding: '8px 12px', background: '#0284c7', color: '#fff', border: 'none', borderRadius: '4px', fontSize: '11px', cursor: 'pointer', fontWeight: 'bold' }}>+ Windows App</button>
+                <button type="button" onClick={() => injectOsPrefix('mac')} style={{ padding: '8px 12px', background: '#be123c', color: '#fff', border: 'none', borderRadius: '4px', fontSize: '11px', cursor: 'pointer', fontWeight: 'bold' }}>+ Mac OS App</button>
+                
                 {targetBlock === 'assets' && (
                   <>
-                    <button type="button" onClick={() => injectOsPrefix('win')} style={{ padding: '8px 12px', background: '#0284c7', color: '#fff', border: 'none', borderRadius: '4px', fontSize: '11px', cursor: 'pointer', fontWeight: 'bold' }}>+ Windows App (Block 2)</button>
-                    <button type="button" onClick={() => injectOsPrefix('mac')} style={{ padding: '8px 12px', background: '#be123c', color: '#fff', border: 'none', borderRadius: '4px', fontSize: '11px', cursor: 'pointer', fontWeight: 'bold' }}>+ Mac OS App (Block 2)</button>
                     <button type="button" onClick={() => injectOsPrefix('pass')} style={{ padding: '8px 12px', background: '#a855f7', color: '#fff', border: 'none', borderRadius: '4px', fontSize: '11px', cursor: 'pointer', fontWeight: 'bold' }}>+ Password Node (Block 5)</button>
                     <button type="button" onClick={() => injectOsPrefix('note')} style={{ padding: '8px 12px', background: '#64748b', color: '#fff', border: 'none', borderRadius: '4px', fontSize: '11px', cursor: 'pointer', fontWeight: 'bold' }}>+ Note Node (Block 5)</button>
                   </>
@@ -279,7 +279,7 @@ export default function Admin() {
         <button type="submit" style={{ padding: '14px', background: '#10b981', color: '#fff', border: 'none', cursor: 'pointer', borderRadius: '8px', fontWeight: '600' }}>Publish Element Matrix Object</button>
       </form>
 
-      {/* RECORD DELETIONS */}
+      {/* VIEW DELETIONS */}
       <h3 style={{ borderBottom: '1px solid #222', paddingBottom: '10px', marginBottom: '15px' }}>Active Structured Portfolio Layout Architecture</h3>
       
       <h4 style={{ color: '#6366f1', margin: '20px 0 10px 0' }}>Matrix Base Bucket Stack 1: Socials Stack</h4>
