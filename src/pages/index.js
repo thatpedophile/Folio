@@ -18,7 +18,7 @@ export default function Home() {
     if (audioRef.current) {
       audioRef.current.play()
         .then(() => setIsPlaying(true))
-        .catch(err => console.log("Audio block override:", err));
+        .catch(err => console.log("Audio block bypass:", err));
     }
   };
 
@@ -36,22 +36,25 @@ export default function Home() {
 
   const { profile, socials, assets, myWork } = data;
 
-  // --- COLUMN 1 SORTING (SOCIALS) ---
-  const socialSites = socials?.filter(item => !item.title.toLowerCase().includes('[tutorial]')) || [];
-  const socialTutorials = socials?.filter(item => item.title.toLowerCase().includes('[tutorial]')) || [];
+  // Combine arrays to seamlessly scan sorting filters across all items
+  const allLinksCombined = [...(socials || []), ...(assets || []), ...(myWork || [])];
 
-  // --- COLUMN 2 SORTING (ASSETS & PRESETS) ---
+  // ================= GRID ROW 1 FILTERS (THE UPPER THREE BLOCKS) =================
+  const block1Socials = socials?.filter(item => !item.title.toLowerCase().match(/\[activation\]|\[othersite\]|\[lowertutorial\]/)) || [];
+  
   const windowsAssets = assets?.filter(item => item.title.toLowerCase().includes('[windows]')) || [];
   const macAssets = assets?.filter(item => item.title.toLowerCase().includes('[mac]')) || [];
-  const notesAssets = assets?.filter(item => item.title.toLowerCase().includes('[password]') || item.title.toLowerCase().includes('[note]')) || [];
+  const block2Notes = assets?.filter(item => item.title.toLowerCase().match(/\[password\]|\[note\]/)) || [];
 
-  // --- COLUMN 3 SORTING (MY WORK) ---
-  const primaryWork = myWork?.filter(item => !item.title.toLowerCase().includes('[tutorial]')) || [];
-  const videoTutorials = myWork?.filter(item => item.title.toLowerCase().includes('[tutorial]')) || [];
+  const block3Work = myWork?.filter(item => !item.title.toLowerCase().match(/\[activation\]|\[othersite\]|\[lowertutorial\]/)) || [];
 
-  // Strips tags cleanly out for the viewer
+  // ================= GRID ROW 2 FILTERS (THE LOWER THREE BLOCKS) =================
+  const block4Activation = allLinksCombined.filter(item => item.title.toLowerCase().includes('[activation]'));
+  const block5OtherSites = allLinksCombined.filter(item => item.title.toLowerCase().includes('[othersite]'));
+  const block6Tutorials = allLinksCombined.filter(item => item.title.toLowerCase().includes('[lowertutorial]'));
+
   const cleanTitle = (title) => {
-    return title.replace(/\[windows\]/i, '').replace(/\[mac\]/i, '').replace(/\[note\]/i, '').replace(/\[password\]/i, '').replace(/\[tutorial\]/i, '').trim();
+    return title.replace(/\[windows\]/i, '').replace(/\[mac\]/i, '').replace(/\[note\]/i, '').replace(/\[password\]/i, '').replace(/\[activation\]/i, '').replace(/\[othersite\]/i, '').replace(/\[lowertutorial\]/i, '').trim();
   };
 
   return (
@@ -144,6 +147,16 @@ export default function Home() {
           background: rgba(168, 85, 247, 0.04); border: 1px dashed rgba(168, 85, 247, 0.3);
           border-radius: 10px; padding: 14px; margin-top: 15px; box-shadow: inset 0 0 15px rgba(168, 85, 247, 0.05);
         }
+
+        /* Standard responsive container card base used across both matrix layouts */
+        .grid-block-panel {
+          background: rgba(15,15,20,0.4); border: 1px solid rgba(255,255,255,0.05);
+          border-radius: 16px; padding: 20px; backdrop-filter: blur(12px);
+        }
+        .matrix-row-wrapper {
+          display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+          gap: 25px; alignItems: 'start';
+        }
       `}</style>
       
       {/* 0. INTRO CURTAIN GATE */}
@@ -160,7 +173,7 @@ export default function Home() {
         </div>
       )}
       
-      {/* BACKGROUND WALLPAPER VIDEO */}
+      {/* LIVE VIDEO WALLPAPER */}
       {profile.bgVideoUrl && (
         <video src={profile.bgVideoUrl} autoPlay loop muted playsInline style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', objectFit: 'cover', zIndex: -3, pointerEvents: 'none' }} />
       )}
@@ -169,10 +182,17 @@ export default function Home() {
       {/* AUDIO LOADER */}
       {profile.audioBgUrl && <audio ref={audioRef} src={profile.audioBgUrl} loop />}
 
-      {/* CORE DISPLAY ARCHITECTURE */}
+      {/* FLOAT CONTROLLER MIX VALVE */}
+      {profile.audioBgUrl && hasEntered && (
+        <button onClick={toggleAudioPlayback} style={{ position: 'fixed', bottom: '25px', right: '25px', zIndex: 100, background: 'rgba(15, 15, 20, 0.6)', border: '1px solid rgba(168, 85, 247, 0.4)', borderRadius: '50%', width: '46px', height: '46px', color: '#fff', cursor: 'pointer', display: 'flex', justifyContent: 'center', alignItems: 'center', backdropFilter: 'blur(10px)', boxShadow: '0 4px 20px rgba(0,0,0,0.6)' }}>
+          {isPlaying ? '⏸️' : '🎵'}
+        </button>
+      )}
+
+      {/* MASTER SYSTEM FRAME PORTAL */}
       <div style={{ maxWidth: '1200px', margin: '0 auto', position: 'relative', zIndex: 1 }}>
         
-        {/* BRAND IDENTITY */}
+        {/* BRAND HEADER DISPLAY ACCENT */}
         <div className="animate-fade-in" style={{ textAlign: 'center', marginBottom: '50px' }}>
           {profile.avatarUrl && (
             <div className="pfp-wrapper">
@@ -184,48 +204,29 @@ export default function Home() {
           <p style={{ fontSize: '14px', color: '#cbd5e1', maxWidth: '500px', margin: '0 auto', lineHeight: '1.6' }}>{profile.bio}</p>
         </div>
 
-        {/* 3 CORE HORIZONTAL GRID COLUMNS */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '25px', alignItems: 'start' }}>
+        {/* ========================================================
+            ROW MATRIX GRID 1: THE PRIMARY UPPER THREE COLS 
+           ======================================================== */}
+        <div className="matrix-row-wrapper">
           
-          {/* ================= COLUMN 1: SOCIALS ================= */}
-          <div className="animate-fade-in column-delay-1" style={{ background: 'rgba(15,15,20,0.4)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '16px', padding: '20px', backdropFilter: 'blur(12px)' }}>
-            <h3 style={{ margin: '0 0 20px 0', fontSize: '14px', color: '#6366f1', letterSpacing: '1px', textTransform: 'uppercase', borderLeft: '3px solid #6366f1', paddingLeft: '10px', fontWeight: '700' }}>Socials</h3>
-            
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-              {/* BLOCK 1: NETWORKS / SITES */}
-              <div>
-                <div style={{ fontSize: '11px', color: '#6366f1', fontWeight: 'bold', letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '10px' }}>🌐 Main Sites</div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                  {socialSites.length === 0 ? <p style={{ color: '#444855', fontSize: '12px' }}>Empty.</p> : socialSites.map(item => (
-                    <a key={item._id} href={item.url} target="_blank" rel="noreferrer" className="particle-btn" style={{ padding: '12px 16px', borderRadius: '8px', color: '#fff', textDecoration: 'none', fontWeight: '600', fontSize: '13px', display: 'block' }}>
-                      {cleanTitle(item.title)}
-                    </a>
-                  ))}
-                </div>
-              </div>
-
-              {/* BLOCK 2: TUTORIAL CHANNELS */}
-              <div>
-                <div style={{ fontSize: '11px', color: '#a855f7', fontWeight: 'bold', letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '10px' }}>📖 Tutorials & Guides</div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                  {socialTutorials.length === 0 ? <p style={{ color: '#444855', fontSize: '12px' }}>Empty.</p> : socialTutorials.map(item => (
-                    <a key={item._id} href={item.url} target="_blank" rel="noreferrer" className="particle-btn" style={{ padding: '12px 16px', borderRadius: '8px', color: '#fff', textDecoration: 'none', fontWeight: '600', fontSize: '13px', display: 'block' }}>
-                      {cleanTitle(item.title)}
-                    </a>
-                  ))}
-                </div>
-              </div>
+          {/* BLOCK 1: SOCIALS */}
+          <div className="animate-fade-in column-delay-1 grid-block-panel" style={{ borderLeft: '3px solid #6366f1' }}>
+            <h3 style={{ margin: '0 0 20px 0', fontSize: '14px', color: '#6366f1', letterSpacing: '1px', textTransform: 'uppercase', fontWeight: '700' }}>Socials</h3>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              {block1Socials.length === 0 ? <p style={{ color: '#64748b', fontSize: '12px' }}>Empty.</p> : block1Socials.map(item => (
+                <a key={item._id} href={item.url} target="_blank" rel="noreferrer" className="particle-btn" style={{ padding: '14px 18px', borderRadius: '10px', color: '#fff', textDecoration: 'none', fontWeight: '600', fontSize: '14px', display: 'block' }}>
+                  {item.title}
+                </a>
+              ))}
             </div>
           </div>
 
-          {/* ================= COLUMN 2: ASSETS & PRESETS ================= */}
-          <div className="animate-fade-in column-delay-2" style={{ background: 'rgba(15,15,20,0.4)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '16px', padding: '20px', backdropFilter: 'blur(12px)' }}>
-            <h3 style={{ margin: '0 0 20px 0', fontSize: '14px', color: '#a855f7', letterSpacing: '1px', textTransform: 'uppercase', borderLeft: '3px solid #a855f7', paddingLeft: '10px', fontWeight: '700' }}>Assets & Presets</h3>
-            
+          {/* BLOCK 2: ASSETS & PRESETS */}
+          <div className="animate-fade-in column-delay-2 grid-block-panel" style={{ borderLeft: '3px solid #a855f7' }}>
+            <h3 style={{ margin: '0 0 20px 0', fontSize: '14px', color: '#a855f7', letterSpacing: '1px', textTransform: 'uppercase', fontWeight: '700' }}>Assets & Presets</h3>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-              {/* BLOCK 1: WINDOWS BUILD APPS */}
               <div>
-                <div style={{ fontSize: '11px', color: '#38bdf8', fontWeight: 'bold', letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '10px' }}>🪟 Windows Apps</div>
+                <div style={{ fontSize: '11px', color: '#38bdf8', fontWeight: 'bold', letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '10px' }}>🪟 Windows System Apps</div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                   {windowsAssets.length === 0 ? <p style={{ color: '#444855', fontSize: '12px' }}>Empty.</p> : windowsAssets.map(item => (
                     <a key={item._id} href={item.url} target="_blank" rel="noreferrer" className="particle-btn" style={{ padding: '12px 16px', borderRadius: '8px', color: '#fff', textDecoration: 'none', fontWeight: '600', fontSize: '13px', display: 'block' }}>
@@ -235,9 +236,8 @@ export default function Home() {
                 </div>
               </div>
 
-              {/* BLOCK 2: MAC OS BUILD APPS */}
               <div>
-                <div style={{ fontSize: '11px', color: '#fb7185', fontWeight: 'bold', letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '10px' }}>🍎 Mac OS Apps</div>
+                <div style={{ fontSize: '11px', color: '#fb7185', fontWeight: 'bold', letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '10px' }}>🍎 Mac OS System Apps</div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                   {macAssets.length === 0 ? <p style={{ color: '#444855', fontSize: '12px' }}>Empty.</p> : macAssets.map(item => (
                     <a key={item._id} href={item.url} target="_blank" rel="noreferrer" className="particle-btn" style={{ padding: '12px 16px', borderRadius: '8px', color: '#fff', textDecoration: 'none', fontWeight: '600', fontSize: '13px', display: 'block' }}>
@@ -246,62 +246,89 @@ export default function Home() {
                   ))}
                 </div>
               </div>
-
-              {/* BLOCK 3: PASSWORD NODE ENTRIES */}
-              {notesAssets.length > 0 && (
-                <div className="secure-data-info-box">
-                  <div style={{ fontSize: '11px', color: '#a855f7', fontWeight: 'bold', letterSpacing: '1.5px', textTransform: 'uppercase', marginBottom: '8px', fontFamily: 'monospace' }}>🔑 Passwords & Note Logs</div>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                    {notesAssets.map(item => (
-                      <div key={item._id} style={{ fontSize: '12.5px', color: '#cbd5e1', fontFamily: 'monospace', background: 'rgba(0,0,0,0.2)', padding: '8px 12px', borderRadius: '6px', border: '1px solid rgba(168,85,247,0.1)' }}>
-                        <span style={{ color: '#a855f7', fontWeight: 'bold' }}>{cleanTitle(item.title)}</span>: {item.url}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
             </div>
           </div>
 
-          {/* ================= COLUMN 3: MY WORK ================= */}
-          <div className="animate-fade-in column-delay-3" style={{ background: 'rgba(15,15,20,0.4)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '16px', padding: '20px', backdropFilter: 'blur(12px)' }}>
-            <h3 style={{ margin: '0 0 20px 0', fontSize: '14px', color: '#10b981', letterSpacing: '1px', textTransform: 'uppercase', borderLeft: '3px solid #10b981', paddingLeft: '10px', fontWeight: '700' }}>My Work</h3>
-            
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '28px' }}>
-              {/* BLOCK 1: EDIT SHOWCASES */}
-              <div>
-                <div style={{ fontSize: '11px', color: '#10b981', fontWeight: 'bold', letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '12px' }}>🎬 Production Edits</div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                  {primaryWork.length === 0 ? <p style={{ color: '#444855', fontSize: '12px' }}>Empty.</p> : primaryWork.map(item => (
-                    <div key={item._id} className="video-card-container">
-                      <div style={{ width: '100%', aspectRatio: '16/9', background: '#000', position: 'relative' }}>
-                        <video src={item.url} controls muted playsInline style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
-                      </div>
-                      <div style={{ padding: '10px', background: 'rgba(20,20,25,0.4)', fontSize: '13px' }}>{cleanTitle(item.title)}</div>
-                    </div>
-                  ))}
+          {/* BLOCK 3: MY WORK */}
+          <div className="animate-fade-in column-delay-3 grid-block-panel" style={{ borderLeft: '3px solid #10b981' }}>
+            <h3 style={{ margin: '0 0 20px 0', fontSize: '14px', color: '#10b981', letterSpacing: '1px', textTransform: 'uppercase', fontWeight: '700' }}>My Work</h3>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              {block3Work.length === 0 ? <p style={{ color: '#64748b', fontSize: '12px' }}>Empty.</p> : block3Work.map(item => (
+                <div key={item._id} className="video-card-container">
+                  <div style={{ width: '100%', aspectRatio: '16/9', background: '#000', position: 'relative' }}>
+                    <video src={item.url} controls muted playsInline style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
+                  </div>
+                  <div style={{ padding: '10px', background: 'rgba(20,20,25,0.4)', fontSize: '13px' }}>{cleanTitle(item.title)}</div>
                 </div>
-              </div>
-
-              {/* BLOCK 2: EDITING TUTORIAL VIDEOS / BREAKDOWNS */}
-              <div>
-                <div style={{ fontSize: '11px', color: '#a855f7', fontWeight: 'bold', letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '12px' }}>🧠 VFX Tutorials</div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                  {videoTutorials.length === 0 ? <p style={{ color: '#444855', fontSize: '12px' }}>Empty.</p> : videoTutorials.map(item => (
-                    <div key={item._id} className="video-card-container" style={{ borderStyle: 'dashed' }}>
-                      <div style={{ width: '100%', aspectRatio: '16/9', background: '#000', position: 'relative' }}>
-                        <video src={item.url} controls muted playsInline style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
-                      </div>
-                      <div style={{ padding: '10px', background: 'rgba(20,20,25,0.4)', fontSize: '13px' }}>{cleanTitle(item.title)}</div>
-                    </div>
-                  ))}
-                </div>
-              </div>
+              ))}
             </div>
-
           </div>
 
         </div>
+
+        {/* Clean Spacing Break Divider Between Row 1 and Row 2 Grid Levels */}
+        <div style={{ margin: '40px 0' }} />
+
+        {/* ========================================================
+            ROW MATRIX GRID 2: THE SECURE LOWER THREE COLS (4, 5, 6)
+           ======================================================== */}
+        <div className="matrix-row-wrapper">
+          
+          {/* BLOCK 4: ACTIVATION CARD MODULE */}
+          <div className="animate-fade-in column-delay-1 grid-block-panel" style={{ borderLeft: '3px solid #7c3aed' }}>
+            <h3 style={{ margin: '0 0 20px 0', fontSize: '14px', color: '#7c3aed', letterSpacing: '1px', textTransform: 'uppercase', fontWeight: '700' }}>System Activation</h3>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              {block4Activation.length === 0 ? <p style={{ color: '#64748b', fontSize: '12px' }}>Empty Block node.</p> : block4Activation.map(item => (
+                <a key={item._id} href={item.url} target="_blank" rel="noreferrer" className="particle-btn" style={{ padding: '14px 18px', borderRadius: '10px', color: '#fff', textDecoration: 'none', fontWeight: '600', fontSize: '14px', display: 'block' }}>
+                  {cleanTitle(item.title)}
+                </a>
+              ))}
+            </div>
+          </div>
+
+          {/* BLOCK 5: OTHER SITES / DIRECTORY CHANNELS */}
+          <div className="animate-fade-in column-delay-2 grid-block-panel" style={{ borderLeft: '3px solid #0ea5e9' }}>
+            <h3 style={{ margin: '0 0 20px 0', fontSize: '14px', color: '#0ea5e9', letterSpacing: '1px', textTransform: 'uppercase', fontWeight: '700' }}>Other Sites</h3>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              {block5OtherSites.length === 0 ? <p style={{ color: '#64748b', fontSize: '12px' }}>Empty Block node.</p> : block5OtherSites.map(item => (
+                <a key={item._id} href={item.url} target="_blank" rel="noreferrer" className="particle-btn" style={{ padding: '14px 18px', borderRadius: '10px', color: '#fff', textDecoration: 'none', fontWeight: '600', fontSize: '14px', display: 'block' }}>
+                  {cleanTitle(item.title)}
+                </a>
+              ))}
+            </div>
+
+            {/* BLOCK 2 EXTRA NOTES HOOK: MOUNTS PASSWORDS CLEANLY AT THE BASE OF COLUMN 5 GRID BALANCING */}
+            {block2Notes.length > 0 && (
+              <div className="secure-data-info-box">
+                <div style={{ fontSize: '11px', color: '#a855f7', fontWeight: 'bold', letterSpacing: '1.5px', textTransform: 'uppercase', marginBottom: '8px', fontFamily: 'monospace' }}>🔑 Passwords Index</div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                  {block2Notes.map(item => (
+                    <div key={item._id} style={{ fontSize: '12px', color: '#cbd5e1', fontFamily: 'monospace', background: 'rgba(0,0,0,0.2)', padding: '8px 12px', borderRadius: '6px', border: '1px solid rgba(168,85,247,0.1)' }}>
+                      <span style={{ color: '#a855f7', fontWeight: 'bold' }}>{cleanTitle(item.title)}</span>: {item.url}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* BLOCK 6: TUTORIAL CHANNELS */}
+          <div className="animate-fade-in column-delay-3 grid-block-panel" style={{ borderLeft: '3px solid #059669' }}>
+            <h3 style={{ margin: '0 0 20px 0', fontSize: '14px', color: '#059669', letterSpacing: '1px', textTransform: 'uppercase', fontWeight: '700' }}>Tutorials</h3>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              {block6Tutorials.length === 0 ? <p style={{ color: '#64748b', fontSize: '12px' }}>Empty Block node.</p> : block6Tutorials.map(item => (
+                <div key={item._id} className="video-card-container" style={{ borderStyle: 'dashed' }}>
+                  <div style={{ width: '100%', aspectRatio: '16/9', background: '#000', position: 'relative' }}>
+                    <video src={item.url} controls muted playsInline style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
+                  </div>
+                  <div style={{ padding: '10px', background: 'rgba(20,20,25,0.4)', fontSize: '13px' }}>{cleanTitle(item.title)}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+        </div>
+
       </div>
     </div>
   );
