@@ -4,12 +4,10 @@ export default function Admin() {
   const [password, setPassword] = useState('');
   const [isAuthorized, setIsAuthorized] = useState(false);
   
-  // Separation Arrays for Display Blocks
   const [socials, setSocials] = useState([]);
   const [assets, setAssets] = useState([]);
   const [myWork, setMyWork] = useState([]);
   
-  // Custom Settings State Matrix Setup
   const [username, setUsername] = useState('');
   const [bio, setBio] = useState('');
   const [avatarUrl, setAvatarUrl] = useState('');
@@ -19,10 +17,9 @@ export default function Admin() {
   const [audioBgUrl, setAudioBgUrl] = useState('');
   const [audioHoverUrl, setAudioHoverUrl] = useState('');
 
-  // Creation Form States
   const [title, setTitle] = useState('');
   const [url, setUrl] = useState('');
-  const [targetBlock, setTargetBlock] = useState('socials'); // Tracks designated display area
+  const [targetBlock, setTargetBlock] = useState('socials'); // Controls column destination
 
   const fetchDashboardData = async (token = password) => {
     try {
@@ -86,7 +83,7 @@ export default function Admin() {
       headers: { 'Content-Type': 'application/json', 'admin-password': password },
       body: JSON.stringify({ type: 'update_profile', username, bio, avatarUrl, videoUrl, subtitle, bgVideoUrl, audioBgUrl, audioHoverUrl }),
     });
-    if (res.ok) alert('Core design properties updated successfully!');
+    if (res.ok) alert('Layout properties saved perfectly!');
   };
 
   const handleCreateElement = async (e) => {
@@ -124,9 +121,9 @@ export default function Admin() {
         <button onClick={handleLogOutAction} style={{ padding: '10px 20px', background: '#ef4444', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: '600' }}>Sign Out</button>
       </div>
       
-      {/* BRANDING AND CUSTOM BACKGROUND FORM FRAME */}
+      {/* BRANDING CONFIG MATRIX FRAME */}
       <div style={{ background: '#13131a', padding: '25px', borderRadius: '12px', border: '1px solid #1e1e24', marginBottom: '40px' }}>
-        <h3 style={{ margin: '0 0 20px 0', color: '#a855f7' }}>Branding, Presets & Background Video Settings</h3>
+        <h3 style={{ margin: '0 0 20px 0', color: '#a855f7' }}>Branding, Design Presets & Core Configurations</h3>
         <form onSubmit={handleUpdateProfile} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
           
           <div style={{ display: 'flex', gap: '15px' }}>
@@ -146,26 +143,25 @@ export default function Admin() {
               <input type="url" value={avatarUrl} onChange={(e) => setAvatarUrl(e.target.value)} required style={{ padding: '12px', width: '100%', boxSizing: 'border-box', background: '#0a0a0f', border: '1px solid #222', color: '#fff', borderRadius: '6px' }} />
             </div>
             <div style={{ flex: 1 }}>
-              <label style={{ display: 'block', fontSize: '12px', color: '#64748b', marginBottom: '5px' }}>Link Interface Hover Sound Effect URL (.wav / .mp3)</label>
+              <label style={{ display: 'block', fontSize: '12px', color: '#64748b', marginBottom: '5px' }}>Link Interface Hover Sound Action Effect URL (.wav / .mp3)</label>
               <input type="url" value={audioHoverUrl} onChange={(e) => setAudioHoverUrl(e.target.value)} style={{ padding: '12px', width: '100%', boxSizing: 'border-box', background: '#0a0a0f', border: '1px solid #222', color: '#fff', borderRadius: '6px' }} />
             </div>
           </div>
 
-          <div style={{ display: 'flex', gap: '15px' }}>
-            <div style={{ flex: 1 }}>
-              <label style={{ display: 'block', fontSize: '12px', color: '#a855f7', marginBottom: '5px', fontWeight: '600' }}>Main Background Web Page Video URL (.mp4 / GitHub link)</label>
-              <input type="url" value={bgVideoUrl} onChange={(e) => setBgVideoUrl(e.target.value)} placeholder="Paste raw GitHub .mp4 video link here to change site background" style={{ padding: '12px', width: '100%', boxSizing: 'border-box', background: '#0a0a0f', border: '1px solid #a855f7', color: '#fff', borderRadius: '6px' }} />
-            </div>
+          {/* DYNAMIC BACKGROUND MEDIA LOADER INPUT FIELD (PASTE CONVERTED RAW GITHUB LINKS HERE) */}
+          <div style={{ background: '#0a0a0f', padding: '15px', borderRadius: '8px', border: '1px dashed #a855f7' }}>
+            <label style={{ display: 'block', fontSize: '12px', color: '#a855f7', marginBottom: '5px', fontWeight: 'bold' }}>Main Website Background Video Link URL (Paste Raw GitHub .mp4 Link)</label>
+            <input type="url" value={bgVideoUrl} onChange={(e) => setBgVideoUrl(e.target.value)} placeholder="e.g., https://raw.githubusercontent.com/username/repo/main/background.mp4" style={{ padding: '12px', width: '100%', boxSizing: 'border-box', background: '#13131a', border: '1px solid #222', color: '#fff', borderRadius: '6px' }} />
           </div>
 
           <div style={{ display: 'flex', gap: '15px' }}>
             <div style={{ flex: 1 }}>
               <label style={{ display: 'block', fontSize: '12px', color: '#64748b', marginBottom: '5px' }}>Main Intro Showreel Video URL (.mp4)</label>
-              <input type="url" value={videoUrl} onChange={(e) => setVideoUrl(e.target.value)} placeholder="Paste showreel video link here" style={{ padding: '12px', width: '100%', boxSizing: 'border-box', background: '#0a0a0f', border: '1px solid #222', color: '#fff', borderRadius: '6px' }} />
+              <input type="url" value={videoUrl} onChange={(e) => setVideoUrl(e.target.value)} placeholder="Paste link here" style={{ padding: '12px', width: '100%', boxSizing: 'border-box', background: '#0a0a0f', border: '1px solid #222', color: '#fff', borderRadius: '6px' }} />
             </div>
             <div style={{ flex: 1 }}>
               <label style={{ display: 'block', fontSize: '12px', color: '#64748b', marginBottom: '5px' }}>Looping Background Music Track URL (.mp3)</label>
-              <input type="url" value={audioBgUrl} onChange={(e) => setAudioBgUrl(e.target.value)} placeholder="Paste background audio link here" style={{ padding: '12px', width: '100%', boxSizing: 'border-box', background: '#0a0a0f', border: '1px solid #222', color: '#fff', borderRadius: '6px' }} />
+              <input type="url" value={audioBgUrl} onChange={(e) => setAudioBgUrl(e.target.value)} placeholder="Paste background music link here" style={{ padding: '12px', width: '100%', boxSizing: 'border-box', background: '#0a0a0f', border: '1px solid #222', color: '#fff', borderRadius: '6px' }} />
             </div>
           </div>
 
@@ -178,39 +174,38 @@ export default function Admin() {
         </form>
       </div>
 
-      {/* THREE INTERACTIVE PORTFOLIO BLOCK CREATOR FORM */}
+      {/* PORTFOLIO ROUTER COLUMN CARD ENTRY GENERATOR */}
       <h3 style={{ margin: '0 0 15px 0', color: '#6366f1' }}>Publish Portfolio Elements</h3>
       <form onSubmit={handleCreateElement} style={{ display: 'flex', flexDirection: 'column', gap: '15px', background: '#13131a', padding: '25px', borderRadius: '12px', border: '1px solid #1e1e24', marginBottom: '40px' }}>
         <div style={{ display: 'flex', gap: '15px' }}>
           <div style={{ flex: 1 }}>
-            <label style={{ display: 'block', fontSize: '12px', color: '#64748b', marginBottom: '5px' }}>Designated Content Block Location</label>
-            <select value={targetBlock} onChange={(e) => setTargetBlock(e.target.value)} style={{ padding: '12px', width: '100%', boxSizing: 'border-box', background: '#0a0a0f', border: '1px solid #a855f7', color: '#fff', borderRadius: '6px', fontWeight: '600' }}>
-              <option value="socials">1. Socials Section Block</option>
-              <option value="assets">2. Assets & Presets Section Block</option>
-              <option value="my_work">3. My Work (Video Portfolio Content) Block</option>
+            <label style={{ display: 'block', fontSize: '12px', color: '#64748b', marginBottom: '5px' }}>Choose Target Column Destination</label>
+            <select value={targetBlock} onChange={(e) => setTargetBlock(e.target.value)} style={{ padding: '12px', width: '100%', boxSizing: 'border-box', background: '#0a0a0f', border: '1px solid #a855f7', color: '#fff', borderRadius: '6px', fontWeight: 'bold' }}>
+              <option value="socials">Column 1: Socials Section Block</option>
+              <option value="assets">Column 2: Assets & Presets Section Block</option>
+              <option value="my_work">Column 3: My Work (Video Showcases) Block</option>
             </select>
           </div>
           <div style={{ flex: 1 }}>
-            <label style={{ display: 'block', fontSize: '12px', color: '#64748b', marginBottom: '5px' }}>Display Label / Caption Description</label>
-            <input type="text" placeholder="e.g., Follow my Instagram, Editing Shake Preset, Valorant AMV Edit" value={title} onChange={(e) => setTitle(e.target.value)} required style={{ padding: '12px', width: '100%', boxSizing: 'border-box', background: '#0a0a0f', border: '1px solid #222', color: '#fff', borderRadius: '6px' }} />
+            <label style={{ display: 'block', fontSize: '12px', color: '#64748b', marginBottom: '5px' }}>Display Label Title / Edit Description</label>
+            <input type="text" placeholder="e.g., Follow my Instagram, Editing Preset, Valorant AMV Edit" value={title} onChange={(e) => setTitle(e.target.value)} required style={{ padding: '12px', width: '100%', boxSizing: 'border-box', background: '#0a0a0f', border: '1px solid #222', color: '#fff', borderRadius: '6px' }} />
           </div>
         </div>
 
         <div>
-          <label style={{ display: 'block', fontSize: '12px', color: '#64748b', marginBottom: '5px' }}>Asset Resource URL Link (e.g., raw GitHub .mp4 link or hyperlink)</label>
-          <input type="url" placeholder="https://raw.githubusercontent.com/..." value={url} onChange={(e) => setUrl(e.target.value)} required style={{ padding: '12px', width: '100%', boxSizing: 'border-box', background: '#0a0a0f', border: '1px solid #222', color: '#fff', borderRadius: '6px' }} />
+          <label style={{ display: 'block', fontSize: '12px', color: '#64748b', marginBottom: '5px' }}>Asset Location Link URL (Paste text links or Raw GitHub URL)</label>
+          <input type="url" placeholder="https://..." value={url} onChange={(e) => setUrl(e.target.value)} required style={{ padding: '12px', width: '100%', boxSizing: 'border-box', background: '#0a0a0f', border: '1px solid #222', color: '#fff', borderRadius: '6px' }} />
         </div>
 
-        <button type="submit" style={{ padding: '14px', background: '#6366f1', color: '#fff', border: 'none', cursor: 'pointer', borderRadius: '8px', fontWeight: '600' }}>Publish Element to Selected Block</button>
+        <button type="submit" style={{ padding: '14px', background: '#6366f1', color: '#fff', border: 'none', cursor: 'pointer', borderRadius: '8px', fontWeight: '600' }}>Publish Element to Selected Column</button>
       </form>
 
-      {/* RENDER CURRENT STRUCTURED STORAGE ARRAYS */}
+      {/* ADMIN STATUS LOG PREVIEWS VIEW */}
       <h3 style={{ borderBottom: '1px solid #222', paddingBottom: '10px', marginBottom: '15px' }}>Active Structured Portfolio Layout Architecture</h3>
       
-      {/* SOCIALS DISPLAY AREA BOX BLOCK */}
-      <h4 style={{ color: '#6366f1', margin: '20px 0 10px 0' }}>Block 1: Social Links</h4>
+      <h4 style={{ color: '#6366f1', margin: '20px 0 10px 0' }}>Column 1: Social Links</h4>
       <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-        {socials.length === 0 ? <p style={{ color: '#444', fontSize: '13px' }}>Empty Block.</p> : socials.map(item => (
+        {socials.length === 0 ? <p style={{ color: '#444', fontSize: '13px' }}>Empty.</p> : socials.map(item => (
           <div key={item._id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#13131a', padding: '14px', borderRadius: '10px', border: '1px solid #1e1e24' }}>
             <div><strong>{item.title}</strong><br/><span style={{ fontSize: '12px', color: '#64748b' }}>{item.url}</span></div>
             <button onClick={() => handleDelete(item._id)} style={{ background: '#ef4444', color: '#fff', border: 'none', padding: '8px 14px', cursor: 'pointer', borderRadius: '6px' }}>Delete</button>
@@ -218,10 +213,9 @@ export default function Admin() {
         ))}
       </div>
 
-      {/* ASSETS AND PRESETS DISPLAY AREA BOX BLOCK */}
-      <h4 style={{ color: '#a855f7', margin: '30px 0 10px 0' }}>Block 2: Assets & Presets</h4>
+      <h4 style={{ color: '#a855f7', margin: '30px 0 10px 0' }}>Column 2: Assets & Presets</h4>
       <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-        {assets.length === 0 ? <p style={{ color: '#444', fontSize: '13px' }}>Empty Block.</p> : assets.map(item => (
+        {assets.length === 0 ? <p style={{ color: '#444', fontSize: '13px' }}>Empty.</p> : assets.map(item => (
           <div key={item._id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#13131a', padding: '14px', borderRadius: '10px', border: '1px solid #1e1e24' }}>
             <div><strong>{item.title}</strong><br/><span style={{ fontSize: '12px', color: '#64748b' }}>{item.url}</span></div>
             <button onClick={() => handleDelete(item._id)} style={{ background: '#ef4444', color: '#fff', border: 'none', padding: '8px 14px', cursor: 'pointer', borderRadius: '6px' }}>Delete</button>
@@ -229,10 +223,9 @@ export default function Admin() {
         ))}
       </div>
 
-      {/* VIDEO PROJECTS DISPPLAY AREA BOX BLOCK */}
-      <h4 style={{ color: '#10b981', margin: '30px 0 10px 0' }}>Block 3: My Work (Video Showcases)</h4>
+      <h4 style={{ color: '#10b981', margin: '30px 0 10px 0' }}>Column 3: My Work (Videos)</h4>
       <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-        {myWork.length === 0 ? <p style={{ color: '#444', fontSize: '13px' }}>Empty Block.</p> : myWork.map(item => (
+        {myWork.length === 0 ? <p style={{ color: '#444', fontSize: '13px' }}>Empty.</p> : myWork.map(item => (
           <div key={item._id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#13131a', padding: '14px', borderRadius: '10px', border: '1px solid #1e1e24' }}>
             <div>
               <strong>{item.title}</strong><br/><span style={{ fontSize: '12px', color: '#64748b' }}>{item.url}</span>
