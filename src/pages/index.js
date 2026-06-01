@@ -1,7 +1,8 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 
 export default function Home() {
   const [data, setData] = useState(null);
+  const canvasRef = useRef(null);
 
   useEffect(() => {
     fetch('/api/links')
@@ -10,65 +11,110 @@ export default function Home() {
       .catch(err => console.error(err));
   }, []);
 
-  if (!data) {
-    return (
-      <div style={{ background: '#07070a', color: '#fff', height: '100vh', display: 'flex', justifyContent: 'center', alignItems: 'center', fontFamily: 'monospace', letterSpacing: '2px' }}>
-        LOADING_SYSTEM_MATRIX...
-      </div>
-    );
-  }
+  // Background Physics Particles Engine Activation Loop
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    let animationFrameId;
+
+    const handleResize = () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    };
+    window.addEventListener('resize', handleResize);
+    handleResize();
+
+    const particlesArray = [];
+    const numberOfParticles = 65;
+
+    class Particle {
+      constructor() {
+        this.x = Math.random() * canvas.width;
+        this.y = Math.random() * canvas.height;
+        this.size = Math.random() * 2 + 0.5;
+        this.speedX = (Math.random() - 0.5) * 0.35;
+        this.speedY = (Math.random() - 0.5) * 0.35;
+        this.alpha = Math.random() * 0.4 + 0.2;
+      }
+      update() {
+        this.x += this.speedX;
+        this.y += this.speedY;
+
+        if (this.x > canvas.width) this.x = 0;
+        else if (this.x < 0) this.x = canvas.width;
+        if (this.y > canvas.height) this.y = 0;
+        else if (this.y < 0) this.y = canvas.height;
+      }
+      draw() {
+        ctx.save();
+        ctx.globalAlpha = this.alpha;
+        ctx.fillStyle = '#a855f7';
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+      }
+    }
+
+    for (let i = 0; i < numberOfParticles; i++) {
+      particlesArray.push(new Particle());
+    }
+
+    const animate = () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      particlesArray.forEach(p => {
+        p.update();
+        p.draw();
+      });
+      animationFrameId = requestAnimationFrame(animate);
+    };
+    animate();
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      cancelAnimationFrame(animationFrameId);
+    };
+  }, [data]);
+
+  if (!data) return <div style={{ background: '#0a0a0f', color: '#fff', height: '100vh', display: 'flex', justifyContent: 'center', alignItems: 'center', fontFamily: 'sans-serif' }}>Loading Engine...</div>;
 
   const { profile, socials, assets, myWork } = data;
 
   return (
-    <div style={{ position: 'relative', minHeight: '100vh', backgroundColor: '#060608', color: '#e2e8f0', fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace', padding: '60px 20px', boxSizing: 'border-box' }}>
+    <div style={{ position: 'relative', minHeight: '100vh', color: '#fff', fontFamily: 'sans-serif', padding: '60px 20px', boxSizing: 'border-box' }}>
       
-      {/* CSS STYLE CONFIG MATRIX */}
+      {/* RESTORED SMOOTH GLASSMORPHIC HOVER EFFECTS */}
       <style jsx global>{`
-        body {
-          margin: 0;
-          padding: 0;
-          background-color: #060608;
-        }
-        @keyframes fadeIn {
-          from { opacity: 0; transform: translateY(10px); }
+        @keyframes fadeInUp {
+          from { opacity: 0; transform: translateY(20px); }
           to { opacity: 1; transform: translateY(0); }
         }
-        .animate-ui {
-          animation: fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        .animate-fade-in {
+          animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
-        .grid-link-item {
-          transition: all 0.25s ease-in-out;
+        .column-delay-1 { animation-delay: 0.1s; opacity: 0; }
+        .column-delay-2 { animation-delay: 0.2s; opacity: 0; }
+        .column-delay-3 { animation-delay: 0.3s; opacity: 0; }
+        
+        .interactive-card {
+          transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1) !important;
         }
-        .grid-link-item:hover {
-          background: rgba(255, 255, 255, 0.03) !important;
+        .interactive-card:hover {
+          transform: translateY(-3px);
+          background: rgba(255, 255, 255, 0.07) !important;
           border-color: rgba(168, 85, 247, 0.4) !important;
-          color: #fff !important;
-          padding-left: 24px !important;
+          box-shadow: 0 8px 24px rgba(168, 85, 247, 0.15);
         }
-        .work-video-card {
-          transition: all 0.3s ease;
+        .video-card-container {
+          transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
         }
-        .work-video-card:hover {
-          border-color: rgba(168, 85, 247, 0.4) !important;
-          box-shadow: 0 0 20px rgba(168, 85, 247, 0.1);
-        }
-        /* Handle Custom Responsive Column Splits */
-        .layout-grid {
-          display: grid;
-          grid-template-columns: repeat(12, 1fr);
-          gap: 24px;
-        }
-        .col-left { grid-column: span 4; }
-        .col-right { grid-column: span 8; }
-
-        @media (max-width: 968px) {
-          .layout-grid { display: flex; flexDirection: column; gap: 30px; }
-          .col-left, .col-right { width: 100%; }
+        .video-card-container:hover {
+          transform: scale(1.015);
         }
       `}</style>
-
-      {/* 1. IMMERSIVE BASE VIDEO WALLPAPER LAYER */}
+      
+      {/* 1. COMPREHENSIVE WALLPAPER VIEWFIX OVERRIDE */}
       {profile.bgVideoUrl && (
         <video 
           src={profile.bgVideoUrl} 
@@ -79,143 +125,75 @@ export default function Home() {
           style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', objectFit: 'cover', zIndex: -3, pointerEvents: 'none' }} 
         />
       )}
-
-      {/* 2. AMBIENT SHIELD GRID BLUR MATTE */}
-      <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'radial-gradient(circle at center, rgba(6,6,8,0.4) 0%, rgba(6,6,8,0.85) 100%)', backdropFilter: 'blur(12px)', zIndex: -2, pointerEvents: 'none' }} />
       
-      {/* 3. OPTIONAL SCI-FI SUBTLE DOT/GRID OVERLAY PATTERN */}
-      <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', backgroundImage: 'radial-gradient(rgba(255,255,255,0.015) 1px, transparent 0)', backgroundSize: '24px 24px', zIndex: -1, pointerEvents: 'none' }} />
+      {/* 2. PERSISTENT PARTICLE CANVAS SCATTER GRID */}
+      <canvas ref={canvasRef} style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', zIndex: -2, pointerEvents: 'none' }} />
+      
+      {/* 3. SUBTLE TINT MATTE SCREEN LAYER */}
+      <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(10, 10, 15, 0.45)', backdropFilter: 'blur(8px)', zIndex: -1, pointerEvents: 'none' }} />
 
-      {/* CORE FRAME LAYOUT STRUCTURE */}
-      <div style={{ maxWidth: '1100px', margin: '0 auto', position: 'relative', zIndex: 1 }}>
+      {/* RENDER BODY CONTEXT BLOCK CONTAINER */}
+      <div style={{ maxWidth: '1200px', margin: '0 auto', position: 'relative', zIndex: 1 }}>
         
-        {/* TOP BRAND EMBLEM SECTION */}
-        <div className="animate-ui" style={{ display: 'flex', alignItems: 'center', gap: '20px', borderBottom: '1px solid #16161f', paddingBottom: '30px', marginBottom: '40px' }}>
-          {profile.avatarUrl && (
-            <img 
-              src={profile.avatarUrl} 
-              alt="Avatar Profile" 
-              style={{ width: '64px', height: '64px', borderRadius: '4px', objectFit: 'cover', border: '1px solid #1c1c26' }} 
-            />
-          )}
-          <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <h1 style={{ margin: 0, fontSize: '18px', fontWeight: '700', letterSpacing: '0.5px', color: '#fff' }}>{profile.username}</h1>
-              <span style={{ width: '6px', height: '6px', backgroundColor: '#a855f7', borderRadius: '50%', display: 'inline-block', boxShadow: '0 0 8px #a855f7' }}></span>
-            </div>
-            <p style={{ margin: '4px 0 0 0', fontSize: '11px', color: '#a855f7', textTransform: 'uppercase', letterSpacing: '2px', fontWeight: 'bold' }}>{profile.subtitle}</p>
-          </div>
+        {/* HEADER ELEMENT ACCENT SECTOR */}
+        <div className="animate-fade-in" style={{ textAlign: 'center', marginBottom: '50px' }}>
+          {profile.avatarUrl && <img src={profile.avatarUrl} alt="avatar" style={{ width: '90px', height: '90px', borderRadius: '50%', border: '2px solid rgba(168,85,247,0.5)', objectFit: 'cover', marginBottom: '15px' }} />}
+          <h1 style={{ margin: '0 0 5px 0', fontSize: '26px', letterSpacing: '1px', fontWeight: '800' }}>{profile.username}</h1>
+          <p style={{ margin: '0 0 15px 0', fontSize: '11px', color: '#a855f7', fontWeight: 'bold', letterSpacing: '3px' }}>{profile.subtitle}</p>
+          <p style={{ fontSize: '14px', color: '#cbd5e1', maxWidth: '500px', margin: '0 auto', lineHeight: '1.6', textShadow: '0 2px 4px rgba(0,0,0,0.4)' }}>{profile.bio}</p>
         </div>
 
-        {/* REBUILT MAIN SYLVRIXS-STYLE MATRIX GRID */}
-        <div className="layout-grid animate-ui" style={{ animationDelay: '0.1s' }}>
+        {/* HORIZONTAL GRID SPLIT COLUMNS ARCHITECTURE */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '25px', alignItems: 'start' }}>
           
-          {/* LEFT SIDEBAR SECTION: BIO SUMMARY & SOCIAL CHANNELS */}
-          <div className="col-left" style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-            
-            {/* ABOUT ME BLOCK */}
-            <div style={{ background: 'rgba(9, 9, 12, 0.55)', border: '1px solid #16161f', borderRadius: '8px', padding: '20px' }}>
-              <div style={{ fontSize: '11px', color: '#64748b', textTransform: 'uppercase', letterSpacing: '1.5px', marginBottom: '12px', fontWeight: '600' }}>// BACKGROUND_MANIFEST</div>
-              <p style={{ margin: 0, fontSize: '13px', lineHeight: '1.6', color: '#94a3b8' }}>{profile.bio}</p>
+          {/* COLUMN 1: SOCIAL PORTS VIEW LIST */}
+          <div className="animate-fade-in column-delay-1" style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '16px', padding: '20px', backdropFilter: 'blur(10px)' }}>
+            <h3 style={{ margin: '0 0 20px 0', fontSize: '14px', color: '#6366f1', letterSpacing: '1px', textTransform: 'uppercase', borderLeft: '3px solid #6366f1', paddingLeft: '10px', fontWeight: '700' }}>Socials</h3>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              {socials.length === 0 ? <p style={{ color: '#64748b', fontSize: '13px' }}>Empty.</p> : socials.map(item => (
+                <a key={item._id} href={item.url} target="_blank" rel="noreferrer" className="interactive-card" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)', padding: '14px 18px', borderRadius: '10px', color: '#fff', textDecoration: 'none', fontWeight: '600', fontSize: '14px', display: 'block' }}>
+                  {item.title}
+                </a>
+              ))}
             </div>
-
-            {/* CONNECT DIRECTORY BLOCK */}
-            <div style={{ background: 'rgba(9, 9, 12, 0.55)', border: '1px solid #16161f', borderRadius: '8px', padding: '20px' }}>
-              <div style={{ fontSize: '11px', color: '#64748b', textTransform: 'uppercase', letterSpacing: '1.5px', marginBottom: '16px', fontWeight: '600' }}>// NETWORK_INDEX</div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                {socials.length === 0 ? (
-                  <div style={{ color: '#4b5563', fontSize: '12px' }}>Index empty.</div>
-                ) : (
-                  socials.map(item => (
-                    <a 
-                      key={item._id} 
-                      href={item.url} 
-                      target="_blank" 
-                      rel="noreferrer" 
-                      className="grid-link-item" 
-                      style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#0b0b0f', border: '1px solid #14141a', padding: '12px 16px', borderRadius: '6px', color: '#94a3b8', textDecoration: 'none', fontSize: '13px', fontWeight: '500' }}
-                    >
-                      <span>{item.title}</span>
-                      <span style={{ fontSize: '10px', color: '#4b5563' }}>↗</span>
-                    </a>
-                  ))
-                )}
-              </div>
-            </div>
-
           </div>
 
-          {/* RIGHT HUB: ASSETS DIRECTORY & HORIZONTAL widescreen SHOWCASE CONTAINER */}
-          <div className="col-right" style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-            
-            {/* ASSETS AND PRESETS SECTIONS ARCHITECTURE */}
-            <div style={{ background: 'rgba(9, 9, 12, 0.55)', border: '1px solid #16161f', borderRadius: '8px', padding: '20px' }}>
-              <div style={{ fontSize: '11px', color: '#64748b', textTransform: 'uppercase', letterSpacing: '1.5px', marginBottom: '16px', fontWeight: '600' }}>// ENGINE_UTILITIES_AND_PRESETS</div>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '10px' }}>
-                {assets.length === 0 ? (
-                  <div style={{ color: '#4b5563', fontSize: '12px' }}>No utility arrays mapped.</div>
-                ) : (
-                  assets.map(item => (
-                    <a 
-                      key={item._id} 
-                      href={item.url} 
-                      target="_blank" 
-                      rel="noreferrer" 
-                      className="grid-link-item" 
-                      style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#0b0b0f', border: '1px solid #14141a', padding: '14px 16px', borderRadius: '6px', color: '#94a3b8', textDecoration: 'none', fontSize: '13px', fontWeight: '500' }}
-                    >
-                      <span>{item.title}</span>
-                      <span style={{ fontSize: '10px', color: '#4b5563' }}>↓</span>
-                    </a>
-                  ))
-                )}
-              </div>
+          {/* COLUMN 2: ASSETS & DESIGN PACKS ARRAYS LINK MAP */}
+          <div className="animate-fade-in column-delay-2" style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '16px', padding: '20px', backdropFilter: 'blur(10px)' }}>
+            <h3 style={{ margin: '0 0 20px 0', fontSize: '14px', color: '#a855f7', letterSpacing: '1px', textTransform: 'uppercase', borderLeft: '3px solid #a855f7', paddingLeft: '10px', fontWeight: '700' }}>Assets & Presets</h3>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              {assets.length === 0 ? <p style={{ color: '#64748b', fontSize: '13px' }}>Empty.</p> : assets.map(item => (
+                <a key={item._id} href={item.url} target="_blank" rel="noreferrer" className="interactive-card" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)', padding: '14px 18px', borderRadius: '10px', color: '#fff', textDecoration: 'none', fontWeight: '600', fontSize: '14px', display: 'block' }}>
+                  {item.title}
+                </a>
+              ))}
             </div>
+          </div>
 
-            {/* REBUILT WORK SHOWCASES: PURE 16:9 LANDSCAPE CINEMATIC SYSTEM */}
-            <div style={{ background: 'rgba(9, 9, 12, 0.55)', border: '1px solid #16161f', borderRadius: '8px', padding: '20px' }}>
-              <div style={{ fontSize: '11px', color: '#64748b', textTransform: 'uppercase', letterSpacing: '1.5px', marginBottom: '20px', fontWeight: '600' }}>// VISUAL_WORKS_BROADCAST</div>
-              
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '20px' }}>
-                {myWork.length === 0 ? (
-                  <div style={{ color: '#4b5563', fontSize: '12px' }}>Broadcast channel idle.</div>
-                ) : (
-                  myWork.map(item => (
-                    <div 
-                      key={item._id} 
-                      className="work-video-card" 
-                      style={{ background: '#0b0b0f', border: '1px solid #14141a', borderRadius: '6px', overflow: 'hidden' }}
-                    >
-                      {/* Strictly maintains standard responsive widescreen architecture */}
-                      <div style={{ width: '100%', aspectRatio: '16/9', background: '#020203', position: 'relative' }}>
-                        <video 
-                          src={item.url} 
-                          controls 
-                          muted 
-                          playsInline 
-                          style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} 
-                        />
-                      </div>
-                      <div style={{ padding: '14px', borderTop: '1px solid #14141a' }}>
-                        <div style={{ fontSize: '13px', fontWeight: '600', color: '#f1f5f9', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{item.title}</div>
-                        <div style={{ fontSize: '10px', color: '#4b5563', marginTop: '4px', fontFamily: 'monospace' }}>RES: 1920X1080 // STREAM_OK</div>
-                      </div>
-                    </div>
-                  ))
-                )}
-              </div>
-
+          {/* COLUMN 3: CINEMATIC SHOWCASE WIDESCREEN BLOCKS */}
+          <div className="animate-fade-in column-delay-3" style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '16px', padding: '20px', backdropFilter: 'blur(10px)' }}>
+            <h3 style={{ margin: '0 0 20px 0', fontSize: '14px', color: '#10b981', letterSpacing: '1px', textTransform: 'uppercase', borderLeft: '3px solid #10b981', paddingLeft: '10px', fontWeight: '700' }}>My Work</h3>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+              {myWork.length === 0 ? <p style={{ color: '#64748b', fontSize: '13px' }}>Empty.</p> : myWork.map(item => (
+                <div key={item._id} className="video-card-container" style={{ background: 'rgba(0,0,0,0.4)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '12px', overflow: 'hidden', boxSizing: 'border-box' }}>
+                  <div style={{ width: '100%', aspectRatio: '16/9', background: '#000', position: 'relative' }}>
+                    <video 
+                      src={item.url} 
+                      controls 
+                      muted 
+                      playsInline 
+                      style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover' }} 
+                    />
+                  </div>
+                  <div style={{ padding: '12px', background: 'rgba(20,20,25,0.4)' }}>
+                    <strong style={{ fontSize: '13.5px', color: '#f8fafc', display: 'block' }}>{item.title}</strong>
+                  </div>
+                </div>
+              ))}
             </div>
-
           </div>
 
         </div>
-
-        {/* BOTTOM MINIMAL DESIGN FOOTER EXPANSION */}
-        <div style={{ marginTop: '60px', borderTop: '1px solid #16161f', paddingTop: '20px', textAlign: 'center', fontSize: '11px', color: '#4b5563', letterSpacing: '1px' }}>
-          CORE_MATRIX_v2.0 // ALL CHANNELS ACTIVE
-        </div>
-
       </div>
     </div>
   );
