@@ -19,7 +19,10 @@ export default function Admin() {
 
   const [title, setTitle] = useState('');
   const [url, setUrl] = useState('');
-  const [targetBlock, setTargetBlock] = useState('socials'); // Controls column destination
+  const [targetBlock, setTargetBlock] = useState('socials');
+
+  // URL Parser State
+  const [rawInputUrl, setRawInputUrl] = useState('');
 
   const fetchDashboardData = async (token = password) => {
     try {
@@ -63,6 +66,25 @@ export default function Admin() {
     }
   }, []);
 
+  // AUTOMATED INSTANT LINK CONVERSION MODULE
+  const handleUrlConversionAction = () => {
+    if (!rawInputUrl) return alert('Please enter a GitHub URL link first.');
+    
+    let processedUrl = rawInputUrl.trim();
+    
+    if (processedUrl.includes('github.com') && processedUrl.includes('/blob/')) {
+      processedUrl = processedUrl
+        .replace('github.com', 'raw.githubusercontent.com')
+        .replace('/blob/', '/');
+      
+      setUrl(processedUrl);
+      setRawInputUrl('');
+      alert('Link parsed to Raw secure streaming CDN format successfully!');
+    } else {
+      alert('Invalid structure format. Please enter a valid standard GitHub file location address.');
+    }
+  };
+
   const handleLoginSubmit = (e) => {
     e.preventDefault();
     sessionStorage.setItem('admin_session_pass', password);
@@ -83,7 +105,7 @@ export default function Admin() {
       headers: { 'Content-Type': 'application/json', 'admin-password': password },
       body: JSON.stringify({ type: 'update_profile', username, bio, avatarUrl, videoUrl, subtitle, bgVideoUrl, audioBgUrl, audioHoverUrl }),
     });
-    if (res.ok) alert('Layout properties saved perfectly!');
+    if (res.ok) alert('Layout core variables saved.');
   };
 
   const handleCreateElement = async (e) => {
@@ -120,10 +142,20 @@ export default function Admin() {
         <h2 style={{ margin: 0 }}>Global Customizer Dash</h2>
         <button onClick={handleLogOutAction} style={{ padding: '10px 20px', background: '#ef4444', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: '600' }}>Sign Out</button>
       </div>
+
+      {/* INSTANT LINK UTILITY TOOLBOX CARD */}
+      <div style={{ background: '#13131a', padding: '20px', borderRadius: '12px', border: '1px solid #a855f7', marginBottom: '35px' }}>
+        <h3 style={{ margin: '0 0 10px 0', color: '#a855f7', fontSize: '15px' }}>⚡ Core GitHub Raw URL Converter Widget</h3>
+        <p style={{ margin: '0 0 15px 0', fontSize: '12px', color: '#64748b' }}>Paste a standard webpage link from your GitHub repo browser bar here, and convert it instantly into a secure streamable raw asset address.</p>
+        <div style={{ display: 'flex', gap: '12px' }}>
+          <input type="text" placeholder="Paste standard link (e.g., https://github.com/username/repo/blob/main/file.mp4)" value={rawInputUrl} onChange={(e) => setRawInputUrl(e.target.value)} style={{ flex: 1, padding: '12px', background: '#0a0a0f', border: '1px solid #222', color: '#fff', borderRadius: '6px' }} />
+          <button type="button" onClick={handleUrlConversionAction} style={{ padding: '12px 20px', background: '#a855f7', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}>Parse to Raw</button>
+        </div>
+      </div>
       
-      {/* BRANDING CONFIG MATRIX FRAME */}
+      {/* BRANDING SETUP CONFIGS AREA */}
       <div style={{ background: '#13131a', padding: '25px', borderRadius: '12px', border: '1px solid #1e1e24', marginBottom: '40px' }}>
-        <h3 style={{ margin: '0 0 20px 0', color: '#a855f7' }}>Branding, Design Presets & Core Configurations</h3>
+        <h3 style={{ margin: '0 0 20px 0', color: '#6366f1' }}>Branding, Design Presets & Core Configurations</h3>
         <form onSubmit={handleUpdateProfile} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
           
           <div style={{ display: 'flex', gap: '15px' }}>
@@ -148,10 +180,9 @@ export default function Admin() {
             </div>
           </div>
 
-          {/* DYNAMIC BACKGROUND MEDIA LOADER INPUT FIELD (PASTE CONVERTED RAW GITHUB LINKS HERE) */}
-          <div style={{ background: '#0a0a0f', padding: '15px', borderRadius: '8px', border: '1px dashed #a855f7' }}>
-            <label style={{ display: 'block', fontSize: '12px', color: '#a855f7', marginBottom: '5px', fontWeight: 'bold' }}>Main Website Background Video Link URL (Paste Raw GitHub .mp4 Link)</label>
-            <input type="url" value={bgVideoUrl} onChange={(e) => setBgVideoUrl(e.target.value)} placeholder="e.g., https://raw.githubusercontent.com/username/repo/main/background.mp4" style={{ padding: '12px', width: '100%', boxSizing: 'border-box', background: '#13131a', border: '1px solid #222', color: '#fff', borderRadius: '6px' }} />
+          <div style={{ background: '#0a0a0f', padding: '15px', borderRadius: '8px', border: '1px solid #222' }}>
+            <label style={{ display: 'block', fontSize: '12px', color: '#a855f7', marginBottom: '5px', fontWeight: 'bold' }}>Main Website Background Video Link URL (Paste Converted Raw GitHub URL)</label>
+            <input type="url" value={bgVideoUrl} onChange={(e) => setBgVideoUrl(e.target.value)} placeholder="e.g., https://raw.githubusercontent.com/username/repo/main/file.mp4" style={{ padding: '12px', width: '100%', boxSizing: 'border-box', background: '#13131a', border: '1px solid #222', color: '#fff', borderRadius: '6px' }} />
           </div>
 
           <div style={{ display: 'flex', gap: '15px' }}>
@@ -161,7 +192,7 @@ export default function Admin() {
             </div>
             <div style={{ flex: 1 }}>
               <label style={{ display: 'block', fontSize: '12px', color: '#64748b', marginBottom: '5px' }}>Looping Background Music Track URL (.mp3)</label>
-              <input type="url" value={audioBgUrl} onChange={(e) => setAudioBgUrl(e.target.value)} placeholder="Paste background music link here" style={{ padding: '12px', width: '100%', boxSizing: 'border-box', background: '#0a0a0f', border: '1px solid #222', color: '#fff', borderRadius: '6px' }} />
+              <input type="url" value={audioBgUrl} onChange={(e) => setAudioBgUrl(e.target.value)} placeholder="Paste link here" style={{ padding: '12px', width: '100%', boxSizing: 'border-box', background: '#0a0a0f', border: '1px solid #222', color: '#fff', borderRadius: '6px' }} />
             </div>
           </div>
 
@@ -170,17 +201,17 @@ export default function Admin() {
             <textarea value={bio} onChange={(e) => setBio(e.target.value)} required rows="2" style={{ padding: '12px', width: '100%', boxSizing: 'border-box', background: '#0a0a0f', border: '1px solid #222', color: '#fff', borderRadius: '6px', resize: 'vertical' }} />
           </div>
 
-          <button type="submit" style={{ padding: '14px', background: '#a855f7', color: '#fff', border: 'none', cursor: 'pointer', borderRadius: '8px', fontWeight: '600' }}>Save Core Framework Matrix</button>
+          <button type="submit" style={{ padding: '14px', background: '#6366f1', color: '#fff', border: 'none', cursor: 'pointer', borderRadius: '8px', fontWeight: '600' }}>Save Core Framework Matrix</button>
         </form>
       </div>
 
-      {/* PORTFOLIO ROUTER COLUMN CARD ENTRY GENERATOR */}
-      <h3 style={{ margin: '0 0 15px 0', color: '#6366f1' }}>Publish Portfolio Elements</h3>
+      {/* CONTENT MANAGEMENT WRAPPER */}
+      <h3 style={{ margin: '0 0 15px 0', color: '#10b981' }}>Publish Portfolio Elements</h3>
       <form onSubmit={handleCreateElement} style={{ display: 'flex', flexDirection: 'column', gap: '15px', background: '#13131a', padding: '25px', borderRadius: '12px', border: '1px solid #1e1e24', marginBottom: '40px' }}>
         <div style={{ display: 'flex', gap: '15px' }}>
           <div style={{ flex: 1 }}>
             <label style={{ display: 'block', fontSize: '12px', color: '#64748b', marginBottom: '5px' }}>Choose Target Column Destination</label>
-            <select value={targetBlock} onChange={(e) => setTargetBlock(e.target.value)} style={{ padding: '12px', width: '100%', boxSizing: 'border-box', background: '#0a0a0f', border: '1px solid #a855f7', color: '#fff', borderRadius: '6px', fontWeight: 'bold' }}>
+            <select value={targetBlock} onChange={(e) => setTargetBlock(e.target.value)} style={{ padding: '12px', width: '100%', boxSizing: 'border-box', background: '#0a0a0f', border: '1px solid #10b981', color: '#fff', borderRadius: '6px', fontWeight: 'bold' }}>
               <option value="socials">Column 1: Socials Section Block</option>
               <option value="assets">Column 2: Assets & Presets Section Block</option>
               <option value="my_work">Column 3: My Work (Video Showcases) Block</option>
@@ -193,14 +224,14 @@ export default function Admin() {
         </div>
 
         <div>
-          <label style={{ display: 'block', fontSize: '12px', color: '#64748b', marginBottom: '5px' }}>Asset Location Link URL (Paste text links or Raw GitHub URL)</label>
+          <label style={{ display: 'block', fontSize: '12px', color: '#64748b', marginBottom: '5px' }}>Asset Location Link URL (Paste text links or converted Raw GitHub link from widget above)</label>
           <input type="url" placeholder="https://..." value={url} onChange={(e) => setUrl(e.target.value)} required style={{ padding: '12px', width: '100%', boxSizing: 'border-box', background: '#0a0a0f', border: '1px solid #222', color: '#fff', borderRadius: '6px' }} />
         </div>
 
-        <button type="submit" style={{ padding: '14px', background: '#6366f1', color: '#fff', border: 'none', cursor: 'pointer', borderRadius: '8px', fontWeight: '600' }}>Publish Element to Selected Column</button>
+        <button type="submit" style={{ padding: '14px', background: '#10b981', color: '#fff', border: 'none', cursor: 'pointer', borderRadius: '8px', fontWeight: '600' }}>Publish Element to Selected Column</button>
       </form>
 
-      {/* ADMIN STATUS LOG PREVIEWS VIEW */}
+      {/* LOG DELETION TABLES ARCHITECTURE */}
       <h3 style={{ borderBottom: '1px solid #222', paddingBottom: '10px', marginBottom: '15px' }}>Active Structured Portfolio Layout Architecture</h3>
       
       <h4 style={{ color: '#6366f1', margin: '20px 0 10px 0' }}>Column 1: Social Links</h4>
