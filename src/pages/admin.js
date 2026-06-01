@@ -16,7 +16,7 @@ export default function Admin() {
   const [bgVideoUrl, setBgVideoUrl] = useState('');
   const [audioBgUrl, setAudioBgUrl] = useState('');
   const [audioHoverUrl, setAudioHoverUrl] = useState('');
-  const [announcement, setAnnouncement] = useState(''); // Tracking state for the ticker line text
+  const [announcement, setAnnouncement] = useState('');
 
   const [title, setTitle] = useState('');
   const [url, setUrl] = useState('');
@@ -97,11 +97,12 @@ export default function Admin() {
   };
 
   const injectOsPrefix = (systemType) => {
-    let baseTitle = title.replace(/\[windows\]/i, '').replace(/\[mac\]/i, '').replace(/\[password\]/i, '').replace(/\[note\]/i, '').trim();
+    let baseTitle = title.replace(/\[windows\]/i, '').replace(/\[mac\]/i, '').replace(/\[password\]/i, '').replace(/\[note\]/i, '').replace(/\[tutorial\]/i, '').trim();
     if (systemType === 'win') setTitle(`[Windows] ${baseTitle}`);
     if (systemType === 'mac') setTitle(`[Mac] ${baseTitle}`);
     if (systemType === 'pass') setTitle(`[Password] ${baseTitle}`);
     if (systemType === 'note') setTitle(`[Note] ${baseTitle}`);
+    if (systemType === 'tute') setTitle(`[Tutorial] ${baseTitle}`);
   };
 
   const handleUpdateProfile = async (e) => {
@@ -111,7 +112,7 @@ export default function Admin() {
       headers: { 'Content-Type': 'application/json', 'admin-password': password },
       body: JSON.stringify({ type: 'update_profile', username, bio, avatarUrl, videoUrl, subtitle, bgVideoUrl, audioBgUrl, audioHoverUrl, announcement }),
     });
-    if (res.ok) alert('Identity and Announcement properties saved safely.');
+    if (res.ok) alert('Identity variables saved safely.');
   };
 
   const handleCreateElement = async (e) => {
@@ -119,7 +120,7 @@ export default function Admin() {
     const res = await fetch('/api/links', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'admin-password': password },
-      body: JSON.stringify({ title, url, blockType: targetBlock }),
+      body: JSON.stringify({ title, url: url || '', blockType: targetBlock }),
     });
     if (res.ok) { setTitle(''); setUrl(''); fetchDashboardData(password); }
   };
@@ -141,6 +142,8 @@ export default function Admin() {
       </form>
     );
   }
+
+  const isTextNode = title.toLowerCase().includes('[password]') || title.toLowerCase().includes('[note]');
 
   return (
     <div style={{ background: '#0a0a0f', color: '#fff', minHeight: '100vh', padding: '40px', boxSizing: 'border-box', fontFamily: 'sans-serif' }}>
@@ -172,10 +175,9 @@ export default function Admin() {
             <div style={{ flex: 1 }}><label style={{ display: 'block', fontSize: '12px', color: '#64748b', marginBottom: '5px' }}>Sound Action Effect URL</label><input type="url" value={audioHoverUrl} style={{ padding: '12px', width: '100%', background: '#0a0a0f', border: '1px solid #222', color: '#fff', borderRadius: '6px' }} /></div>
           </div>
 
-          {/* DYNAMIC ANNOUNCEMENT MATRIC INPUT BLOCK PANEL */}
           <div style={{ background: '#0a0a0f', padding: '15px', borderRadius: '8px', border: '1px dashed #6366f1' }}>
-            <label style={{ display: 'block', fontSize: '12px', color: '#6366f1', marginBottom: '5px', fontWeight: 'bold' }}>📰 Top Header Scrolling Announcement Text Strip (Leaves blank to disable ticker entirely)</label>
-            <input type="text" value={announcement} onChange={(e) => setAnnouncement(e.target.value)} placeholder="e.g., SITE MAINTENANCE UNDERWAY PRESETS PACK VOL 5 DROPPING TONIGHT AT 9 PM" style={{ padding: '12px', width: '100%', boxSizing: 'border-box', background: '#13131a', border: '1px solid #222', color: '#fff', borderRadius: '6px', fontFamily: 'monospace' }} />
+            <label style={{ display: 'block', fontSize: '12px', color: '#6366f1', marginBottom: '5px', fontWeight: 'bold' }}>📰 Top Header Scrolling Announcement Text Strip</label>
+            <input type="text" value={announcement} onChange={(e) => setAnnouncement(e.target.value)} placeholder="e.g., PRESETS DROPPING TONIGHT" style={{ padding: '12px', width: '100%', boxSizing: 'border-box', background: '#13131a', border: '1px solid #222', color: '#fff', borderRadius: '6px' }} />
           </div>
 
           <div style={{ background: '#0a0a0f', padding: '15px', borderRadius: '8px', border: '1px solid #a855f7' }}>
@@ -194,13 +196,13 @@ export default function Admin() {
         </form>
       </div>
 
-      {/* CORE FORM ELEMENT ARCHITECTURE */}
+      {/* MASTER CREATOR PANEL */}
       <h3 style={{ margin: '0 0 15px 0', color: '#10b981' }}>Publish Portfolio Elements</h3>
       <form onSubmit={handleCreateElement} style={{ display: 'flex', flexDirection: 'column', gap: '15px', background: '#13131a', padding: '25px', borderRadius: '12px', border: '1px solid #1e1e24', marginBottom: '40px' }}>
         <div style={{ display: 'flex', gap: '15px' }}>
           <div style={{ flex: 1 }}>
             <label style={{ display: 'block', fontSize: '12px', color: '#64748b', marginBottom: '5px' }}>Choose Target Column Destination</label>
-            <select value={targetBlock} onChange={(e) => setTargetBlock(e.target.value)} style={{ padding: '12px', width: '100%', boxSizing: 'border-box', background: '#0a0a0f', border: '1px solid #10b981', color: '#fff', borderRadius: '6px', fontWeight: 'bold' }}>
+            <select value={targetBlock} onChange={(e) => setTargetBlock(e.target.value)} style={{ padding: '12px', width: '100%', background: '#0a0a0f', border: '1px solid #10b981', color: '#fff', borderRadius: '6px', fontWeight: 'bold' }}>
               <option value="socials">Column 1: Socials Section Block</option>
               <option value="assets">Column 2: Assets & Presets Section Block</option>
               <option value="my_work">Column 3: My Work (Video Showcases) Block</option>
@@ -209,28 +211,37 @@ export default function Admin() {
           <div style={{ flex: 1 }}>
             <label style={{ display: 'block', fontSize: '12px', color: '#64748b', marginBottom: '5px' }}>Display Label Title / Key Descriptor Box</label>
             <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
-              <input type="text" placeholder="e.g., Velocity Shake Plugin or Zip File Password" value={title} onChange={(e) => setTitle(e.target.value)} required style={{ flex: 1, padding: '12px', background: '#0a0a0f', border: '1px solid #222', color: '#fff', borderRadius: '6px' }} />
-              {targetBlock === 'assets' && (
-                <div style={{ display: 'flex', gap: '4px', width: '100%', marginTop: '6px' }}>
-                  <button type="button" onClick={() => injectOsPrefix('win')} style={{ padding: '8px 12px', background: '#0284c7', color: '#fff', border: 'none', borderRadius: '6px', fontSize: '11px', cursor: 'pointer', fontWeight: 'bold' }}>+ Windows App</button>
-                  <button type="button" onClick={() => injectOsPrefix('mac')} style={{ padding: '8px 12px', background: '#be123c', color: '#fff', border: 'none', borderRadius: '6px', fontSize: '11px', cursor: 'pointer', fontWeight: 'bold' }}>+ Mac OS App</button>
-                  <button type="button" onClick={() => injectOsPrefix('pass')} style={{ padding: '8px 12px', background: '#a855f7', color: '#fff', border: 'none', borderRadius: '6px', fontSize: '11px', cursor: 'pointer', fontWeight: 'bold' }}>+ Password Node</button>
-                  <button type="button" onClick={() => injectOsPrefix('note')} style={{ padding: '8px 12px', background: '#64748b', color: '#fff', border: 'none', borderRadius: '6px', fontSize: '11px', cursor: 'pointer', fontWeight: 'bold' }}>+ Note Node</button>
-                </div>
-              )}
+              <input type="text" placeholder="e.g., My Instagram or Zip Key" value={title} onChange={(e) => setTitle(e.target.value)} required style={{ flex: 1, padding: '12px', background: '#0a0a0f', border: '1px solid #222', color: '#fff', borderRadius: '6px' }} />
+              
+              {/* GLOBAL STRATEGIC TAG HOOKS BUTTON SHIELD */}
+              <div style={{ display: 'flex', gap: '4px', width: '100%', marginTop: '6px' }}>
+                {targetBlock === 'assets' && (
+                  <>
+                    <button type="button" onClick={() => injectOsPrefix('win')} style={{ padding: '8px 12px', background: '#0284c7', color: '#fff', border: 'none', borderRadius: '6px', fontSize: '11px', cursor: 'pointer', fontWeight: 'bold' }}>+ Windows App</button>
+                    <button type="button" onClick={() => injectOsPrefix('mac')} style={{ padding: '8px 12px', background: '#be123c', color: '#fff', border: 'none', borderRadius: '6px', fontSize: '11px', cursor: 'pointer', fontWeight: 'bold' }}>+ Mac OS App</button>
+                    <button type="button" onClick={() => injectOsPrefix('pass')} style={{ padding: '8px 12px', background: '#a855f7', color: '#fff', border: 'none', borderRadius: '6px', fontSize: '11px', cursor: 'pointer', fontWeight: 'bold' }}>+ Password Node</button>
+                    <button type="button" onClick={() => injectOsPrefix('note')} style={{ padding: '8px 12px', background: '#64748b', color: '#fff', border: 'none', borderRadius: '6px', fontSize: '11px', cursor: 'pointer', fontWeight: 'bold' }}>+ Note Node</button>
+                  </>
+                )}
+                {(targetBlock === 'socials' || targetBlock === 'my_work') && (
+                  <button type="button" onClick={() => injectOsPrefix('tute')} style={{ padding: '8px 12px', background: '#10b981', color: '#fff', border: 'none', borderRadius: '6px', fontSize: '11px', cursor: 'pointer', fontWeight: 'bold' }}>+ Tag as Tutorial Block Element</button>
+                )}
+              </div>
             </div>
           </div>
         </div>
 
         <div>
-          <label style={{ display: 'block', fontSize: '12px', color: '#64748b', marginBottom: '5px' }}>Resource Location target value (Paste plain text for Passwords/Notes, or web URLs for file downloads)</label>
-          <input type="text" placeholder="Enter target URL or raw password/information text note values here..." value={url} onChange={(e) => setUrl(e.target.value)} required style={{ padding: '12px', width: '100%', boxSizing: 'border-box', background: '#0a0a0f', border: '1px solid #222', color: '#fff', borderRadius: '6px' }} />
+          <label style={{ display: 'block', fontSize: '12px', color: isTextNode ? '#a855f7' : '#64748b', marginBottom: '5px', fontWeight: isTextNode ? 'bold' : 'normal' }}>
+            {isTextNode ? "🔒 Type the Raw Password/Text Value Here" : "Resource Value (Paste links or handles)"}
+          </label>
+          <input type="text" placeholder={isTextNode ? "e.g., sh1vx" : "https://..."} value={url} onChange={(e) => setUrl(e.target.value)} style={{ padding: '12px', width: '100%', background: '#0a0a0f', border: isTextNode ? '1px solid #a855f7' : '1px solid #222', color: '#fff', borderRadius: '6px' }} />
         </div>
 
         <button type="submit" style={{ padding: '14px', background: '#10b981', color: '#fff', border: 'none', cursor: 'pointer', borderRadius: '8px', fontWeight: '600' }}>Publish Element to Selected Column</button>
       </form>
 
-      {/* RECORD DELETION LOG */}
+      {/* RECORD DELETION MATRIX DISPLAY LOGS */}
       <h3 style={{ borderBottom: '1px solid #222', paddingBottom: '10px', marginBottom: '15px' }}>Active Structured Portfolio Layout Architecture</h3>
       
       <h4 style={{ color: '#6366f1', margin: '20px 0 10px 0' }}>Column 1: Social Links</h4>
