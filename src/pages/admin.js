@@ -21,7 +21,6 @@ export default function Admin() {
   const [url, setUrl] = useState('');
   const [targetBlock, setTargetBlock] = useState('socials');
 
-  // URL Converter Input State
   const [rawInputUrl, setRawInputUrl] = useState('');
 
   const fetchDashboardData = async (token = password) => {
@@ -57,7 +56,7 @@ export default function Admin() {
   useEffect(() => {
     document.body.style.margin = "0";
     document.body.style.padding = "0";
-    document.body.style.backgroundColor = "#0a0a0f";
+    document.body.style.backgroundColor = "#060608";
     
     const savedPass = sessionStorage.getItem('admin_session_pass');
     if (savedPass) {
@@ -66,27 +65,20 @@ export default function Admin() {
     }
   }, []);
 
-  // AUTOMATED INSTANT LINK CONVERSION MODULE
   const handleUrlConversionAction = () => {
     if (!rawInputUrl) return alert('Please enter a GitHub URL link first.');
-    
     let processedUrl = rawInputUrl.trim();
-    
     if (processedUrl.includes('github.com') && processedUrl.includes('/blob/')) {
       processedUrl = processedUrl
         .replace('github.com', 'raw.githubusercontent.com')
         .replace('/blob/', '/');
       
-      // Auto-populate both form location targets for zero-friction publishing
       setUrl(processedUrl);
       setBgVideoUrl(processedUrl);
-      
-      // Clear converter widget search box
       setRawInputUrl('');
-      
-      alert(`Link parsed to Raw secure streaming CDN format successfully!\n\nIt has been auto-filled into your form inputs below:\n${processedUrl}`);
+      alert(`Link successfully parsed to raw content streaming address:\n\n${processedUrl}`);
     } else {
-      alert('Invalid structure format. Please enter a valid standard GitHub file location address from your browser bar.');
+      alert('Invalid URL pattern. Paste a valid link with /blob/ from your repository browser bar.');
     }
   };
 
@@ -100,7 +92,6 @@ export default function Admin() {
     sessionStorage.removeItem('admin_session_pass');
     setPassword('');
     setIsAuthorized(false);
-    alert('Session terminated safely.');
   };
 
   const handleUpdateProfile = async (e) => {
@@ -110,7 +101,7 @@ export default function Admin() {
       headers: { 'Content-Type': 'application/json', 'admin-password': password },
       body: JSON.stringify({ type: 'update_profile', username, bio, avatarUrl, videoUrl, subtitle, bgVideoUrl, audioBgUrl, audioHoverUrl }),
     });
-    if (res.ok) alert('Core design properties updated successfully!');
+    if (res.ok) alert('Identity variables updated safely.');
   };
 
   const handleCreateElement = async (e) => {
@@ -133,145 +124,142 @@ export default function Admin() {
 
   if (!isAuthorized) {
     return (
-      <form onSubmit={handleLoginSubmit} style={{ background: '#0a0a0f', color: '#fff', height: '100vh', display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column', fontFamily: 'sans-serif' }}>
-        <h3>Master Console Authorization</h3>
-        <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required style={{ padding: '12px', width: '240px', background: '#13131a', border: '1px solid #222', borderRadius: '8px', color: '#fff', marginBottom: '15px', textAlign: 'center' }} placeholder="••••••••" />
-        <button type="submit" style={{ padding: '12px 24px', borderRadius: '8px', cursor: 'pointer', background: '#6366f1', color: '#fff', border: 'none', fontWeight: '600' }}>Access Panel</button>
+      <form onSubmit={handleLoginSubmit} style={{ background: '#060608', color: '#fff', height: '100vh', display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column', fontFamily: 'monospace' }}>
+        <h3 style={{ letterSpacing: '1px', marginBottom: '20px' }}>// AUTHORIZE_CONSOLE_ENTRY</h3>
+        <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required style={{ padding: '14px', width: '260px', background: '#0b0b0f', border: '1px solid #16161f', borderRadius: '6px', color: '#fff', marginBottom: '16px', textAlign: 'center', fontFamily: 'monospace' }} placeholder="ACCESS_KEY" />
+        <button type="submit" style={{ padding: '12px 28px', borderRadius: '6px', cursor: 'pointer', background: '#a855f7', color: '#fff', border: 'none', fontWeight: 'bold', fontFamily: 'monospace' }}>EXECUTE()</button>
       </form>
     );
   }
 
   return (
-    <div style={{ background: '#0a0a0f', color: '#fff', minHeight: '100vh', padding: '40px', boxSizing: 'border-box', fontFamily: 'sans-serif' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '30px' }}>
-        <h2 style={{ margin: 0 }}>Global Customizer Dash</h2>
-        <button onClick={handleLogOutAction} style={{ padding: '10px 20px', background: '#ef4444', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: '600' }}>Sign Out</button>
-      </div>
-
-      {/* INSTANT LINK UTILITY TOOLBOX CARD */}
-      <div style={{ background: '#13131a', padding: '20px', borderRadius: '12px', border: '1px solid #a855f7', marginBottom: '35px' }}>
-        <h3 style={{ margin: '0 0 10px 0', color: '#a855f7', fontSize: '15px' }}>⚡ Core GitHub Raw URL Converter Widget</h3>
-        <p style={{ margin: '0 0 15px 0', fontSize: '12px', color: '#64748b' }}>Paste a standard webpage link from your GitHub repo browser bar here, and convert it instantly into a secure streamable raw asset address.</p>
-        <div style={{ display: 'flex', gap: '12px' }}>
-          <input type="text" placeholder="Paste standard link (e.g., https://github.com/username/repo/blob/main/file.mp4)" value={rawInputUrl} onChange={(e) => setRawInputUrl(e.target.value)} style={{ flex: 1, padding: '12px', background: '#0a0a0f', border: '1px solid #222', color: '#fff', borderRadius: '6px' }} />
-          <button type="button" onClick={handleUrlConversionAction} style={{ padding: '12px 20px', background: '#a855f7', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}>Parse to Raw</button>
-        </div>
-      </div>
+    <div style={{ background: '#060608', color: '#94a3b8', minHeight: '100vh', padding: '40px 20px', boxSizing: 'border-box', fontFamily: 'ui-monospace, monospace' }}>
       
-      {/* BRANDING SETUP CONFIGS AREA */}
-      <div style={{ background: '#13131a', padding: '25px', borderRadius: '12px', border: '1px solid #1e1e24', marginBottom: '40px' }}>
-        <h3 style={{ margin: '0 0 20px 0', color: '#6366f1' }}>Branding, Design Presets & Core Configurations</h3>
-        <form onSubmit={handleUpdateProfile} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-          
-          <div style={{ display: 'flex', gap: '15px' }}>
-            <div style={{ flex: 1 }}>
-              <label style={{ display: 'block', fontSize: '12px', color: '#64748b', marginBottom: '5px' }}>Handle</label>
-              <input type="text" value={username} onChange={(e) => setUsername(e.target.value)} required style={{ padding: '12px', width: '100%', boxSizing: 'border-box', background: '#0a0a0f', border: '1px solid #222', color: '#fff', borderRadius: '6px' }} />
-            </div>
-            <div style={{ flex: 1 }}>
-              <label style={{ display: 'block', fontSize: '12px', color: '#64748b', marginBottom: '5px' }}>Subtitle Tag Line</label>
-              <input type="text" value={subtitle} onChange={(e) => setSubtitle(e.target.value)} required style={{ padding: '12px', width: '100%', boxSizing: 'border-box', background: '#0a0a0f', border: '1px solid #222', color: '#fff', borderRadius: '6px' }} />
-            </div>
-          </div>
+      <div style={{ maxWidth: '1000px', margin: '0 auto' }}>
+        
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '40px', borderBottom: '1px solid #16161f', paddingBottom: '20px' }}>
+          <h2 style={{ margin: 0, color: '#fff', fontSize: '18px' }}>// CENTRAL_CONTROL_DASHBOARD</h2>
+          <button onClick={handleLogOutAction} style={{ padding: '8px 16px', background: '#ef4444', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold', fontSize: '12px', fontFamily: 'monospace' }}>DISCONNECT</button>
+        </div>
 
-          <div style={{ display: 'flex', gap: '15px' }}>
-            <div style={{ flex: 1 }}>
-              <label style={{ display: 'block', fontSize: '12px', color: '#64748b', marginBottom: '5px' }}>Avatar Photo Link URL</label>
-              <input type="url" value={avatarUrl} onChange={(e) => setAvatarUrl(e.target.value)} required style={{ padding: '12px', width: '100%', boxSizing: 'border-box', background: '#0a0a0f', border: '1px solid #222', color: '#fff', borderRadius: '6px' }} />
-            </div>
-            <div style={{ flex: 1 }}>
-              <label style={{ display: 'block', fontSize: '12px', color: '#64748b', marginBottom: '5px' }}>Link Interface Hover Sound Action Effect URL (.wav / .mp3)</label>
-              <input type="url" value={audioHoverUrl} onChange={(e) => setAudioHoverUrl(e.target.value)} style={{ padding: '12px', width: '100%', boxSizing: 'border-box', background: '#0a0a0f', border: '1px solid #222', color: '#fff', borderRadius: '6px' }} />
-            </div>
+        {/* PARSER WORKBENCH */}
+        <div style={{ background: '#0b0b0f', padding: '20px', borderRadius: '8px', border: '1px solid #a855f7', marginBottom: '30px' }}>
+          <h3 style={{ margin: '0 0 8px 0', color: '#fff', fontSize: '14px' }}>⚡ GITHUB LINK CONVERTER ENGINE</h3>
+          <p style={{ margin: '0 0 16px 0', fontSize: '12px', color: '#64748b' }}>Converts standard browser view paths into direct streamable raw data links.</p>
+          <div style={{ display: 'flex', gap: '12px' }}>
+            <input type="text" placeholder="https://github.com/.../blob/main/video.mp4" value={rawInputUrl} onChange={(e) => setRawInputUrl(e.target.value)} style={{ flex: 1, padding: '12px', background: '#060608', border: '1px solid #16161f', color: '#fff', borderRadius: '4px', fontFamily: 'monospace', fontSize: '12px' }} />
+            <button type="button" onClick={handleUrlConversionAction} style={{ padding: '12px 20px', background: '#a855f7', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold', fontFamily: 'monospace', fontSize: '12px' }}>PARSE_RAW</button>
           </div>
+        </div>
 
-          <div style={{ background: '#0a0a0f', padding: '15px', borderRadius: '8px', border: '1px solid #a855f7' }}>
-            <label style={{ display: 'block', fontSize: '12px', color: '#a855f7', marginBottom: '5px', fontWeight: 'bold' }}>Main Website Background Video Link URL (Populated automatically via converter widget)</label>
-            <input type="url" value={bgVideoUrl} onChange={(e) => setBgVideoUrl(e.target.value)} placeholder="e.g., https://raw.githubusercontent.com/username/repo/main/file.mp4" style={{ padding: '12px', width: '100%', boxSizing: 'border-box', background: '#13131a', border: '1px solid #222', color: '#fff', borderRadius: '6px' }} />
-          </div>
-
-          <div style={{ display: 'flex', gap: '15px' }}>
-            <div style={{ flex: 1 }}>
-              <label style={{ display: 'block', fontSize: '12px', color: '#64748b', marginBottom: '5px' }}>Main Intro Showreel Video URL (.mp4)</label>
-              <input type="url" value={videoUrl} onChange={(e) => setVideoUrl(e.target.value)} placeholder="Paste link here" style={{ padding: '12px', width: '100%', boxSizing: 'border-box', background: '#0a0a0f', border: '1px solid #222', color: '#fff', borderRadius: '6px' }} />
+        {/* SITE LAYOUT FORMS */}
+        <div style={{ background: '#0b0b0f', padding: '24px', borderRadius: '8px', border: '1px solid #16161f', marginBottom: '30px' }}>
+          <h3 style={{ margin: '0 0 20px 0', color: '#fff', fontSize: '14px' }}>// CORE_IDENTITY_MANIFEST</h3>
+          <form onSubmit={handleUpdateProfile} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
+              <div style={{ flex: 1, minWidth: '250px' }}>
+                <label style={{ display: 'block', fontSize: '11px', color: '#64748b', marginBottom: '6px' }}>HANDLE_NAME</label>
+                <input type="text" value={username} onChange={(e) => setUsername(e.target.value)} required style={{ padding: '12px', width: '100%', boxSizing: 'border-box', background: '#060608', border: '1px solid #16161f', color: '#fff', borderRadius: '4px', fontFamily: 'monospace' }} />
+              </div>
+              <div style={{ flex: 1, minWidth: '250px' }}>
+                <label style={{ display: 'block', fontSize: '11px', color: '#64748b', marginBottom: '6px' }}>TAG_SUBTITLE</label>
+                <input type="text" value={subtitle} onChange={(e) => setSubtitle(e.target.value)} required style={{ padding: '12px', width: '100%', boxSizing: 'border-box', background: '#060608', border: '1px solid #16161f', color: '#fff', borderRadius: '4px', fontFamily: 'monospace' }} />
+              </div>
             </div>
-            <div style={{ flex: 1 }}>
-              <label style={{ display: 'block', fontSize: '12px', color: '#64748b', marginBottom: '5px' }}>Looping Background Music Track URL (.mp3)</label>
-              <input type="url" value={audioBgUrl} onChange={(e) => setAudioBgUrl(e.target.value)} placeholder="Paste link here" style={{ padding: '12px', width: '100%', boxSizing: 'border-box', background: '#0a0a0f', border: '1px solid #222', color: '#fff', borderRadius: '6px' }} />
+
+            <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
+              <div style={{ flex: 1, minWidth: '250px' }}>
+                <label style={{ display: 'block', fontSize: '11px', color: '#64748b', marginBottom: '6px' }}>AVATAR_IMAGE_URL</label>
+                <input type="url" value={avatarUrl} onChange={(e) => setAvatarUrl(e.target.value)} required style={{ padding: '12px', width: '100%', boxSizing: 'border-box', background: '#060608', border: '1px solid #16161f', color: '#fff', borderRadius: '4px', fontFamily: 'monospace' }} />
+              </div>
+              <div style={{ flex: 1, minWidth: '250px' }}>
+                <label style={{ display: 'block', fontSize: '11px', color: '#64748b', marginBottom: '6px' }}>BACKGROUND_WALLPAPER_VIDEO_URL</label>
+                <input type="url" value={bgVideoUrl} onChange={(e) => setBgVideoUrl(e.target.value)} style={{ padding: '12px', width: '100%', boxSizing: 'border-box', background: '#060608', border: '1px solid #16161f', color: '#fff', borderRadius: '4px', fontFamily: 'monospace' }} />
+              </div>
+            </div>
+
+            <div>
+              <label style={{ display: 'block', fontSize: '11px', color: '#64748b', marginBottom: '6px' }}>BIOGRAPHY_LOG_DATA</label>
+              <textarea value={bio} onChange={(e) => setBio(e.target.value)} required rows="3" style={{ padding: '12px', width: '100%', boxSizing: 'border-box', background: '#060608', border: '1px solid #16161f', color: '#fff', borderRadius: '4px', resize: 'vertical', fontFamily: 'monospace' }} />
+            </div>
+
+            <button type="submit" style={{ padding: '14px', background: '#14141a', color: '#fff', border: '1px solid #16161f', cursor: 'pointer', borderRadius: '4px', fontWeight: 'bold', fontFamily: 'monospace', fontSize: '12px' }}>SYNC_CORE_PROPERTIES()</button>
+          </form>
+        </div>
+
+        {/* CONTENT MANAGER CONTAINER */}
+        <div style={{ background: '#0b0b0f', padding: '24px', borderRadius: '8px', border: '1px solid #16161f', marginBottom: '40px' }}>
+          <h3 style={{ margin: '0 0 20px 0', color: '#fff', fontSize: '14px' }}>// DEPLOY_PORTFOLIO_OBJECT</h3>
+          <form onSubmit={handleCreateElement} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
+              <div style={{ flex: 1, minWidth: '250px' }}>
+                <label style={{ display: 'block', fontSize: '11px', color: '#64748b', marginBottom: '6px' }}>DESTINATION_MATRIX_BLOCK</label>
+                <select value={targetBlock} onChange={(e) => setTargetBlock(e.target.value)} style={{ padding: '12px', width: '100%', boxSizing: 'border-box', background: '#060608', border: '1px solid #16161f', color: '#fff', borderRadius: '4px', fontFamily: 'monospace' }}>
+                  <option value="socials">Network Links Segment</option>
+                  <option value="assets">Utility Assets / Presets Segment</option>
+                  <option value="my_work">Cinematic Production Work (16:9 Video Showcase)</option>
+                </select>
+              </div>
+              <div style={{ flex: 1, minWidth: '250px' }}>
+                <label style={{ display: 'block', fontSize: '11px', color: '#64748b', marginBottom: '6px' }}>OBJECT_LABEL_TITLE</label>
+                <input type="text" placeholder="e.g., After Effects Shake Preset" value={title} onChange={(e) => setTitle(e.target.value)} required style={{ padding: '12px', width: '100%', boxSizing: 'border-box', background: '#060608', border: '1px solid #16161f', color: '#fff', borderRadius: '4px', fontFamily: 'monospace' }} />
+              </div>
+            </div>
+
+            <div>
+              <label style={{ display: 'block', fontSize: '11px', color: '#64748b', marginBottom: '6px' }}>OBJECT_RESOURCE_URL</label>
+              <input type="url" placeholder="https://..." value={url} onChange={(e) => setUrl(e.target.value)} required style={{ padding: '12px', width: '100%', boxSizing: 'border-box', background: '#060608', border: '1px solid #16161f', color: '#fff', borderRadius: '4px', fontFamily: 'monospace' }} />
+            </div>
+
+            <button type="submit" style={{ padding: '14px', background: '#10b981', color: '#fff', border: 'none', cursor: 'pointer', borderRadius: '4px', fontWeight: 'bold', fontFamily: 'monospace', fontSize: '12px' }}>PUBLISH_ELEMENT_ARRAY()</button>
+          </form>
+        </div>
+
+        {/* ACTIVE NODES SUMMARY */}
+        <h3 style={{ color: '#fff', fontSize: '14px', margin: '0 0 20px 0' }}>// ACTIVE_ROUTING_TABLES</h3>
+        
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '30px' }}>
+          <div>
+            <div style={{ fontSize: '11px', color: '#6366f1', marginBottom: '10px' }}>[BLOCK_01 // SOCIALS]</div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              {socials.map(item => (
+                <div key={item._id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#0b0b0f', padding: '12px', borderRadius: '4px', border: '1px solid #16161f' }}>
+                  <div style={{ fontSize: '12px' }}><span style={{ color: '#fff' }}>{item.title}</span> — <span style={{ color: '#4b5563' }}>{item.url}</span></div>
+                  <button onClick={() => handleDelete(item._id)} style={{ background: '#ef4444', color: '#fff', border: 'none', padding: '6px 12px', cursor: 'pointer', borderRadius: '4px', fontFamily: 'monospace', fontSize: '11px' }}>DROP</button>
+                </div>
+              ))}
             </div>
           </div>
 
           <div>
-            <label style={{ display: 'block', fontSize: '12px', color: '#64748b', marginBottom: '5px' }}>Bio Summary Text Field</label>
-            <textarea value={bio} onChange={(e) => setBio(e.target.value)} required rows="2" style={{ padding: '12px', width: '100%', boxSizing: 'border-box', background: '#0a0a0f', border: '1px solid #222', color: '#fff', borderRadius: '6px', resize: 'vertical' }} />
-          </div>
-
-          <button type="submit" style={{ padding: '14px', background: '#6366f1', color: '#fff', border: 'none', cursor: 'pointer', borderRadius: '8px', fontWeight: '600' }}>Save Core Framework Matrix</button>
-        </form>
-      </div>
-
-      {/* CONTENT MANAGEMENT WRAPPER */}
-      <h3 style={{ margin: '0 0 15px 0', color: '#10b981' }}>Publish Portfolio Elements</h3>
-      <form onSubmit={handleCreateElement} style={{ display: 'flex', flexDirection: 'column', gap: '15px', background: '#13131a', padding: '25px', borderRadius: '12px', border: '1px solid #1e1e24', marginBottom: '40px' }}>
-        <div style={{ display: 'flex', gap: '15px' }}>
-          <div style={{ flex: 1 }}>
-            <label style={{ display: 'block', fontSize: '12px', color: '#64748b', marginBottom: '5px' }}>Choose Target Column Destination</label>
-            <select value={targetBlock} onChange={(e) => setTargetBlock(e.target.value)} style={{ padding: '12px', width: '100%', boxSizing: 'border-box', background: '#0a0a0f', border: '1px solid #10b981', color: '#fff', borderRadius: '6px', fontWeight: 'bold' }}>
-              <option value="socials">Column 1: Socials Section Block</option>
-              <option value="assets">Column 2: Assets & Presets Section Block</option>
-              <option value="my_work">Column 3: My Work (Video Showcases) Block</option>
-            </select>
-          </div>
-          <div style={{ flex: 1 }}>
-            <label style={{ display: 'block', fontSize: '12px', color: '#64748b', marginBottom: '5px' }}>Display Label Title / Edit Description</label>
-            <input type="text" placeholder="e.g., Follow my Instagram, Editing Preset, Valorant AMV Edit" value={title} onChange={(e) => setTitle(e.target.value)} required style={{ padding: '12px', width: '100%', boxSizing: 'border-box', background: '#0a0a0f', border: '1px solid #222', color: '#fff', borderRadius: '6px' }} />
-          </div>
-        </div>
-
-        <div>
-          <label style={{ display: 'block', fontSize: '12px', color: '#64748b', marginBottom: '5px' }}>Asset Location Link URL (Populated automatically via converter widget above)</label>
-          <input type="url" placeholder="https://..." value={url} onChange={(e) => setUrl(e.target.value)} required style={{ padding: '12px', width: '100%', boxSizing: 'border-box', background: '#0a0a0f', border: '1px solid #222', color: '#fff', borderRadius: '6px' }} />
-        </div>
-
-        <button type="submit" style={{ padding: '14px', background: '#10b981', color: '#fff', border: 'none', cursor: 'pointer', borderRadius: '8px', fontWeight: '600' }}>Publish Element to Selected Column</button>
-      </form>
-
-      {/* LOG DELETION ARCHITECTURE */}
-      <h3 style={{ borderBottom: '1px solid #222', paddingBottom: '10px', marginBottom: '15px' }}>Active Structured Portfolio Layout Architecture</h3>
-      
-      <h4 style={{ color: '#6366f1', margin: '20px 0 10px 0' }}>Column 1: Social Links</h4>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-        {socials.length === 0 ? <p style={{ color: '#444', fontSize: '13px' }}>Empty.</p> : socials.map(item => (
-          <div key={item._id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#13131a', padding: '14px', borderRadius: '10px', border: '1px solid #1e1e24' }}>
-            <div><strong>{item.title}</strong><br/><span style={{ fontSize: '12px', color: '#64748b' }}>{item.url}</span></div>
-            <button onClick={() => handleDelete(item._id)} style={{ background: '#ef4444', color: '#fff', border: 'none', padding: '8px 14px', cursor: 'pointer', borderRadius: '6px' }}>Delete</button>
-          </div>
-        ))}
-      </div>
-
-      <h4 style={{ color: '#a855f7', margin: '30px 0 10px 0' }}>Column 2: Assets & Presets</h4>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-        {assets.length === 0 ? <p style={{ color: '#444', fontSize: '13px' }}>Empty.</p> : assets.map(item => (
-          <div key={item._id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#13131a', padding: '14px', borderRadius: '10px', border: '1px solid #1e1e24' }}>
-            <div><strong>{item.title}</strong><br/><span style={{ fontSize: '12px', color: '#64748b' }}>{item.url}</span></div>
-            <button onClick={() => handleDelete(item._id)} style={{ background: '#ef4444', color: '#fff', border: 'none', padding: '8px 14px', cursor: 'pointer', borderRadius: '6px' }}>Delete</button>
-          </div>
-        ))}
-      </div>
-
-      <h4 style={{ color: '#10b981', margin: '30px 0 10px 0' }}>Column 3: My Work (Videos)</h4>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-        {myWork.length === 0 ? <p style={{ color: '#444', fontSize: '13px' }}>Empty.</p> : myWork.map(item => (
-          <div key={item._id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#13131a', padding: '14px', borderRadius: '10px', border: '1px solid #1e1e24' }}>
-            <div>
-              <strong>{item.title}</strong><br/><span style={{ fontSize: '12px', color: '#64748b' }}>{item.url}</span>
-              <video src={item.url} controls muted style={{ width: '140px', height: '80px', display: 'block', marginTop: '10px', borderRadius: '6px', objectFit: 'cover', background: '#000' }} />
+            <div style={{ fontSize: '11px', color: '#a855f7', marginBottom: '10px' }}>[BLOCK_02 // UTILITY_ASSETS]</div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              {assets.map(item => (
+                <div key={item._id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#0b0b0f', padding: '12px', borderRadius: '4px', border: '1px solid #16161f' }}>
+                  <div style={{ fontSize: '12px' }}><span style={{ color: '#fff' }}>{item.title}</span> — <span style={{ color: '#4b5563' }}>{item.url}</span></div>
+                  <button onClick={() => handleDelete(item._id)} style={{ background: '#ef4444', color: '#fff', border: 'none', padding: '6px 12px', cursor: 'pointer', borderRadius: '4px', fontFamily: 'monospace', fontSize: '11px' }}>DROP</button>
+                </div>
+              ))}
             </div>
-            <button onClick={() => handleDelete(item._id)} style={{ background: '#ef4444', color: '#fff', border: 'none', padding: '8px 14px', cursor: 'pointer', borderRadius: '6px' }}>Delete</button>
           </div>
-        ))}
-      </div>
 
+          <div>
+            <div style={{ fontSize: '11px', color: '#10b981', marginBottom: '10px' }}>[BLOCK_03 // VISUAL_WORKS]</div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              {myWork.map(item => (
+                <div key={item._id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#0b0b0f', padding: '12px', borderRadius: '4px', border: '1px solid #16161f' }}>
+                  <div>
+                    <div style={{ fontSize: '12px', color: '#fff' }}>{item.title}</div>
+                    <video src={item.url} muted style={{ width: '120px', aspectRatio: '16/9', display: 'block', marginTop: '8px', borderRadius: '4px', objectFit: 'cover', background: '#000', border: '1px solid #16161f' }} />
+                  </div>
+                  <button onClick={() => handleDelete(item._id)} style={{ background: '#ef4444', color: '#fff', border: 'none', padding: '6px 12px', cursor: 'pointer', borderRadius: '4px', fontFamily: 'monospace', fontSize: '11px' }}>DROP</button>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+      </div>
     </div>
   );
 }
