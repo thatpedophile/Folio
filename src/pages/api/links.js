@@ -14,9 +14,10 @@ export default async function handler(req, res) {
     }
 
     try {
-      const socials = await db.collection('links').find({ blockType: 'socials' }).sort({ createdAt: -1 }).toArray();
-      const assets = await db.collection('links').find({ blockType: 'assets' }).sort({ createdAt: -1 }).toArray();
-      const myWork = await db.collection('links').find({ blockType: 'my_work' }).sort({ createdAt: -1 }).toArray();
+      {/* FIXED: Elements now pull strictly by their custom order index numbers */}
+      const socials = await db.collection('links').find({ blockType: 'socials' }).sort({ order: 1, createdAt: -1 }).toArray();
+      const assets = await db.collection('links').find({ blockType: 'assets' }).sort({ order: 1, createdAt: -1 }).toArray();
+      const myWork = await db.collection('links').find({ blockType: 'my_work' }).sort({ order: 1, createdAt: -1 }).toArray();
       const config = await db.collection('config').findOne({ key: 'profile_settings' });
       
       const profile = {
@@ -29,7 +30,6 @@ export default async function handler(req, res) {
         audioBgUrl: config?.audioBgUrl || '',
         audioHoverUrl: config?.audioHoverUrl || '',
         announcement: config?.announcement || '',
-        // DYNAMIC BLOCK NAME RECORDS
         block1Name: config?.block1Name || 'Socials',
         block2Name: config?.block2Name || 'Assets & Presets',
         block3Name: config?.block3Name || 'My Work',
@@ -51,7 +51,7 @@ export default async function handler(req, res) {
   if (req.method === 'POST') {
     const { 
       title, url, blockType, type, username, bio, avatarUrl, videoUrl, subtitle, bgVideoUrl, audioBgUrl, audioHoverUrl, announcement,
-      block1Name, block2Name, block3Name, block4Name, block5Name, block6Name
+      block1Name, block2Name, block3Name, block4Name, block5Name, block6Name, orderedIds
     } = req.body;
 
     if (type === 'update_profile') {
@@ -65,14 +65,34 @@ export default async function handler(req, res) {
           } },
           { upsert: true }
         );
-        return res.status(200).json({ message: 'Identity and custom block names synchronized successfully.' });
+        return res.status(200).json({ message: 'Saved successfully.' });
+      } catch (err) {
+        return res.status(500).json({ error: err.message });
+      }
+    }
+
+    {/* NEW: Receives rearranged arrays and mass updates index properties inside MongoDB */}
+    if (type === 'update_order') {
+      try {
+        const bulkOps = orderedIds.map((id, index) => ({
+          updateOne: {
+            filter: { _id: new ObjectId(id) },
+            update: { $set: { order: index } }
+          }
+        }));
+        if (bulkOps.length > 0) {
+          await db.collection('links').bulkWrite(bulkOps);
+        }
+        return res.status(200).json({ message: 'Order index synchronized successfully.' });
       } catch (err) {
         return res.status(500).json({ error: err.message });
       }
     }
 
     try {
-      const entry = { title, url: url || '', blockType: blockType || 'socials', createdAt: new Date() };
+      {/* Increments fallback order index for new additions */}
+      const existingCount = await db.collection('links').countDocuments({ blockType });
+      const entry = { title, url: url || '', blockType: blockType || 'socials', order: existingCount, createdAt: new Date() };
       await db.collection('links').insertOne(entry);
       return res.status(201).json(entry);
     } catch (err) {
