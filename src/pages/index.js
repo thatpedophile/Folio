@@ -43,24 +43,8 @@ export default function Home() {
 
   const allLinksCombined = [...(socials || []), ...(assets || []), ...(myWork || [])];
 
-  // ================= GRID ROW 1 FILTERS (THE UPPER THREE BLOCKS) =================
-  const block1Socials = socials?.filter(item => !item.title.toLowerCase().match(/\[activation\]|\[othersite\]|\[lowertutorial\]/)) || [];
-  
-  const windowsAssets = assets?.filter(item => item.title.toLowerCase().includes('[windows]') && !item.title.toLowerCase().includes('[password for') && !item.title.toLowerCase().includes('[note for')) || [];
-  const macAssets = assets?.filter(item => item.title.toLowerCase().includes('[mac]') && !item.title.toLowerCase().includes('[password for') && !item.title.toLowerCase().includes('[note for')) || [];
-
-  const block3Work = myWork?.filter(item => !item.title.toLowerCase().match(/\[activation\]|\[othersite\]|\[lowertutorial\]/)) || [];
-
-  // ================= GRID ROW 2 FILTERS (THE LOWER THREE BLOCKS) =================
-  const totalActivationNodes = allLinksCombined.filter(item => item.title.toLowerCase().includes('[activation]') && !item.title.toLowerCase().includes('[password for') && !item.title.toLowerCase().includes('[note for'));
-  const windowsActivation = totalActivationNodes.filter(item => item.title.toLowerCase().includes('windows'));
-  const macActivation = totalActivationNodes.filter(item => item.title.toLowerCase().includes('mac'));
-
-  const block5OtherSites = allLinksCombined.filter(item => item.title.toLowerCase().includes('[othersite]') && !item.title.toLowerCase().includes('[password for') && !item.title.toLowerCase().includes('[note for'));
-  const block6Tutorials = allLinksCombined.filter(item => item.title.toLowerCase().includes('[lowertutorial]') && !item.title.toLowerCase().includes('[password for') && !item.title.toLowerCase().includes('[note for'));
-
   const cleanTitle = (title) => {
-    return title.replace(/\[windows\]/i, '').replace(/\[mac\]/i, '').replace(/\[note\]/i, '').replace(/\[password\]/i, '').replace(/\[activation\]/i, '').replace(/\[othersite\]/i, '').replace(/\[lowertutorial\]/i, '').replace(/\[password for [^\]]+\]/i, '').trim();
+    return title.replace(/\[windows\]/i, '').replace(/\[mac\]/i, '').replace(/\[activation\]/i, '').replace(/\[othersite\]/i, '').replace(/\[lowertutorial\]/i, '').trim();
   };
 
   const isUrlOnly = (string) => {
@@ -79,20 +63,37 @@ export default function Home() {
     });
   };
 
-  const RenderAttachedPassword = ({ targetName }) => {
-    const matchingPassNode = allLinksCombined.find(item => 
-      item.title.toLowerCase().includes(`[password for ${targetName.toLowerCase()}]`) ||
-      item.title.toLowerCase().includes(`[note for ${targetName.toLowerCase()}]`)
-    );
-
-    if (!matchingPassNode) return null;
+  {/* FIXED RELATIONAL RENDER: Locates sub-nodes directly tied to parent elements via direct ID keys */}
+  const RenderAttachedSubNodes = ({ parentId }) => {
+    const matchingNodes = allLinksCombined.filter(item => item.parentId === parentId);
+    if (matchingNodes.length === 0) return null;
 
     return (
-      <div className="individual-pass-box">
-        🔑 Key: {matchingPassNode.url}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', marginTop: '6px', marginBottom: '10px' }}>
+        {matchingNodes.map(node => (
+          <div key={node._id} className="individual-pass-box">
+            {node.title.toLowerCase().includes('pass') ? '🔑' : '📌'} {cleanTitle(node.title)}: {node.url}
+          </div>
+        ))}
       </div>
     );
   };
+
+  {/* ================= DATA ROW 1 MATRIX GROUPS ================= */}
+  const block1Socials = socials?.filter(item => !item.title.toLowerCase().match(/\[activation\]|\[othersite\]|\[lowertutorial\]/) && !item.parentId) || [];
+  
+  const windowsAssets = assets?.filter(item => item.title.toLowerCase().includes('[windows]') && !item.parentId) || [];
+  const macAssets = assets?.filter(item => item.title.toLowerCase().includes('[mac]') && !item.parentId) || [];
+
+  const block3Work = myWork?.filter(item => !item.title.toLowerCase().match(/\[activation\]|\[othersite\]|\[lowertutorial\]/) && !item.parentId) || [];
+
+  {/* ================= DATA ROW 2 MATRIX GROUPS ================= */}
+  const totalActivationNodes = allLinksCombined.filter(item => item.title.toLowerCase().includes('[activation]') && !item.parentId);
+  const windowsActivation = totalActivationNodes.filter(item => item.title.toLowerCase().includes('windows'));
+  const macActivation = totalActivationNodes.filter(item => item.title.toLowerCase().includes('mac'));
+
+  const block5OtherSites = allLinksCombined.filter(item => item.title.toLowerCase().includes('[othersite]') && !item.parentId);
+  const block6Tutorials = allLinksCombined.filter(item => item.title.toLowerCase().includes('[lowertutorial]') && !item.parentId);
 
   return (
     <div style={{ position: 'relative', minHeight: '100vh', color: '#fff', fontFamily: 'sans-serif', padding: '90px 20px 60px 20px', boxSizing: 'border-box', overflowX: 'hidden' }}>
@@ -278,10 +279,11 @@ export default function Home() {
         </div>
 
         {/* ========================================================
-            ROW MATRIX GRID 1: THE PRIMARY UPPER THREE COLS (1, 2, 3)
+            ROW MATRIX GRID 1: UPPER LAYER THREE COLS (1, 2, 3)
            ======================================================== */}
         <div className="matrix-row-wrapper">
           
+          {/* BLOCK 1 */}
           <div className="animate-fade-in column-delay-1 grid-block-panel" style={{ borderLeft: '3px solid #6366f1' }}>
             <h3 style={{ margin: '0 0 20px 0', fontSize: '14px', color: '#6366f1', letterSpacing: '1px', textTransform: 'uppercase', fontWeight: '700' }}>{profile.block1Name}</h3>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
@@ -290,12 +292,13 @@ export default function Home() {
                   <a href={item.url} target="_blank" rel="noreferrer" className="particle-btn" style={{ padding: '14px 18px', borderRadius: '10px', color: '#fff', textDecoration: 'none', fontWeight: '600', fontSize: '14px', display: 'block' }}>
                     {cleanTitle(item.title)}
                   </a>
-                  <RenderAttachedPassword targetName={cleanTitle(item.title)} />
+                  <RenderAttachedSubNodes parentId={item._id} />
                 </div>
               ))}
             </div>
           </div>
 
+          {/* BLOCK 2 */}
           <div className="animate-fade-in column-delay-2 grid-block-panel" style={{ borderLeft: '3px solid #a855f7' }}>
             <h3 style={{ margin: '0 0 20px 0', fontSize: '14px', color: '#a855f7', letterSpacing: '1px', textTransform: 'uppercase', fontWeight: '700' }}>{profile.block2Name}</h3>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
@@ -308,7 +311,7 @@ export default function Home() {
                       <a href={item.url} target="_blank" rel="noreferrer" className="particle-btn" style={{ padding: '12px 16px', borderRadius: '8px', color: '#fff', textDecoration: 'none', fontWeight: '600', fontSize: '13px', display: 'block' }}>
                         {cleanTitle(item.title)}
                       </a>
-                      <RenderAttachedPassword targetName={cleanTitle(item.title)} />
+                      <RenderAttachedSubNodes parentId={item._id} />
                     </div>
                   ))}
                 </div>
@@ -322,7 +325,7 @@ export default function Home() {
                       <a href={item.url} target="_blank" rel="noreferrer" className="particle-btn" style={{ padding: '12px 16px', borderRadius: '8px', color: '#fff', textDecoration: 'none', fontWeight: '600', fontSize: '13px', display: 'block' }}>
                         {cleanTitle(item.title)}
                       </a>
-                      <RenderAttachedPassword targetName={cleanTitle(item.title)} />
+                      <RenderAttachedSubNodes parentId={item._id} />
                     </div>
                   ))}
                 </div>
@@ -331,6 +334,7 @@ export default function Home() {
             </div>
           </div>
 
+          {/* BLOCK 3 */}
           <div className="animate-fade-in column-delay-3 grid-block-panel" style={{ borderLeft: '3px solid #10b981' }}>
             <h3 style={{ margin: '0 0 20px 0', fontSize: '14px', color: '#10b981', letterSpacing: '1px', textTransform: 'uppercase', fontWeight: '700' }}>{profile.block3Name}</h3>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
@@ -342,7 +346,7 @@ export default function Home() {
                     </div>
                     <div style={{ padding: '10px', background: 'rgba(20,20,25,0.4)', fontSize: '13px' }}>{cleanTitle(item.title)}</div>
                   </div>
-                  <RenderAttachedPassword targetName={cleanTitle(item.title)} />
+                  <RenderAttachedSubNodes parentId={item._id} />
                 </div>
               ))}
             </div>
@@ -357,6 +361,7 @@ export default function Home() {
            ======================================================== */}
         <div className="matrix-row-wrapper">
           
+          {/* BLOCK 4 */}
           <div className="animate-fade-in column-delay-1 grid-block-panel" style={{ borderLeft: '3px solid #7c3aed' }}>
             <button className="accordion-interactive-trigger" onClick={() => toggleSectionDropdown('block4')}>
               <span>⚡ {profile.block4Name}</span>
@@ -373,7 +378,7 @@ export default function Home() {
                       <div key={item._id} className="markdown-doc-card">
                         <div style={{ color: '#38bdf8', fontWeight: 'bold', marginBottom: '6px', fontSize: '12px' }}>{cleanTitle(item.title)}</div>
                         <div style={{ color: '#cbd5e1' }}>{renderTextWithLinks(item.url)}</div>
-                        <RenderAttachedPassword targetName={cleanTitle(item.title)} />
+                        <RenderAttachedSubNodes parentId={item._id} />
                       </div>
                     ))}
                     {windowsActivation.length === 0 && <p style={{ color: '#444855', fontSize: '12px', margin: 0 }}>Empty.</p>}
@@ -387,7 +392,7 @@ export default function Home() {
                       <div key={item._id} className="markdown-doc-card">
                         <div style={{ color: '#fb7185', fontWeight: 'bold', marginBottom: '6px', fontSize: '12px' }}>{cleanTitle(item.title)}</div>
                         <div style={{ color: '#cbd5e1' }}>{renderTextWithLinks(item.url)}</div>
-                        <RenderAttachedPassword targetName={cleanTitle(item.title)} />
+                        <RenderAttachedSubNodes parentId={item._id} />
                       </div>
                     ))}
                     {macActivation.length === 0 && <p style={{ color: '#444855', fontSize: '12px', margin: 0 }}>Empty.</p>}
@@ -398,6 +403,7 @@ export default function Home() {
             </div>
           </div>
 
+          {/* BLOCK 5 */}
           <div className="animate-fade-in column-delay-2 grid-block-panel" style={{ borderLeft: '3px solid #0ea5e9' }}>
             <button className="accordion-interactive-trigger" onClick={() => toggleSectionDropdown('block5')}>
               <span>🔗 {profile.block5Name}</span>
@@ -418,27 +424,15 @@ export default function Home() {
                         <div>{renderTextWithLinks(item.url)}</div>
                       </>
                     )}
-                    <RenderAttachedPassword targetName={cleanTitle(item.title)} />
+                    <RenderAttachedSubNodes parentId={item._id} />
                   </div>
                 ))}
                 {block5OtherSites.length === 0 && <p style={{ color: '#64748b', fontSize: '12px', margin: 0 }}>Empty block node.</p>}
               </div>
-
-              {block2Notes.length > 0 && (
-                <div className="secure-data-info-box">
-                  <div style={{ fontSize: '11px', color: '#a855f7', fontWeight: 'bold', letterSpacing: '1.5px', textTransform: 'uppercase', marginBottom: '8px', fontFamily: 'monospace' }}>🔑 Passwords Index</div>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                    {block2Notes.map(item => (
-                      <div key={item._id} style={{ fontSize: '12px', color: '#cbd5e1', fontFamily: 'monospace', background: 'rgba(0,0,0,0.2)', padding: '8px 12px', borderRadius: '6px', border: '1px solid rgba(168,85,247,0.1)' }}>
-                        <span style={{ color: '#a855f7', fontWeight: 'bold' }}>{cleanTitle(item.title)}</span>: {item.url}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
             </div>
           </div>
 
+          {/* BLOCK 6 */}
           <div className="animate-fade-in column-delay-3 grid-block-panel" style={{ borderLeft: '3px solid #059669' }}>
             <button className="accordion-interactive-trigger" onClick={() => toggleSectionDropdown('block6')}>
               <span>🧠 {profile.block6Name}</span>
@@ -462,7 +456,7 @@ export default function Home() {
                         <div>{renderTextWithLinks(item.url)}</div>
                       </div>
                     )}
-                    <RenderAttachedPassword targetName={cleanTitle(item.title)} />
+                    <RenderAttachedSubNodes parentId={item._id} />
                   </div>
                 ))}
                 {block6Tutorials.length === 0 && <p style={{ color: '#64748b', fontSize: '12px', margin: 0 }}>Empty block node.</p>}
