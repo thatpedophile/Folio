@@ -2,20 +2,26 @@ import { useEffect, useState } from 'react';
 
 export default function Home() {
   const [links, setLinks] = useState([]);
-  const [avatar, setAvatar] = useState('');
+  const [profile, setProfile] = useState({
+    username: 'sh1vx69',
+    bio: 'Loading configuration settings...',
+    avatarUrl: '',
+    videoUrl: ''
+  });
 
-  const loadData = () => {
+  useEffect(() => {
+    // Edge-to-edge browser reset to clear white borders
+    document.body.style.margin = "0";
+    document.body.style.padding = "0";
+    document.body.style.backgroundColor = "#050508";
+
     fetch('/api/links')
       .then((res) => res.json())
       .then((data) => {
         setLinks(data.links || []);
-        setAvatar(data.avatarUrl);
+        if (data.profile) setProfile(data.profile);
       })
-      .catch((err) => console.error("Error loading frontend structural data:", err));
-  };
-
-  useEffect(() => {
-    loadData();
+      .catch((err) => console.error("Error reading interface package mapping:", err));
   }, []);
 
   return (
@@ -28,11 +34,12 @@ export default function Home() {
       flexDirection: 'column',
       alignItems: 'center',
       padding: '60px 20px',
+      boxSizing: 'border-box',
       fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
     }}>
       
-      {/* Upper Bio Unit */}
-      <div style={{ textAlign: 'center', marginBottom: '40px' }}>
+      {/* Upper Branding Block Container */}
+      <div style={{ textAlign: 'center', marginBottom: '35px' }}>
         <div style={{ position: 'relative', display: 'inline-block' }}>
           <div style={{
             position: 'absolute',
@@ -45,8 +52,8 @@ export default function Home() {
           }}></div>
           
           <img 
-            src={avatar || 'https://api.dicebear.com/7.x/shapes/svg?seed=sh1vx69'} 
-            alt="sh1vx69"
+            src={profile.avatarUrl || 'https://api.dicebear.com/7.x/shapes/svg?seed=sh1vx69'} 
+            alt="avatar"
             style={{
               width: '100px',
               height: '100px',
@@ -64,21 +71,46 @@ export default function Home() {
           background: 'linear-gradient(to right, #fff, #cbd5e1)',
           WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent'
         }}>
-          sh1vx69
+          @{profile.username}
         </h1>
-        <p style={{ color: '#94a3b8', fontSize: '14px', margin: '0' }}>VFX Editor & Developer</p>
+        <p style={{ color: '#64748b', fontSize: '13px', margin: '0', textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: '600' }}>
+          VFX Portfolio Engine
+        </p>
       </div>
 
-      {/* Main UI Body Content Layout */}
+      {/* Main Structural Column */}
       <div style={{ width: '100%', maxWidth: '440px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+        
+        {/* Dynamic Bio Description Card */}
         <div style={{
           background: 'rgba(255, 255, 255, 0.03)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)',
           border: '1px solid rgba(255, 255, 255, 0.08)', borderRadius: '16px', padding: '20px',
-          textAlign: 'center', fontSize: '14px', color: '#94a3b8', boxShadow: '0 4px 30px rgba(0, 0, 0, 0.4)'
+          textAlign: 'center', fontSize: '14px', color: '#94a3b8', lineHeight: '1.6', boxShadow: '0 4px 30px rgba(0, 0, 0, 0.4)'
         }}>
-          Welcome to my biolink platform. Check out my latest presets, project mirrors, and socials below.
+          {profile.bio}
         </div>
 
+        {/* Dynamic Video Element Panel Showcase */}
+        {profile.videoUrl && (
+          <div style={{
+            width: '100%', background: 'rgba(255, 255, 255, 0.02)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)',
+            border: '1px solid rgba(255, 255, 255, 0.06)', borderRadius: '16px', overflow: 'hidden',
+            boxShadow: '0 8px 32px rgba(0, 0, 0, 0.5)', boxSizing: 'border-box'
+          }}>
+            <video 
+              key={profile.videoUrl} // Triggers re-render if video asset URL adjustments change
+              src={profile.videoUrl}
+              controls
+              autoPlay
+              muted
+              loop
+              playsInline
+              style={{ width: '100%', display: 'block', aspectRatio: '16/9', objectFit: 'cover' }}
+            />
+          </div>
+        )}
+
+        {/* Dynamic Anchor Mapping Points Links Array Loop */}
         {links.map((link) => (
           <a
             key={link._id}
