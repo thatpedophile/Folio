@@ -34,19 +34,32 @@ export default async function handler(req, res) {
   if (req.method === 'POST') {
     const { title, url, type, username, bio, avatarUrl, videoUrl } = req.body;
 
+    // Separate profile saving logic completely
     if (type === 'update_profile') {
-      await db.collection('config').updateOne(
-        { key: 'profile_settings' },
-        { $set: { username, bio, avatarUrl, videoUrl, updatedAt: new Date() } },
-        { upsert: true }
-      );
-      return res.status(200).json({ message: 'Profile settings updated!' });
+      try {
+        await db.collection('config').updateOne(
+          { key: 'profile_settings' },
+          { $set: { username, bio, avatarUrl, videoUrl, updatedAt: new Date() } },
+          { upsert: true }
+        );
+        return res.status(200).json({ message: 'Profile settings updated!' });
+      } catch (err) {
+        return res.status(500).json({ error: err.message });
+      }
     }
 
-    if (!title || !url) return res.status(400).json({ message: 'Missing fields' });
-    const newLink = { title, url, createdAt: new Date() };
-    await db.collection('links').insertOne(newLink);
-    return res.status(201).json(newLink);
+    // Link adding logic (only checks title/url if type is NOT update_profile)
+    if (!title || !url) {
+      return res.status(400).json({ message: 'Missing fields for link creation' });
+    }
+
+    try {
+      const newLink = { title, url, createdAt: new Date() };
+      await db.collection('links').insertOne(newLink);
+      return res.status(201).json(newLink);
+    } catch (err) {
+      return res.status(500).json({ error: err.message });
+    }
   }
 
   // 3. DELETE: Drop active routing links
