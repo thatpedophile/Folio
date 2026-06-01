@@ -8,29 +8,27 @@ export default async function handler(req, res) {
   const password = req.headers['admin-password'];
   const isAdminRequest = req.headers['admin-password'] !== undefined;
 
-  // 1. GET: Fetch elements organized by structural blocks
+  // 1. GET: Fetch data buckets
   if (req.method === 'GET') {
     if (isAdminRequest && password !== process.env.ADMIN_PASSWORD) {
       return res.status(401).json({ message: 'Unauthorized' });
     }
 
     try {
-      // Pull and sort items into separate array buckets
       const socials = await db.collection('links').find({ blockType: 'socials' }).sort({ createdAt: -1 }).toArray();
       const assets = await db.collection('links').find({ blockType: 'assets' }).sort({ createdAt: -1 }).toArray();
       const myWork = await db.collection('links').find({ blockType: 'my_work' }).sort({ createdAt: -1 }).toArray();
-      
       const config = await db.collection('config').findOne({ key: 'profile_settings' });
       
       const profile = {
         username: config?.username || 'sh1vx',
-        bio: config?.bio || 'Welcome to my portfolio. Check out my latest edits and assets below.',
+        bio: config?.bio || 'Welcome to my portfolio.',
         avatarUrl: config?.avatarUrl || '',
-        videoUrl: config?.videoUrl || '', // Main showreel / introduction edit
+        videoUrl: config?.videoUrl || '',
         subtitle: config?.subtitle || 'VFX PORTFOLIO ENGINE',
-        bgVideoUrl: config?.bgVideoUrl || '', // Custom dynamic video background
+        bgVideoUrl: config?.bgVideoUrl || '',
         audioBgUrl: config?.audioBgUrl || '',
-        audioHoverUrl: config?.audioHoverUrl || 'https://assets.mixkit.co/active_storage/sfx/2568/2568-84.wav'
+        audioHoverUrl: config?.audioHoverUrl || ''
       };
 
       return res.status(200).json({ socials, assets, myWork, profile });
@@ -39,14 +37,14 @@ export default async function handler(req, res) {
     }
   }
 
-  // Security Access Wall for Data Modifications
+  // Security Access Barrier
   if (password !== process.env.ADMIN_PASSWORD) {
     return res.status(401).json({ message: 'Unauthorized' });
   }
 
-  // 2. POST: Process Framework Configurations and Card Elements
+  // 2. POST: Handle Creation
   if (req.method === 'POST') {
-    const { title, url, blockType, type, username, bio, avatarUrl, videoUrl, subtitle, bgVideoUrl, audioBgUrl, audioHoverUrl } = req.body;
+    const { title, url, blockType, note, type, username, bio, avatarUrl, videoUrl, subtitle, bgVideoUrl, audioBgUrl, audioHoverUrl } = req.body;
 
     if (type === 'update_profile') {
       try {
@@ -55,7 +53,7 @@ export default async function handler(req, res) {
           { $set: { username, bio, avatarUrl, videoUrl, subtitle, bgVideoUrl, audioBgUrl, audioHoverUrl, updatedAt: new Date() } },
           { upsert: true }
         );
-        return res.status(200).json({ message: 'Layout engine saved perfectly!' });
+        return res.status(200).json({ message: 'Saved successfully.' });
       } catch (err) {
         return res.status(500).json({ error: err.message });
       }
@@ -65,7 +63,8 @@ export default async function handler(req, res) {
       const entry = { 
         title, 
         url, 
-        blockType: blockType || 'socials', // Default block assignment
+        blockType: blockType || 'socials', 
+        note: note || '', // SAVES THE FILE PASSWORDS / INFO METADATA CLEANLY
         createdAt: new Date() 
       };
       await db.collection('links').insertOne(entry);
@@ -75,13 +74,10 @@ export default async function handler(req, res) {
     }
   }
 
-  // 3. DELETE: Wipe asset objects out of database records
+  // 3. DELETE: Drop data
   if (req.method === 'DELETE') {
     const { id } = req.query;
     await db.collection('links').deleteOne({ _id: new ObjectId(id) });
     return res.status(200).json({ message: 'Deleted successfully' });
   }
-
-  res.setHeader('Allow', ['GET', 'POST', 'DELETE']);
-  res.status(405).end(`Method ${req.method} Not Allowed`);
 }
