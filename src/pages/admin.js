@@ -18,7 +18,6 @@ export default function Admin() {
   const [audioHoverUrl, setAudioHoverUrl] = useState('');
   const [announcement, setAnnouncement] = useState('');
 
-  // BLOCK HEADER NAMES STATE HOOKS
   const [block1Name, setBlock1Name] = useState('');
   const [block2Name, setBlock2Name] = useState('');
   const [block3Name, setBlock3Name] = useState('');
@@ -29,14 +28,13 @@ export default function Admin() {
   const [title, setTitle] = useState('');
   const [url, setUrl] = useState('');
   const [targetBlock, setTargetBlock] = useState('socials');
+  const [parentId, setParentId] = useState(''); {/* Relational mapping hook state */}
 
   const [rawInputUrl, setRawInputUrl] = useState('');
 
   const fetchDashboardData = async (token = password) => {
     try {
-      const res = await fetch('/api/links', {
-        headers: { 'admin-password': token }
-      });
+      const res = await fetch('/api/links', { headers: { 'admin-password': token } });
       if (res.status === 200) {
         const data = await res.json();
         setSocials(data.socials || []);
@@ -63,34 +61,23 @@ export default function Admin() {
         setIsAuthorized(true);
       } else {
         setIsAuthorized(false);
-        if (typeof window !== 'undefined') {
-          sessionStorage.removeItem('admin_session_pass');
-        }
+        if (typeof window !== 'undefined') sessionStorage.removeItem('admin_session_pass');
       }
-    } catch (err) {
-      console.error(err);
-    }
+    } catch (err) { console.error(err); }
   };
 
   useEffect(() => {
-    document.body.style.margin = "0";
-    document.body.style.padding = "0";
+    document.body.style.margin = "0"; document.body.style.padding = "0";
     document.body.style.backgroundColor = "#0a0a0f";
-    
     if (typeof window !== 'undefined') {
       const savedPass = sessionStorage.getItem('admin_session_pass');
-      if (savedPass) {
-        setPassword(savedPass);
-        fetchDashboardData(savedPass);
-      }
+      if (savedPass) { setPassword(savedPass); fetchDashboardData(savedPass); }
     }
   }, []);
 
   const handleLoginSubmit = (e) => {
     e.preventDefault();
-    if (typeof window !== 'undefined') {
-      sessionStorage.setItem('admin_session_pass', password);
-    }
+    if (typeof window !== 'undefined') sessionStorage.setItem('admin_session_pass', password);
     fetchDashboardData(password);
   };
 
@@ -98,17 +85,10 @@ export default function Admin() {
     if (!rawInputUrl) return alert('Please enter a GitHub URL link first.');
     let processedUrl = rawInputUrl.trim();
     if (processedUrl.includes('github.com') && processedUrl.includes('/blob/')) {
-      processedUrl = processedUrl
-        .replace('github.com', 'raw.githubusercontent.com')
-        .replace('/blob/', '/');
-      
-      setUrl(processedUrl);
-      setBgVideoUrl(processedUrl);
-      setRawInputUrl('');
-      alert(`Link successfully parsed to raw streaming CDN address format:\n\n${processedUrl}`);
-    } else {
-      alert('Invalid URL structure. Ensure it contains /blob/ from the repository window branch.');
-    }
+      processedUrl = processedUrl.replace('github.com', 'raw.githubusercontent.com').replace('/blob/', '/');
+      setUrl(processedUrl); setBgVideoUrl(processedUrl); setRawInputUrl('');
+      alert(`Parsed address formatting:\n\n${processedUrl}`);
+    } else { alert('Invalid layout hierarchy.'); }
   };
 
   const injectOsPrefix = (systemType) => {
@@ -124,7 +104,7 @@ export default function Admin() {
 
   const handleUpdateProfile = async (e) => {
     e.preventDefault();
-    const res = await fetch('/api/links', {
+    await fetch('/api/links', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'admin-password': password },
       body: JSON.stringify({ 
@@ -132,24 +112,21 @@ export default function Admin() {
         block1Name, block2Name, block3Name, block4Name, block5Name, block6Name
       }),
     });
-    if (res.ok) alert('Identity variables saved safely.');
+    alert('Matrix variables saved cleanly.');
   };
 
   const handleCreateElement = async (e) => {
     e.preventDefault();
-    const res = await fetch('/api/links', {
+    await fetch('/api/links', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'admin-password': password },
-      body: JSON.stringify({ title, url: url || '', blockType: targetBlock }),
+      body: JSON.stringify({ title, url: url || '', blockType: targetBlock, parentId: parentId || null }),
     });
-    if (res.ok) { setTitle(''); setUrl(''); fetchDashboardData(password); }
+    setTitle(''); setUrl(''); setParentId(''); fetchDashboardData(password);
   };
 
   const handleDelete = async (id) => {
-    const res = await fetch(`/api/links?id=${id}`, {
-      method: 'DELETE',
-      headers: { 'admin-password': password },
-    });
+    const res = await fetch(`/api/links?id=${id}`, { method: 'DELETE', headers: { 'admin-password': password } });
     if (res.ok) fetchDashboardData(password);
   };
 
@@ -157,46 +134,47 @@ export default function Admin() {
     return (
       <form onSubmit={handleLoginSubmit} style={{ background: '#0a0a0f', color: '#fff', height: '100vh', display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column', fontFamily: 'sans-serif' }}>
         <h3>Master Console Authorization</h3>
-        <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required style={{ padding: '12px', width: '240px', background: '#13131a', border: '1px solid #222', borderRadius: '8px', color: '#fff', marginBottom: '15px', textAlign: 'center' }} placeholder="••••••••" />
-        <button type="submit" style={{ padding: '12px 24px', borderRadius: '8px', cursor: 'pointer', background: '#6366f1', color: '#fff', border: 'none', fontWeight: '600' }}>Access Panel</button>
+        <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required style={{ padding: '12px', width: '240px', background: '#13131a', border: '1px solid #222', borderRadius: '8px', color: '#fff', marginBottom: '15px', textAlign: 'center' }} />
+        <button type="submit" style={{ padding: '12px 24px', background: '#6366f1', color: '#fff', border: 'none', borderRadius: '8px', fontWeight: '600', cursor: 'pointer' }}>Access Panel</button>
       </form>
     );
   }
 
-  const isLowerGridRowBlock = title.toLowerCase().match(/\[activation\]|\[othersite\]|\[lowertutorial\]/);
-  const isTextNode = title.toLowerCase().includes('[password]') || title.toLowerCase().includes('[note]') || isLowerGridRowBlock;
+  const allParentOptionsCombined = [...socials, ...assets, ...myWork].filter(item => !item.parentId);
+  const isLowerRowBlock = title.toLowerCase().match(/\[activation\]|\[othersite\]|\[lowertutorial\]/);
+  const isTextNode = title.toLowerCase().includes('[password]') || title.toLowerCase().includes('[note]') || isLowerRowBlock;
 
   return (
     <div style={{ background: '#0a0a0f', color: '#fff', minHeight: '100vh', padding: '40px', boxSizing: 'border-box', fontFamily: 'sans-serif' }}>
       
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '30px' }}>
         <h2>Global Customizer Dash</h2>
-        <button onClick={() => { if (typeof window !== 'undefined') { sessionStorage.removeItem('admin_session_pass'); } setIsAuthorized(false); }} style={{ padding: '10px 20px', background: '#ef4444', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: '600' }}>Sign Out</button>
+        <button onClick={() => setIsAuthorized(false)} style={{ padding: '10px 20px', background: '#ef4444', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer' }}>Sign Out</button>
       </div>
 
       {/* PARSER UTILITY WIDGET */}
       <div style={{ background: '#13131a', padding: '20px', borderRadius: '12px', border: '1px solid #a855f7', marginBottom: '35px' }}>
-        <h3 style={{ margin: '0 0 10px 0', color: '#a855f7', fontSize: '15px' }}>⚡ Core GitHub Raw URL Converter Widget</h3>
+        <h3 style={{ margin: '0 0 10px 0', color: '#a855f7', fontSize: '15px' }}>Core GitHub Raw URL Converter</h3>
         <div style={{ display: 'flex', gap: '12px' }}>
-          <input type="text" placeholder="https://github.com/.../blob/main/file.mp4" value={rawInputUrl} onChange={(e) => setRawInputUrl(e.target.value)} style={{ flex: 1, padding: '12px', background: '#0a0a0f', border: '1px solid #222', color: '#fff', borderRadius: '6px' }} />
-          <button type="button" onClick={handleUrlConversionAction} style={{ padding: '12px 20px', background: '#a855f7', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}>Parse to Raw</button>
+          <input type="text" placeholder="Paste link here..." value={rawInputUrl} onChange={(e) => setRawInputUrl(e.target.value)} style={{ flex: 1, padding: '12px', background: '#0a0a0f', border: '1px solid #222', color: '#fff', borderRadius: '6px' }} />
+          <button type="button" onClick={handleUrlConversionAction} style={{ padding: '12px 20px', background: '#a855f7', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer' }}>Parse to Raw</button>
         </div>
       </div>
       
-      {/* IDENTITY CONFIG MATRIX */}
+      {/* IDENTITY MATRIX CARD */}
       <div style={{ background: '#13131a', padding: '25px', borderRadius: '12px', border: '1px solid #1e1e24', marginBottom: '40px' }}>
-        <h3 style={{ margin: '0 0 20px 0', color: '#6366f1' }}>Branding, Design Presets & Core Configurations</h3>
+        <h3 style={{ margin: '0 0 20px 0', color: '#6366f1' }}>Core Presets & Header Customizations</h3>
         <form onSubmit={handleUpdateProfile} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
           
           <div style={{ background: '#0a0a0f', padding: '20px', borderRadius: '8px', border: '1px solid #222' }}>
             <div style={{ fontSize: '13px', color: '#a855f7', fontWeight: 'bold', marginBottom: '15px' }}>🛠️ Custom Grid Header Titles Config (Blocks 1-6)</div>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '15px' }}>
-              <div><label style={{ display: 'block', fontSize: '11px', color: '#64748b', marginBottom: '4px' }}>Block 1 Title Name</label><input type="text" value={block1Name} onChange={(e) => setBlock1Name(e.target.value)} style={{ padding: '10px', width: '100%', boxSizing: 'border-box', background: '#13131a', border: '1px solid #222', color: '#fff', borderRadius: '4px' }} /></div>
-              <div><label style={{ display: 'block', fontSize: '11px', color: '#64748b', marginBottom: '4px' }}>Block 2 Title Name</label><input type="text" value={block2Name} onChange={(e) => setBlock2Name(e.target.value)} style={{ padding: '10px', width: '100%', boxSizing: 'border-box', background: '#13131a', border: '1px solid #222', color: '#fff', borderRadius: '4px' }} /></div>
-              <div><label style={{ display: 'block', fontSize: '11px', color: '#64748b', marginBottom: '4px' }}>Block 3 Title Name</label><input type="text" value={block3Name} onChange={(e) => setBlock3Name(e.target.value)} style={{ padding: '10px', width: '100%', boxSizing: 'border-box', background: '#13131a', border: '1px solid #222', color: '#fff', borderRadius: '4px' }} /></div>
-              <div><label style={{ display: 'block', fontSize: '11px', color: '#64748b', marginBottom: '4px' }}>Block 4 Title Name</label><input type="text" value={block4Name} onChange={(e) => setBlock4Name(e.target.value)} style={{ padding: '10px', width: '100%', boxSizing: 'border-box', background: '#13131a', border: '1px solid #222', color: '#fff', borderRadius: '4px' }} /></div>
-              <div><label style={{ display: 'block', fontSize: '11px', color: '#64748b', marginBottom: '4px' }}>Block 5 Title Name</label><input type="text" value={block5Name} onChange={(e) => setBlock5Name(e.target.value)} style={{ padding: '10px', width: '100%', boxSizing: 'border-box', background: '#13131a', border: '1px solid #222', color: '#fff', borderRadius: '4px' }} /></div>
-              <div><label style={{ display: 'block', fontSize: '11px', color: '#64748b', marginBottom: '4px' }}>Block 6 Title Name</label><input type="text" value={block6Name} onChange={(e) => setBlock6Name(e.target.value)} style={{ padding: '10px', width: '100%', boxSizing: 'border-box', background: '#13131a', border: '1px solid #222', color: '#fff', borderRadius: '4px' }} /></div>
+              <div><label style={{ display: 'block', fontSize: '11px', color: '#64748b', marginBottom: '4px' }}>Block 1 Title</label><input type="text" value={block1Name} onChange={(e) => setBlock1Name(e.target.value)} style={{ padding: '10px', width: '100%', background: '#13131a', border: '1px solid #222', color: '#fff', borderRadius: '4px' }} /></div>
+              <div><label style={{ display: 'block', fontSize: '11px', color: '#64748b', marginBottom: '4px' }}>Block 2 Title</label><input type="text" value={block2Name} onChange={(e) => setBlock2Name(e.target.value)} style={{ padding: '10px', width: '100%', background: '#13131a', border: '1px solid #222', color: '#fff', borderRadius: '4px' }} /></div>
+              <div><label style={{ display: 'block', fontSize: '11px', color: '#64748b', marginBottom: '4px' }}>Block 3 Title</label><input type="text" value={block3Name} onChange={(e) => setBlock3Name(e.target.value)} style={{ padding: '10px', width: '100%', background: '#13131a', border: '1px solid #222', color: '#fff', borderRadius: '4px' }} /></div>
+              <div><label style={{ display: 'block', fontSize: '11px', color: '#64748b', marginBottom: '4px' }}>Block 4 Title</label><input type="text" value={block4Name} onChange={(e) => setBlock4Name(e.target.value)} style={{ padding: '10px', width: '100%', background: '#13131a', border: '1px solid #222', color: '#fff', borderRadius: '4px' }} /></div>
+              <div><label style={{ display: 'block', fontSize: '11px', color: '#64748b', marginBottom: '4px' }}>Block 5 Title</label><input type="text" value={block5Name} onChange={(e) => setBlock5Name(e.target.value)} style={{ padding: '10px', width: '100%', background: '#13131a', border: '1px solid #222', color: '#fff', borderRadius: '4px' }} /></div>
+              <div><label style={{ display: 'block', fontSize: '11px', color: '#64748b', marginBottom: '4px' }}>Block 6 Title</label><input type="text" value={block6Name} onChange={(e) => setBlock6Name(e.target.value)} style={{ padding: '10px', width: '100%', background: '#13131a', border: '1px solid #222', color: '#fff', borderRadius: '4px' }} /></div>
             </div>
           </div>
 
@@ -205,30 +183,31 @@ export default function Admin() {
             <div style={{ flex: 1 }}><label style={{ display: 'block', fontSize: '12px', color: '#64748b', marginBottom: '5px' }}>Subtitle Tag Line</label><input type="text" value={subtitle} onChange={(e) => setSubtitle(e.target.value)} required style={{ padding: '12px', width: '100%', background: '#0a0a0f', border: '1px solid #222', color: '#fff', borderRadius: '6px' }} /></div>
           </div>
           <div style={{ display: 'flex', gap: '15px' }}>
-            <div style={{ flex: 1 }}><label style={{ display: 'block', fontSize: '12px', color: '#64748b', marginBottom: '5px' }}>Avatar Photo Link URL</label><input type="url" value={avatarUrl} onChange={(e) => setAvatarUrl(e.target.value)} required style={{ padding: '12px', width: '100%', background: '#0a0a0f', border: '1px solid #222', color: '#fff', borderRadius: '6px' }} /></div>
-            <div style={{ flex: 1 }}><label style={{ display: 'block', fontSize: '12px', color: '#64748b', marginBottom: '5px' }}>Sound Action Effect URL</label><input type="url" value={audioHoverUrl} onChange={(e) => setAudioHoverUrl(e.target.value)} style={{ padding: '12px', width: '100%', background: '#0a0a0f', border: '1px solid #222', color: '#fff', borderRadius: '6px' }} /></div>
+            <div style={{ flex: 1 }}><label style={{ display: 'block', fontSize: '12px', color: '#64748b', marginBottom: '5px' }}>Avatar URL</label><input type="url" value={avatarUrl} onChange={(e) => setAvatarUrl(e.target.value)} required style={{ padding: '12px', width: '100%', background: '#0a0a0f', border: '1px solid #222', color: '#fff', borderRadius: '6px' }} /></div>
+            {/* FIXED ANNOUNCEMENT RECIPIENT TRUNCATION FIELD BUG */}
+            <div style={{ flex: 1 }}><label style={{ display: 'block', fontSize: '12px', color: '#64748b', marginBottom: '5px' }}>Sound Action URL</label><input type="url" value={audioHoverUrl} onChange={(e) => setAudioHoverUrl(e.target.value)} style={{ padding: '12px', width: '100%', background: '#0a0a0f', border: '1px solid #222', color: '#fff', borderRadius: '6px' }} /></div>
           </div>
           <div style={{ background: '#0a0a0f', padding: '15px', borderRadius: '8px', border: '1px dashed #6366f1' }}>
-            <label style={{ display: 'block', fontSize: '12px', color: '#6366f1', marginBottom: '5px', fontWeight: 'bold' }}>📰 Top Header Scrolling Announcement Text Strip</label>
-            <input type="text" value={announcement} onChange={(e) => setAnnouncement(e.target.value)} placeholder="e.g., SITE MAINTENANCE UNDERWAY" style={{ padding: '12px', width: '100%', background: '#13131a', border: '1px solid #222', color: '#fff', borderRadius: '6px' }} />
+            <label style={{ display: 'block', fontSize: '12px', color: '#6366f1', marginBottom: '5px', fontWeight: 'bold' }}>📰 Top Header Scrolling Announcement text</label>
+            <input type="text" value={announcement} onChange={(e) => setAnnouncement(e.target.value)} style={{ padding: '12px', width: '100%', background: '#13131a', border: '1px solid #222', color: '#fff', borderRadius: '6px' }} />
           </div>
           <div style={{ background: '#0a0a0f', padding: '15px', borderRadius: '8px', border: '1px solid #a855f7' }}>
             <label style={{ display: 'block', fontSize: '12px', color: '#a855f7', marginBottom: '5px', fontWeight: 'bold' }}>Main Website Background Video Link URL</label>
-            <input type="url" value={bgVideoUrl} onChange={(e) => setBgVideoUrl(e.target.value)} style={{ padding: '12px', width: '100%', boxSizing: 'border-box', background: '#13131a', border: '1px solid #222', color: '#fff', borderRadius: '6px' }} />
+            <input type="url" value={bgVideoUrl} onChange={(e) => setBgVideoUrl(e.target.value)} style={{ padding: '12px', width: '100%', background: '#13131a', border: '1px solid #222', color: '#fff', borderRadius: '6px' }} />
           </div>
           <div style={{ display: 'flex', gap: '15px' }}>
-            <div style={{ flex: 1 }}><label style={{ display: 'block', fontSize: '12px', color: '#64748b', marginBottom: '5px' }}>Main Intro Showreel Video URL</label><input type="url" value={videoUrl} style={{ padding: '12px', width: '100%', background: '#0a0a0f', border: '1px solid #222', color: '#fff', borderRadius: '6px' }} /></div>
+            <div style={{ flex: 1 }}><label style={{ display: 'block', fontSize: '12px', color: '#64748b', marginBottom: '5px' }}>Main Intro Showreel Video URL</label><input type="url" value={videoUrl} onChange={(e) => setVideoUrl(e.target.value)} style={{ padding: '12px', width: '100%', background: '#0a0a0f', border: '1px solid #222', color: '#fff', borderRadius: '6px' }} /></div>
             <div style={{ flex: 1 }}><label style={{ display: 'block', fontSize: '12px', color: '#64748b', marginBottom: '5px' }}>Looping Background Music Track URL</label><input type="url" value={audioBgUrl} onChange={(e) => setAudioBgUrl(e.target.value)} style={{ padding: '12px', width: '100%', background: '#0a0a0f', border: '1px solid #222', color: '#fff', borderRadius: '6px' }} /></div>
           </div>
           <div>
-            <label style={{ display: 'block', fontSize: '12px', color: '#64748b', marginBottom: '5px' }}>Bio Summary Text Field</label>
+            <label style={{ display: 'block', fontSize: '12px', color: '#64748b', marginBottom: '5px' }}>Bio Field Summary</label>
             <textarea value={bio} onChange={(e) => setBio(e.target.value)} required rows="2" style={{ padding: '12px', width: '100%', background: '#0a0a0f', border: '1px solid #222', color: '#fff', borderRadius: '6px' }} />
           </div>
-          <button type="submit" style={{ padding: '14px', background: '#6366f1', color: '#fff', border: 'none', cursor: 'pointer', borderRadius: '8px', fontWeight: '600' }}>Save Core Framework Matrix</button>
+          <button type="submit" style={{ padding: '14px', background: '#6366f1', color: '#fff', border: 'none', cursor: 'pointer', borderRadius: '8px', fontWeight: '600' }}>Save Settings Matrix</button>
         </form>
       </div>
 
-      {/* MASTER CREATOR PANEL */}
+      {/* ELEMENT PUBLICATION PANEL ENTRY BLOCK */}
       <h3 style={{ margin: '0 0 15px 0', color: '#10b981' }}>Publish Portfolio Elements</h3>
       <form onSubmit={handleCreateElement} style={{ display: 'flex', flexDirection: 'column', gap: '15px', background: '#13131a', padding: '25px', borderRadius: '12px', border: '1px solid #1e1e24', marginBottom: '40px' }}>
         <div style={{ display: 'flex', gap: '15px' }}>
@@ -241,9 +220,9 @@ export default function Admin() {
             </select>
           </div>
           <div style={{ flex: 1 }}>
-            <label style={{ display: 'block', fontSize: '12px', color: '#64748b', marginBottom: '5px' }}>Display Label Title / Key Descriptor Box</label>
+            <label style={{ display: 'block', fontSize: '12px', color: '#64748b', marginBottom: '5px' }}>Display Label Title Description Name</label>
             <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
-              <input type="text" placeholder="e.g., Asset Name or Pass Key" value={title} onChange={(e) => setTitle(e.target.value)} required style={{ flex: 1, padding: '12px', background: '#0a0a0f', border: '1px solid #222', color: '#fff', borderRadius: '6px' }} />
+              <input type="text" placeholder="e.g., Premier Pro Key Node" value={title} onChange={(e) => setTitle(e.target.value)} required style={{ flex: 1, padding: '12px', background: '#0a0a0f', border: '1px solid #222', color: '#fff', borderRadius: '6px' }} />
               
               <div style={{ display: 'flex', gap: '4px', width: '100%', marginTop: '6px', flexWrap: 'wrap' }}>
                 <button type="button" onClick={() => injectOsPrefix('win')} style={{ padding: '8px 12px', background: '#0284c7', color: '#fff', border: 'none', borderRadius: '4px', fontSize: '11px', cursor: 'pointer', fontWeight: 'bold' }}>+ Windows App</button>
@@ -251,8 +230,8 @@ export default function Admin() {
                 
                 {targetBlock === 'assets' && (
                   <>
-                    <button type="button" onClick={() => injectOsPrefix('pass')} style={{ padding: '8px 12px', background: '#a855f7', color: '#fff', border: 'none', borderRadius: '4px', fontSize: '11px', cursor: 'pointer', fontWeight: 'bold' }}>+ Password Node (Block 5)</button>
-                    <button type="button" onClick={() => injectOsPrefix('note')} style={{ padding: '8px 12px', background: '#64748b', color: '#fff', border: 'none', borderRadius: '4px', fontSize: '11px', cursor: 'pointer', fontWeight: 'bold' }}>+ Note Node (Block 5)</button>
+                    <button type="button" onClick={() => injectOsPrefix('pass')} style={{ padding: '8px 12px', background: '#a855f7', color: '#fff', border: 'none', borderRadius: '4px', fontSize: '11px', cursor: 'pointer', fontWeight: 'bold' }}>+ Password Node</button>
+                    <button type="button" onClick={() => injectOsPrefix('note')} style={{ padding: '8px 12px', background: '#64748b', color: '#fff', border: 'none', borderRadius: '4px', fontSize: '11px', cursor: 'pointer', fontWeight: 'bold' }}>+ Note Node</button>
                   </>
                 )}
                 
@@ -264,11 +243,23 @@ export default function Admin() {
           </div>
         </div>
 
+        {/* AUTOMATED DYNAMIC ASSIGNMENT SELECTOR FIELD TRUNK */}
+        <div>
+          <label style={{ display: 'block', fontSize: '12px', color: '#a855f7', marginBottom: '5px', fontWeight: 'bold' }}>🔗 Attach Directly to Parent App Link (Optional — Use this to link passwords directly underneath items)</label>
+          <select value={parentId} onChange={(e) => setParentId(e.target.value)} style={{ padding: '12px', width: '100%', background: '#0a0a0f', border: '1px solid #a855f7', color: '#fff', borderRadius: '6px', fontWeight: 'bold' }}>
+            <option value="">-- Standalone Item (No Parent Assignment) --</option>
+            {allParentOptionsCombined.map(parent => (
+              <option key={parent._id} value={parent._id}>
+                [{parent.blockType.toUpperCase()}] {cleanTitle(parent.title)} ({parent.url.substring(0, 40)}...)
+              </option>
+            ))}
+          </select>
+        </div>
+
         <div>
           <label style={{ display: 'block', fontSize: '12px', color: isTextNode ? '#a855f7' : '#64748b', marginBottom: '5px', fontWeight: isTextNode ? 'bold' : 'normal' }}>
             {isTextNode ? "🔒 Type the Raw Instructions Guide or Password Values Here" : "Resource Value (Paste links or handles)"}
           </label>
-          
           {isTextNode ? (
             <textarea rows="6" placeholder="Paste text here..." value={url} onChange={(e) => setUrl(e.target.value)} style={{ padding: '12px', width: '100%', background: '#0a0a0f', border: '1px solid #a855f7', color: '#fff', borderRadius: '6px', fontFamily: 'monospace', fontSize: '13px' }} />
           ) : (
@@ -279,36 +270,14 @@ export default function Admin() {
         <button type="submit" style={{ padding: '14px', background: '#10b981', color: '#fff', border: 'none', cursor: 'pointer', borderRadius: '8px', fontWeight: '600' }}>Publish Element Matrix Object</button>
       </form>
 
-      {/* RECORD DELETIONS */}
+      {/* VIEW ACTIVE LINKS */}
       <h3 style={{ borderBottom: '1px solid #222', paddingBottom: '10px', marginBottom: '15px' }}>Active Structured Portfolio Layout Architecture</h3>
-      
-      <h4 style={{ color: '#6366f1', margin: '20px 0 10px 0' }}>Matrix Base Bucket Stack 1: Socials Stack</h4>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-        {socials.map(item => (
-          <div key={item._id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#13131a', padding: '14px', borderRadius: '10px', border: '1px solid #1e1e24' }}>
-            <div><strong>{item.title}</strong><br/><span style={{ fontSize: '12px', color: '#64748b' }}>{item.url}</span></div>
-            <button onClick={() => handleDelete(item._id)} style={{ background: '#ef4444', color: '#fff', border: 'none', padding: '8px 14px', cursor: 'pointer', borderRadius: '6px' }}>Delete</button>
-          </div>
-        ))}
-      </div>
-
-      <h4 style={{ color: '#a855f7', margin: '30px 0 10px 0' }}>Matrix Base Bucket Stack 2: Assets Stack</h4>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-        {assets.map(item => (
-          <div key={item._id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#13131a', padding: '14px', borderRadius: '10px', border: '1px solid #1e1e24' }}>
-            <div><strong>{item.title}</strong><br/><span style={{ fontSize: '12px', color: '#64748b' }}>{item.url}</span></div>
-            <button onClick={() => handleDelete(item._id)} style={{ background: '#ef4444', color: '#fff', border: 'none', padding: '8px 14px', cursor: 'pointer', borderRadius: '6px' }}>Delete</button>
-          </div>
-        ))}
-      </div>
-
-      <h4 style={{ color: '#10b981', margin: '30px 0 10px 0' }}>Matrix Base Bucket Stack 3: My Work Stack</h4>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-        {myWork.map(item => (
-          <div key={item._id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#13131a', padding: '14px', borderRadius: '10px', border: '1px solid #1e1e24' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+        {[...socials, ...assets, ...myWork].map(item => (
+          <div key={item._id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#13131a', padding: '14px', borderRadius: '10px', border: item.parentId ? '1px dashed #a855f7' : '1px solid #1e1e24', marginLeft: item.parentId ? '25px' : '0' }}>
             <div>
-              <strong>{item.title}</strong><br/><span style={{ fontSize: '12px', color: '#64748b' }}>{item.url}</span>
-              <video src={item.url} controls muted style={{ width: '140px', height: '80px', display: 'block', marginTop: '10px', borderRadius: '6px', objectFit: 'cover', background: '#000' }} />
+              <strong>{item.parentId ? '↳ ' : ''}{item.title}</strong>
+              <br/><span style={{ fontSize: '12px', color: '#64748b' }}>{item.url}</span>
             </div>
             <button onClick={() => handleDelete(item._id)} style={{ background: '#ef4444', color: '#fff', border: 'none', padding: '8px 14px', cursor: 'pointer', borderRadius: '6px' }}>Delete</button>
           </div>
