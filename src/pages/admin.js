@@ -65,6 +65,12 @@ export default function Admin() {
     }
   }, []);
 
+  const handleLoginSubmit = (e) => {
+    e.preventDefault();
+    sessionStorage.setItem('admin_session_pass', password);
+    fetchDashboardData(password);
+  };
+
   const handleUrlConversionAction = () => {
     if (!rawInputUrl) return alert('Please enter a GitHub URL link first.');
     let processedUrl = rawInputUrl.trim();
@@ -76,14 +82,13 @@ export default function Admin() {
       setUrl(processedUrl);
       setBgVideoUrl(processedUrl);
       setRawInputUrl('');
-      alert(`Link successfully parsed to raw content streaming address:\n\n${processedUrl}`);
+      alert(`Link successfully parsed to raw streaming CDN address format:\n\n${processedUrl}`);
     } else {
       alert('Invalid URL structure. Ensure it contains /blob/ from the repository window branch.');
     }
   };
 
   const injectOsPrefix = (systemType) => {
-    // Strips any existing tags out first to avoid duplication bugs
     let baseTitle = title.replace(/\[windows\]/i, '').replace(/\[mac\]/i, '').trim();
     if (systemType === 'win') {
       setTitle(`[Windows] ${baseTitle}`);
@@ -171,7 +176,7 @@ export default function Admin() {
             </div>
             <div style={{ flex: 1 }}>
               <label style={{ display: 'block', fontSize: '12px', color: '#64748b', marginBottom: '5px' }}>Link Interface Hover Sound Action Effect URL (.wav / .mp3)</label>
-              <input type="url" value={audioHoverUrl} onChange={(e) => setAudioHoverUrl(e.target.value)} style={{ padding: '12px', width: '100%', boxSizing: 'border-box', background: '#0a0a0f', border: '1px solid #222', color: '#fff', borderRadius: '6px' }} />
+              <input type="url" value={audioHoverUrl} style={{ padding: '12px', width: '100%', boxSizing: 'border-box', background: '#0a0a0f', border: '1px solid #222', color: '#fff', borderRadius: '6px' }} />
             </div>
           </div>
 
@@ -217,7 +222,6 @@ export default function Admin() {
             <div style={{ display: 'flex', gap: '8px', marginBottom: '6px' }}>
               <input type="text" placeholder="e.g., Velocity Shake Plugin" value={title} onChange={(e) => setTitle(e.target.value)} required style={{ flex: 1, padding: '12px', background: '#0a0a0f', border: '1px solid #222', color: '#fff', borderRadius: '6px' }} />
               
-              {/* OPERATING SYSTEM CONDITIONAL QUICK INJECTION ROUTERS */}
               {targetBlock === 'assets' && (
                 <>
                   <button type="button" onClick={() => injectOsPrefix('win')} style={{ padding: '0 12px', background: '#0284c7', color: '#fff', border: 'none', borderRadius: '6px', fontSize: '11px', cursor: 'pointer', fontWeight: 'bold' }}>+ Win OS Tag</button>
@@ -236,7 +240,7 @@ export default function Admin() {
         <button type="submit" style={{ padding: '14px', background: '#10b981', color: '#fff', border: 'none', cursor: 'pointer', borderRadius: '8px', fontWeight: '600' }}>Publish Element to Selected Column</button>
       </form>
 
-      {/* RECORD DELETION RENDERING BOUNDS */}
+      {/* Structured Deletion Sections */}
       <h3 style={{ borderBottom: '1px solid #222', paddingBottom: '10px', marginBottom: '15px' }}>Active Structured Portfolio Layout Architecture</h3>
       
       <h4 style={{ color: '#6366f1', margin: '20px 0 10px 0' }}>Column 1: Social Links</h4>
