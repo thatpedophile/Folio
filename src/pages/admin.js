@@ -18,6 +18,7 @@ export default function Admin() {
   const [audioHoverUrl, setAudioHoverUrl] = useState('');
   const [announcement, setAnnouncement] = useState('');
 
+  // BLOCK HEADER NAMES STATE HOOKS
   const [block1Name, setBlock1Name] = useState('');
   const [block2Name, setBlock2Name] = useState('');
   const [block3Name, setBlock3Name] = useState('');
@@ -28,7 +29,7 @@ export default function Admin() {
   const [title, setTitle] = useState('');
   const [url, setUrl] = useState('');
   const [targetBlock, setTargetBlock] = useState('socials');
-  const [parentId, setParentId] = useState(''); {/* Relational mapping hook state */}
+  const [parentId, setParentId] = useState('');
 
   const [rawInputUrl, setRawInputUrl] = useState('');
 
@@ -41,11 +42,11 @@ export default function Admin() {
         setAssets(data.assets || []);
         setMyWork(data.myWork || []);
         if (data.profile) {
-          setUsername(data.profile.username);
-          setBio(data.profile.bio);
-          setAvatarUrl(data.profile.avatarUrl);
-          setVideoUrl(data.profile.videoUrl);
-          setSubtitle(data.profile.subtitle);
+          setUsername(data.profile.username || '');
+          setBio(data.profile.bio || '');
+          setAvatarUrl(data.profile.avatarUrl || '');
+          setVideoUrl(data.profile.videoUrl || '');
+          setSubtitle(data.profile.subtitle || '');
           setBgVideoUrl(data.profile.bgVideoUrl || '');
           setAudioBgUrl(data.profile.audioBgUrl || '');
           setAudioHoverUrl(data.profile.audioHoverUrl || '');
@@ -87,8 +88,8 @@ export default function Admin() {
     if (processedUrl.includes('github.com') && processedUrl.includes('/blob/')) {
       processedUrl = processedUrl.replace('github.com', 'raw.githubusercontent.com').replace('/blob/', '/');
       setUrl(processedUrl); setBgVideoUrl(processedUrl); setRawInputUrl('');
-      alert(`Parsed address formatting:\n\n${processedUrl}`);
-    } else { alert('Invalid layout hierarchy.'); }
+      alert(`Parsed URL formatting:\n\n${processedUrl}`);
+    } else { alert('Invalid layout parameters.'); }
   };
 
   const injectOsPrefix = (systemType) => {
@@ -112,7 +113,7 @@ export default function Admin() {
         block1Name, block2Name, block3Name, block4Name, block5Name, block6Name
       }),
     });
-    alert('Matrix variables saved cleanly.');
+    alert('Matrix labels saved cleanly.');
   };
 
   const handleCreateElement = async (e) => {
@@ -144,6 +145,10 @@ export default function Admin() {
   const isLowerRowBlock = title.toLowerCase().match(/\[activation\]|\[othersite\]|\[lowertutorial\]/);
   const isTextNode = title.toLowerCase().includes('[password]') || title.toLowerCase().includes('[note]') || isLowerRowBlock;
 
+  const cleanTitle = (titleStr) => {
+    return titleStr.replace(/\[windows\]/i, '').replace(/\[mac\]/i, '').replace(/\[activation\]/i, '').replace(/\[othersite\]/i, '').replace(/\[lowertutorial\]/i).trim();
+  };
+
   return (
     <div style={{ background: '#0a0a0f', color: '#fff', minHeight: '100vh', padding: '40px', boxSizing: 'border-box', fontFamily: 'sans-serif' }}>
       
@@ -152,16 +157,14 @@ export default function Admin() {
         <button onClick={() => setIsAuthorized(false)} style={{ padding: '10px 20px', background: '#ef4444', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer' }}>Sign Out</button>
       </div>
 
-      {/* PARSER UTILITY WIDGET */}
       <div style={{ background: '#13131a', padding: '20px', borderRadius: '12px', border: '1px solid #a855f7', marginBottom: '35px' }}>
         <h3 style={{ margin: '0 0 10px 0', color: '#a855f7', fontSize: '15px' }}>Core GitHub Raw URL Converter</h3>
         <div style={{ display: 'flex', gap: '12px' }}>
-          <input type="text" placeholder="Paste link here..." value={rawInputUrl} onChange={(e) => setRawInputUrl(e.target.value)} style={{ flex: 1, padding: '12px', background: '#0a0a0f', border: '1px solid #222', color: '#fff', borderRadius: '6px' }} />
+          <input type="text" placeholder="Paste link here..." value={rawInputUrl || ''} onChange={(e) => setRawInputUrl(e.target.value)} style={{ flex: 1, padding: '12px', background: '#0a0a0f', border: '1px solid #222', color: '#fff', borderRadius: '6px' }} />
           <button type="button" onClick={handleUrlConversionAction} style={{ padding: '12px 20px', background: '#a855f7', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer' }}>Parse to Raw</button>
         </div>
       </div>
       
-      {/* IDENTITY MATRIX CARD */}
       <div style={{ background: '#13131a', padding: '25px', borderRadius: '12px', border: '1px solid #1e1e24', marginBottom: '40px' }}>
         <h3 style={{ margin: '0 0 20px 0', color: '#6366f1' }}>Core Presets & Header Customizations</h3>
         <form onSubmit={handleUpdateProfile} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
@@ -169,45 +172,45 @@ export default function Admin() {
           <div style={{ background: '#0a0a0f', padding: '20px', borderRadius: '8px', border: '1px solid #222' }}>
             <div style={{ fontSize: '13px', color: '#a855f7', fontWeight: 'bold', marginBottom: '15px' }}>🛠️ Custom Grid Header Titles Config (Blocks 1-6)</div>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '15px' }}>
-              <div><label style={{ display: 'block', fontSize: '11px', color: '#64748b', marginBottom: '4px' }}>Block 1 Title</label><input type="text" value={block1Name} onChange={(e) => setBlock1Name(e.target.value)} style={{ padding: '10px', width: '100%', background: '#13131a', border: '1px solid #222', color: '#fff', borderRadius: '4px' }} /></div>
-              <div><label style={{ display: 'block', fontSize: '11px', color: '#64748b', marginBottom: '4px' }}>Block 2 Title</label><input type="text" value={block2Name} onChange={(e) => setBlock2Name(e.target.value)} style={{ padding: '10px', width: '100%', background: '#13131a', border: '1px solid #222', color: '#fff', borderRadius: '4px' }} /></div>
-              <div><label style={{ display: 'block', fontSize: '11px', color: '#64748b', marginBottom: '4px' }}>Block 3 Title</label><input type="text" value={block3Name} onChange={(e) => setBlock3Name(e.target.value)} style={{ padding: '10px', width: '100%', background: '#13131a', border: '1px solid #222', color: '#fff', borderRadius: '4px' }} /></div>
-              <div><label style={{ display: 'block', fontSize: '11px', color: '#64748b', marginBottom: '4px' }}>Block 4 Title</label><input type="text" value={block4Name} onChange={(e) => setBlock4Name(e.target.value)} style={{ padding: '10px', width: '100%', background: '#13131a', border: '1px solid #222', color: '#fff', borderRadius: '4px' }} /></div>
-              <div><label style={{ display: 'block', fontSize: '11px', color: '#64748b', marginBottom: '4px' }}>Block 5 Title</label><input type="text" value={block5Name} onChange={(e) => setBlock5Name(e.target.value)} style={{ padding: '10px', width: '100%', background: '#13131a', border: '1px solid #222', color: '#fff', borderRadius: '4px' }} /></div>
-              <div><label style={{ display: 'block', fontSize: '11px', color: '#64748b', marginBottom: '4px' }}>Block 6 Title</label><input type="text" value={block6Name} onChange={(e) => setBlock6Name(e.target.value)} style={{ padding: '10px', width: '100%', background: '#13131a', border: '1px solid #222', color: '#fff', borderRadius: '4px' }} /></div>
+              <div><label style={{ display: 'block', fontSize: '11px', color: '#64748b', marginBottom: '4px' }}>Block 1 Title</label><input type="text" value={block1Name || ''} onChange={(e) => setBlock1Name(e.target.value)} style={{ padding: '10px', width: '100%', background: '#13131a', border: '1px solid #222', color: '#fff', borderRadius: '4px' }} /></div>
+              <div><label style={{ display: 'block', fontSize: '11px', color: '#64748b', marginBottom: '4px' }}>Block 2 Title</label><input type="text" value={block2Name || ''} onChange={(e) => setBlock2Name(e.target.value)} style={{ padding: '10px', width: '100%', background: '#13131a', border: '1px solid #222', color: '#fff', borderRadius: '4px' }} /></div>
+              <div><label style={{ display: 'block', fontSize: '11px', color: '#64748b', marginBottom: '4px' }}>Block 3 Title</label><input type="text" value={block3Name || ''} onChange={(e) => setBlock3Name(e.target.value)} style={{ padding: '10px', width: '100%', background: '#13131a', border: '1px solid #222', color: '#fff', borderRadius: '4px' }} /></div>
+              <div><label style={{ display: 'block', fontSize: '11px', color: '#64748b', marginBottom: '4px' }}>Block 4 Title</label><input type="text" value={block4Name || ''} onChange={(e) => setBlock4Name(e.target.value)} style={{ padding: '10px', width: '100%', background: '#13131a', border: '1px solid #222', color: '#fff', borderRadius: '4px' }} /></div>
+              <div><label style={{ display: 'block', fontSize: '11px', color: '#64748b', marginBottom: '4px' }}>Block 5 Title</label><input type="text" value={block5Name || ''} onChange={(e) => setBlock5Name(e.target.value)} style={{ padding: '10px', width: '100%', background: '#13131a', border: '1px solid #222', color: '#fff', borderRadius: '4px' }} /></div>
+              <div><label style={{ display: 'block', fontSize: '11px', color: '#64748b', marginBottom: '4px' }}>Block 6 Title</label><input type="text" value={block6Name || ''} onChange={(e) => setBlock6Name(e.target.value)} style={{ padding: '10px', width: '100%', background: '#13131a', border: '1px solid #222', color: '#fff', borderRadius: '4px' }} /></div>
             </div>
           </div>
 
           <div style={{ display: 'flex', gap: '15px' }}>
-            <div style={{ flex: 1 }}><label style={{ display: 'block', fontSize: '12px', color: '#64748b', marginBottom: '5px' }}>Handle</label><input type="text" value={username} onChange={(e) => setUsername(e.target.value)} required style={{ padding: '12px', width: '100%', background: '#0a0a0f', border: '1px solid #222', color: '#fff', borderRadius: '6px' }} /></div>
-            <div style={{ flex: 1 }}><label style={{ display: 'block', fontSize: '12px', color: '#64748b', marginBottom: '5px' }}>Subtitle Tag Line</label><input type="text" value={subtitle} onChange={(e) => setSubtitle(e.target.value)} required style={{ padding: '12px', width: '100%', background: '#0a0a0f', border: '1px solid #222', color: '#fff', borderRadius: '6px' }} /></div>
+            <div style={{ flex: 1 }}><label style={{ display: 'block', fontSize: '12px', color: '#64748b', marginBottom: '5px' }}>Handle</label><input type="text" value={username || ''} onChange={(e) => setUsername(e.target.value)} required style={{ padding: '12px', width: '100%', background: '#0a0a0f', border: '1px solid #222', color: '#fff', borderRadius: '6px' }} /></div>
+            <div style={{ flex: 1 }}><label style={{ display: 'block', fontSize: '12px', color: '#64748b', marginBottom: '5px' }}>Subtitle Tag Line</label><input type="text" value={subtitle || ''} onChange={(e) => setSubtitle(e.target.value)} required style={{ padding: '12px', width: '100%', background: '#0a0a0f', border: '1px solid #222', color: '#fff', borderRadius: '6px' }} /></div>
           </div>
           <div style={{ display: 'flex', gap: '15px' }}>
-            <div style={{ flex: 1 }}><label style={{ display: 'block', fontSize: '12px', color: '#64748b', marginBottom: '5px' }}>Avatar URL</label><input type="url" value={avatarUrl} onChange={(e) => setAvatarUrl(e.target.value)} required style={{ padding: '12px', width: '100%', background: '#0a0a0f', border: '1px solid #222', color: '#fff', borderRadius: '6px' }} /></div>
-            {/* FIXED ANNOUNCEMENT RECIPIENT TRUNCATION FIELD BUG */}
-            <div style={{ flex: 1 }}><label style={{ display: 'block', fontSize: '12px', color: '#64748b', marginBottom: '5px' }}>Sound Action URL</label><input type="url" value={audioHoverUrl} onChange={(e) => setAudioHoverUrl(e.target.value)} style={{ padding: '12px', width: '100%', background: '#0a0a0f', border: '1px solid #222', color: '#fff', borderRadius: '6px' }} /></div>
+            <div style={{ flex: 1 }}><label style={{ display: 'block', fontSize: '12px', color: '#64748b', marginBottom: '5px' }}>Avatar URL</label><input type="url" value={avatarUrl || ''} onChange={(e) => setAvatarUrl(e.target.value)} required style={{ padding: '12px', width: '100%', background: '#0a0a0f', border: '1px solid #222', color: '#fff', borderRadius: '6px' }} /></div>
+            <div style={{ flex: 1 }}><label style={{ display: 'block', fontSize: '12px', color: '#64748b', marginBottom: '5px' }}>Sound Action URL</label><input type="url" value={audioHoverUrl || ''} onChange={(e) => setAudioHoverUrl(e.target.value)} style={{ padding: '12px', width: '100%', background: '#0a0a0f', border: '1px solid #222', color: '#fff', borderRadius: '6px' }} /></div>
           </div>
           <div style={{ background: '#0a0a0f', padding: '15px', borderRadius: '8px', border: '1px dashed #6366f1' }}>
-            <label style={{ display: 'block', fontSize: '12px', color: '#6366f1', marginBottom: '5px', fontWeight: 'bold' }}>📰 Top Header Scrolling Announcement text</label>
-            <input type="text" value={announcement} onChange={(e) => setAnnouncement(e.target.value)} style={{ padding: '12px', width: '100%', background: '#13131a', border: '1px solid #222', color: '#fff', borderRadius: '6px' }} />
+            <label style={{ display: 'block', fontSize: '12px', color: '#6366f1', marginBottom: '5px', fontWeight: 'bold' }}>📰 Top Header Scrolling Announcement Text</label>
+            {/* FIXED: Binding loop syntax corrected to value handler parameter stream */}
+            <input type="text" value={announcement || ''} onChange={(e) => setAnnouncement(e.target.value)} style={{ padding: '12px', width: '100%', background: '#13131a', border: '1px solid #222', color: '#fff', borderRadius: '6px' }} />
           </div>
           <div style={{ background: '#0a0a0f', padding: '15px', borderRadius: '8px', border: '1px solid #a855f7' }}>
             <label style={{ display: 'block', fontSize: '12px', color: '#a855f7', marginBottom: '5px', fontWeight: 'bold' }}>Main Website Background Video Link URL</label>
-            <input type="url" value={bgVideoUrl} onChange={(e) => setBgVideoUrl(e.target.value)} style={{ padding: '12px', width: '100%', background: '#13131a', border: '1px solid #222', color: '#fff', borderRadius: '6px' }} />
+            <input type="url" value={bgVideoUrl || ''} onChange={(e) => setBgVideoUrl(e.target.value)} style={{ padding: '12px', width: '100%', boxSizing: 'border-box', background: '#13131a', border: '1px solid #222', color: '#fff', borderRadius: '6px' }} />
           </div>
           <div style={{ display: 'flex', gap: '15px' }}>
-            <div style={{ flex: 1 }}><label style={{ display: 'block', fontSize: '12px', color: '#64748b', marginBottom: '5px' }}>Main Intro Showreel Video URL</label><input type="url" value={videoUrl} onChange={(e) => setVideoUrl(e.target.value)} style={{ padding: '12px', width: '100%', background: '#0a0a0f', border: '1px solid #222', color: '#fff', borderRadius: '6px' }} /></div>
-            <div style={{ flex: 1 }}><label style={{ display: 'block', fontSize: '12px', color: '#64748b', marginBottom: '5px' }}>Looping Background Music Track URL</label><input type="url" value={audioBgUrl} onChange={(e) => setAudioBgUrl(e.target.value)} style={{ padding: '12px', width: '100%', background: '#0a0a0f', border: '1px solid #222', color: '#fff', borderRadius: '6px' }} /></div>
+            <div style={{ flex: 1 }}><label style={{ display: 'block', fontSize: '12px', color: '#64748b', marginBottom: '5px' }}>Main Intro Showreel Video URL</label><input type="url" value={videoUrl || ''} onChange={(e) => setVideoUrl(e.target.value)} style={{ padding: '12px', width: '100%', background: '#0a0a0f', border: '1px solid #222', color: '#fff', borderRadius: '6px' }} /></div>
+            <div style={{ flex: 1 }}><label style={{ display: 'block', fontSize: '12px', color: '#64748b', marginBottom: '5px' }}>Looping Background Music Track URL</label><input type="url" value={audioBgUrl || ''} onChange={(e) => setAudioBgUrl(e.target.value)} style={{ padding: '12px', width: '100%', background: '#0a0a0f', border: '1px solid #222', color: '#fff', borderRadius: '6px' }} /></div>
           </div>
           <div>
             <label style={{ display: 'block', fontSize: '12px', color: '#64748b', marginBottom: '5px' }}>Bio Field Summary</label>
-            <textarea value={bio} onChange={(e) => setBio(e.target.value)} required rows="2" style={{ padding: '12px', width: '100%', background: '#0a0a0f', border: '1px solid #222', color: '#fff', borderRadius: '6px' }} />
+            <textarea value={bio || ''} onChange={(e) => setBio(e.target.value)} required rows="2" style={{ padding: '12px', width: '100%', background: '#0a0a0f', border: '1px solid #222', color: '#fff', borderRadius: '6px' }} />
           </div>
           <button type="submit" style={{ padding: '14px', background: '#6366f1', color: '#fff', border: 'none', cursor: 'pointer', borderRadius: '8px', fontWeight: '600' }}>Save Settings Matrix</button>
         </form>
       </div>
 
-      {/* ELEMENT PUBLICATION PANEL ENTRY BLOCK */}
+      {/* MASTER CREATOR PANEL */}
       <h3 style={{ margin: '0 0 15px 0', color: '#10b981' }}>Publish Portfolio Elements</h3>
       <form onSubmit={handleCreateElement} style={{ display: 'flex', flexDirection: 'column', gap: '15px', background: '#13131a', padding: '25px', borderRadius: '12px', border: '1px solid #1e1e24', marginBottom: '40px' }}>
         <div style={{ display: 'flex', gap: '15px' }}>
@@ -220,21 +223,18 @@ export default function Admin() {
             </select>
           </div>
           <div style={{ flex: 1 }}>
-            <label style={{ display: 'block', fontSize: '12px', color: '#64748b', marginBottom: '5px' }}>Display Label Title Description Name</label>
+            <label style={{ display: 'block', fontSize: '12px', color: '#64748b', marginBottom: '5px' }}>Display Label Title / Key Descriptor Box</label>
             <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
-              <input type="text" placeholder="e.g., Premier Pro Key Node" value={title} onChange={(e) => setTitle(e.target.value)} required style={{ flex: 1, padding: '12px', background: '#0a0a0f', border: '1px solid #222', color: '#fff', borderRadius: '6px' }} />
-              
+              <input type="text" placeholder="e.g., Asset Name or Pass Key" value={title || ''} onChange={(e) => setTitle(e.target.value)} required style={{ flex: 1, padding: '12px', background: '#0a0a0f', border: '1px solid #222', color: '#fff', borderRadius: '6px' }} />
               <div style={{ display: 'flex', gap: '4px', width: '100%', marginTop: '6px', flexWrap: 'wrap' }}>
                 <button type="button" onClick={() => injectOsPrefix('win')} style={{ padding: '8px 12px', background: '#0284c7', color: '#fff', border: 'none', borderRadius: '4px', fontSize: '11px', cursor: 'pointer', fontWeight: 'bold' }}>+ Windows App</button>
                 <button type="button" onClick={() => injectOsPrefix('mac')} style={{ padding: '8px 12px', background: '#be123c', color: '#fff', border: 'none', borderRadius: '4px', fontSize: '11px', cursor: 'pointer', fontWeight: 'bold' }}>+ Mac OS App</button>
-                
                 {targetBlock === 'assets' && (
                   <>
                     <button type="button" onClick={() => injectOsPrefix('pass')} style={{ padding: '8px 12px', background: '#a855f7', color: '#fff', border: 'none', borderRadius: '4px', fontSize: '11px', cursor: 'pointer', fontWeight: 'bold' }}>+ Password Node</button>
                     <button type="button" onClick={() => injectOsPrefix('note')} style={{ padding: '8px 12px', background: '#64748b', color: '#fff', border: 'none', borderRadius: '4px', fontSize: '11px', cursor: 'pointer', fontWeight: 'bold' }}>+ Note Node</button>
                   </>
                 )}
-                
                 <button type="button" onClick={() => injectOsPrefix('act')} style={{ padding: '8px 12px', background: '#7c3aed', color: '#fff', border: 'none', borderRadius: '4px', fontSize: '11px', cursor: 'pointer', fontWeight: 'bold' }}>🔲 Route to Block 4</button>
                 <button type="button" onClick={() => injectOsPrefix('site')} style={{ padding: '8px 12px', background: '#0ea5e9', color: '#fff', border: 'none', borderRadius: '4px', fontSize: '11px', cursor: 'pointer', fontWeight: 'bold' }}>🔲 Route to Block 5</button>
                 <button type="button" onClick={() => injectOsPrefix('tute')} style={{ padding: '8px 12px', background: '#059669', color: '#fff', border: 'none', borderRadius: '4px', fontSize: '11px', cursor: 'pointer', fontWeight: 'bold' }}>🔲 Route to Block 6</button>
@@ -243,10 +243,9 @@ export default function Admin() {
           </div>
         </div>
 
-        {/* AUTOMATED DYNAMIC ASSIGNMENT SELECTOR FIELD TRUNK */}
         <div>
-          <label style={{ display: 'block', fontSize: '12px', color: '#a855f7', marginBottom: '5px', fontWeight: 'bold' }}>🔗 Attach Directly to Parent App Link (Optional — Use this to link passwords directly underneath items)</label>
-          <select value={parentId} onChange={(e) => setParentId(e.target.value)} style={{ padding: '12px', width: '100%', background: '#0a0a0f', border: '1px solid #a855f7', color: '#fff', borderRadius: '6px', fontWeight: 'bold' }}>
+          <label style={{ display: 'block', fontSize: '12px', color: '#a855f7', marginBottom: '5px', fontWeight: 'bold' }}>🔗 Attach Directly to Parent App Link (Optional)</label>
+          <select value={parentId || ''} onChange={(e) => setParentId(e.target.value)} style={{ padding: '12px', width: '100%', background: '#0a0a0f', border: '1px solid #a855f7', color: '#fff', borderRadius: '6px', fontWeight: 'bold' }}>
             <option value="">-- Standalone Item (No Parent Assignment) --</option>
             {allParentOptionsCombined.map(parent => (
               <option key={parent._id} value={parent._id}>
@@ -261,16 +260,16 @@ export default function Admin() {
             {isTextNode ? "🔒 Type the Raw Instructions Guide or Password Values Here" : "Resource Value (Paste links or handles)"}
           </label>
           {isTextNode ? (
-            <textarea rows="6" placeholder="Paste text here..." value={url} onChange={(e) => setUrl(e.target.value)} style={{ padding: '12px', width: '100%', background: '#0a0a0f', border: '1px solid #a855f7', color: '#fff', borderRadius: '6px', fontFamily: 'monospace', fontSize: '13px' }} />
+            <textarea rows="6" placeholder="Paste text here..." value={url || ''} onChange={(e) => setUrl(e.target.value)} style={{ padding: '12px', width: '100%', background: '#0a0a0f', border: '1px solid #a855f7', color: '#fff', borderRadius: '6px', fontFamily: 'monospace', fontSize: '13px' }} />
           ) : (
-            <input type="text" placeholder="https://..." value={url} onChange={(e) => setUrl(e.target.value)} style={{ padding: '12px', width: '100%', background: '#0a0a0f', border: '1px solid #222', color: '#fff', borderRadius: '6px' }} />
+            <input type="text" placeholder="https://..." value={url || ''} onChange={(e) => setUrl(e.target.value)} style={{ padding: '12px', width: '100%', background: '#0a0a0f', border: '1px solid #222', color: '#fff', borderRadius: '6px' }} />
           )}
         </div>
 
         <button type="submit" style={{ padding: '14px', background: '#10b981', color: '#fff', border: 'none', cursor: 'pointer', borderRadius: '8px', fontWeight: '600' }}>Publish Element Matrix Object</button>
       </form>
 
-      {/* VIEW ACTIVE LINKS */}
+      {/* VIEW LAYOUT ROW SLOTS */}
       <h3 style={{ borderBottom: '1px solid #222', paddingBottom: '10px', marginBottom: '15px' }}>Active Structured Portfolio Layout Architecture</h3>
       <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
         {[...socials, ...assets, ...myWork].map(item => (
