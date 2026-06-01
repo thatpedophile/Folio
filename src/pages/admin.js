@@ -97,12 +97,14 @@ export default function Admin() {
   };
 
   const injectOsPrefix = (systemType) => {
-    let baseTitle = title.replace(/\[windows\]/i, '').replace(/\[mac\]/i, '').replace(/\[password\]/i, '').replace(/\[note\]/i, '').replace(/\[tutorial\]/i, '').trim();
+    let baseTitle = title.replace(/\[windows\]/i, '').replace(/\[mac\]/i, '').replace(/\[password\]/i, '').replace(/\[note\]/i, '').replace(/\[activation\]/i, '').replace(/\[othersite\]/i, '').replace(/\[lowertutorial\]/i, '').trim();
     if (systemType === 'win') setTitle(`[Windows] ${baseTitle}`);
     if (systemType === 'mac') setTitle(`[Mac] ${baseTitle}`);
     if (systemType === 'pass') setTitle(`[Password] ${baseTitle}`);
     if (systemType === 'note') setTitle(`[Note] ${baseTitle}`);
-    if (systemType === 'tute') setTitle(`[Tutorial] ${baseTitle}`);
+    if (systemType === 'act') setTitle(`[Activation] ${baseTitle}`);
+    if (systemType === 'site') setTitle(`[OtherSite] ${baseTitle}`);
+    if (systemType === 'tute') setTitle(`[LowerTutorial] ${baseTitle}`);
   };
 
   const handleUpdateProfile = async (e) => {
@@ -162,7 +164,7 @@ export default function Admin() {
         </div>
       </div>
       
-      {/* IDENTITY CONFIG MATRIX */}
+      {/* IDENTITY CONFIG CONFIG CARD */}
       <div style={{ background: '#13131a', padding: '25px', borderRadius: '12px', border: '1px solid #1e1e24', marginBottom: '40px' }}>
         <h3 style={{ margin: '0 0 20px 0', color: '#6366f1' }}>Branding, Design Presets & Core Configurations</h3>
         <form onSubmit={handleUpdateProfile} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
@@ -177,12 +179,12 @@ export default function Admin() {
 
           <div style={{ background: '#0a0a0f', padding: '15px', borderRadius: '8px', border: '1px dashed #6366f1' }}>
             <label style={{ display: 'block', fontSize: '12px', color: '#6366f1', marginBottom: '5px', fontWeight: 'bold' }}>📰 Top Header Scrolling Announcement Text Strip</label>
-            <input type="text" value={announcement} onChange={(e) => setAnnouncement(e.target.value)} placeholder="e.g., PRESETS DROPPING TONIGHT" style={{ padding: '12px', width: '100%', boxSizing: 'border-box', background: '#13131a', border: '1px solid #222', color: '#fff', borderRadius: '6px' }} />
+            <input type="text" value={announcement} onChange={(e) => setAnnouncement(e.target.value)} placeholder="e.g., PLUGINS LOADING IN SECTOR 2" style={{ padding: '12px', width: '100%', background: '#13131a', border: '1px solid #222', color: '#fff', borderRadius: '6px' }} />
           </div>
 
           <div style={{ background: '#0a0a0f', padding: '15px', borderRadius: '8px', border: '1px solid #a855f7' }}>
             <label style={{ display: 'block', fontSize: '12px', color: '#a855f7', marginBottom: '5px', fontWeight: 'bold' }}>Main Website Background Video Link URL</label>
-            <input type="url" value={bgVideoUrl} onChange={(e) => setBgVideoUrl(e.target.value)} style={{ padding: '12px', width: '100%', boxSizing: 'border-box', background: '#13131a', border: '1px solid #222', color: '#fff', borderRadius: '6px' }} />
+            <input type="url" value={bgVideoUrl} onChange={(e) => setBgVideoUrl(e.target.value)} style={{ padding: '12px', width: '100%', background: '#13131a', border: '1px solid #222', color: '#fff', borderRadius: '6px' }} />
           </div>
           <div style={{ display: 'flex', gap: '15px' }}>
             <div style={{ flex: 1 }}><label style={{ display: 'block', fontSize: '12px', color: '#64748b', marginBottom: '5px' }}>Main Intro Showreel Video URL</label><input type="url" value={videoUrl} style={{ padding: '12px', width: '100%', background: '#0a0a0f', border: '1px solid #222', color: '#fff', borderRadius: '6px' }} /></div>
@@ -196,36 +198,37 @@ export default function Admin() {
         </form>
       </div>
 
-      {/* MASTER CREATOR PANEL */}
+      {/* MASTER CREATOR PANEL FORM */}
       <h3 style={{ margin: '0 0 15px 0', color: '#10b981' }}>Publish Portfolio Elements</h3>
       <form onSubmit={handleCreateElement} style={{ display: 'flex', flexDirection: 'column', gap: '15px', background: '#13131a', padding: '25px', borderRadius: '12px', border: '1px solid #1e1e24', marginBottom: '40px' }}>
         <div style={{ display: 'flex', gap: '15px' }}>
           <div style={{ flex: 1 }}>
-            <label style={{ display: 'block', fontSize: '12px', color: '#64748b', marginBottom: '5px' }}>Choose Target Column Destination</label>
+            <label style={{ display: 'block', fontSize: '12px', color: '#64748b', marginBottom: '5px' }}>Choose Target Matrix Column Base Bucket</label>
             <select value={targetBlock} onChange={(e) => setTargetBlock(e.target.value)} style={{ padding: '12px', width: '100%', background: '#0a0a0f', border: '1px solid #10b981', color: '#fff', borderRadius: '6px', fontWeight: 'bold' }}>
-              <option value="socials">Column 1: Socials Section Block</option>
-              <option value="assets">Column 2: Assets & Presets Section Block</option>
-              <option value="my_work">Column 3: My Work (Video Showcases) Block</option>
+              <option value="socials">Matrix Lane 1: Socials Group Stack</option>
+              <option value="assets">Matrix Lane 2: Assets & Presets Group Stack</option>
+              <option value="my_work">Matrix Lane 3: My Work Video Group Stack</option>
             </select>
           </div>
           <div style={{ flex: 1 }}>
             <label style={{ display: 'block', fontSize: '12px', color: '#64748b', marginBottom: '5px' }}>Display Label Title / Key Descriptor Box</label>
             <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
-              <input type="text" placeholder="e.g., My Instagram or Zip Key" value={title} onChange={(e) => setTitle(e.target.value)} required style={{ flex: 1, padding: '12px', background: '#0a0a0f', border: '1px solid #222', color: '#fff', borderRadius: '6px' }} />
+              <input type="text" placeholder="e.g., Asset Name or Pass Key" value={title} onChange={(e) => setTitle(e.target.value)} required style={{ flex: 1, padding: '12px', background: '#0a0a0f', border: '1px solid #222', color: '#fff', borderRadius: '6px' }} />
               
-              {/* GLOBAL STRATEGIC TAG HOOKS BUTTON SHIELD */}
-              <div style={{ display: 'flex', gap: '4px', width: '100%', marginTop: '6px' }}>
+              {/* STYLISH MODAL ROUTER SHORTCUT BUTTON TAG MAP */}
+              <div style={{ display: 'flex', gap: '4px', width: '100%', marginTop: '6px', flexWrap: 'wrap' }}>
                 {targetBlock === 'assets' && (
                   <>
-                    <button type="button" onClick={() => injectOsPrefix('win')} style={{ padding: '8px 12px', background: '#0284c7', color: '#fff', border: 'none', borderRadius: '6px', fontSize: '11px', cursor: 'pointer', fontWeight: 'bold' }}>+ Windows App</button>
-                    <button type="button" onClick={() => injectOsPrefix('mac')} style={{ padding: '8px 12px', background: '#be123c', color: '#fff', border: 'none', borderRadius: '6px', fontSize: '11px', cursor: 'pointer', fontWeight: 'bold' }}>+ Mac OS App</button>
-                    <button type="button" onClick={() => injectOsPrefix('pass')} style={{ padding: '8px 12px', background: '#a855f7', color: '#fff', border: 'none', borderRadius: '6px', fontSize: '11px', cursor: 'pointer', fontWeight: 'bold' }}>+ Password Node</button>
-                    <button type="button" onClick={() => injectOsPrefix('note')} style={{ padding: '8px 12px', background: '#64748b', color: '#fff', border: 'none', borderRadius: '6px', fontSize: '11px', cursor: 'pointer', fontWeight: 'bold' }}>+ Note Node</button>
+                    <button type="button" onClick={() => injectOsPrefix('win')} style={{ padding: '8px 12px', background: '#0284c7', color: '#fff', border: 'none', borderRadius: '4px', fontSize: '11px', cursor: 'pointer', fontWeight: 'bold' }}>+ Windows App (Block 2)</button>
+                    <button type="button" onClick={() => injectOsPrefix('mac')} style={{ padding: '8px 12px', background: '#be123c', color: '#fff', border: 'none', borderRadius: '4px', fontSize: '11px', cursor: 'pointer', fontWeight: 'bold' }}>+ Mac OS App (Block 2)</button>
+                    <button type="button" onClick={() => injectOsPrefix('pass')} style={{ padding: '8px 12px', background: '#a855f7', color: '#fff', border: 'none', borderRadius: '4px', fontSize: '11px', cursor: 'pointer', fontWeight: 'bold' }}>+ Password Node (Block 5)</button>
+                    <button type="button" onClick={() => injectOsPrefix('note')} style={{ padding: '8px 12px', background: '#64748b', color: '#fff', border: 'none', borderRadius: '4px', fontSize: '11px', cursor: 'pointer', fontWeight: 'bold' }}>+ Note Node (Block 5)</button>
                   </>
                 )}
-                {(targetBlock === 'socials' || targetBlock === 'my_work') && (
-                  <button type="button" onClick={() => injectOsPrefix('tute')} style={{ padding: '8px 12px', background: '#10b981', color: '#fff', border: 'none', borderRadius: '6px', fontSize: '11px', cursor: 'pointer', fontWeight: 'bold' }}>+ Tag as Tutorial Block Element</button>
-                )}
+                
+                <button type="button" onClick={() => injectOsPrefix('act')} style={{ padding: '8px 12px', background: '#7c3aed', color: '#fff', border: 'none', borderRadius: '4px', fontSize: '11px', cursor: 'pointer', fontWeight: 'bold' }}>🔲 Route to Block 4: System Activation</button>
+                <button type="button" onClick={() => injectOsPrefix('site')} style={{ padding: '8px 12px', background: '#0ea5e9', color: '#fff', border: 'none', borderRadius: '4px', fontSize: '11px', cursor: 'pointer', fontWeight: 'bold' }}>🔲 Route to Block 5: Other Sites</button>
+                <button type="button" onClick={() => injectOsPrefix('tute')} style={{ padding: '8px 12px', background: '#059669', color: '#fff', border: 'none', borderRadius: '4px', fontSize: '11px', cursor: 'pointer', fontWeight: 'bold' }}>🔲 Route to Block 6: Tutorials</button>
               </div>
             </div>
           </div>
@@ -238,13 +241,13 @@ export default function Admin() {
           <input type="text" placeholder={isTextNode ? "e.g., sh1vx" : "https://..."} value={url} onChange={(e) => setUrl(e.target.value)} style={{ padding: '12px', width: '100%', background: '#0a0a0f', border: isTextNode ? '1px solid #a855f7' : '1px solid #222', color: '#fff', borderRadius: '6px' }} />
         </div>
 
-        <button type="submit" style={{ padding: '14px', background: '#10b981', color: '#fff', border: 'none', cursor: 'pointer', borderRadius: '8px', fontWeight: '600' }}>Publish Element to Selected Column</button>
+        <button type="submit" style={{ padding: '14px', background: '#10b981', color: '#fff', border: 'none', cursor: 'pointer', borderRadius: '8px', fontWeight: '600' }}>Publish Element Matrix Object</button>
       </form>
 
-      {/* RECORD DELETION MATRIX DISPLAY LOGS */}
+      {/* ADMIN ARCHITECTURE SLOTS DELETION LOGS */}
       <h3 style={{ borderBottom: '1px solid #222', paddingBottom: '10px', marginBottom: '15px' }}>Active Structured Portfolio Layout Architecture</h3>
       
-      <h4 style={{ color: '#6366f1', margin: '20px 0 10px 0' }}>Column 1: Social Links</h4>
+      <h4 style={{ color: '#6366f1', margin: '20px 0 10px 0' }}>Matrix Base Bucket Stack 1: Socials Stack</h4>
       <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
         {socials.map(item => (
           <div key={item._id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#13131a', padding: '14px', borderRadius: '10px', border: '1px solid #1e1e24' }}>
@@ -254,7 +257,7 @@ export default function Admin() {
         ))}
       </div>
 
-      <h4 style={{ color: '#a855f7', margin: '30px 0 10px 0' }}>Column 2: Assets & Presets</h4>
+      <h4 style={{ color: '#a855f7', margin: '30px 0 10px 0' }}>Matrix Base Bucket Stack 2: Assets Stack</h4>
       <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
         {assets.map(item => (
           <div key={item._id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#13131a', padding: '14px', borderRadius: '10px', border: '1px solid #1e1e24' }}>
@@ -264,7 +267,7 @@ export default function Admin() {
         ))}
       </div>
 
-      <h4 style={{ color: '#10b981', margin: '30px 0 10px 0' }}>Column 3: My Work (Videos)</h4>
+      <h4 style={{ color: '#10b981', margin: '30px 0 10px 0' }}>Matrix Base Bucket Stack 3: My Work Stack</h4>
       <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
         {myWork.map(item => (
           <div key={item._id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#13131a', padding: '14px', borderRadius: '10px', border: '1px solid #1e1e24' }}>
