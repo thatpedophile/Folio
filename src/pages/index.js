@@ -38,16 +38,21 @@ export default function Home() {
 
   const allLinksCombined = [...(socials || []), ...(assets || []), ...(myWork || [])];
 
-  // ================= DYNAMIC ARRAYS FILTER SYSTEM =================
+  // ================= GRID ROW 1 FILTERS (THE UPPER THREE BLOCKS) =================
   const block1Socials = socials?.filter(item => !item.title.toLowerCase().match(/\[activation\]|\[othersite\]|\[lowertutorial\]/)) || [];
   
-  const windowsAssets = assets?.filter(item => item.title.toLowerCase().includes('[windows]')) || [];
-  const macAssets = assets?.filter(item => item.title.toLowerCase().includes('[mac]')) || [];
+  const windowsAssets = assets?.filter(item => item.title.toLowerCase().includes('[windows]') && !item.title.toLowerCase().includes('[activation]')) || [];
+  const macAssets = assets?.filter(item => item.title.toLowerCase().includes('[mac]') && !item.title.toLowerCase().includes('[activation]')) || [];
   const block2Notes = assets?.filter(item => item.title.toLowerCase().match(/\[password\]|\[note\]/)) || [];
 
   const block3Work = myWork?.filter(item => !item.title.toLowerCase().match(/\[activation\]|\[othersite\]|\[lowertutorial\]/)) || [];
 
-  const block4Activation = allLinksCombined.filter(item => item.title.toLowerCase().includes('[activation]'));
+  // ================= GRID ROW 2 FILTERS (THE LOWER THREE BLOCKS) =================
+  // FIXED: Activatons now cleanly sort into Windows and Mac categories
+  const windowsActivation = allLinksCombined.filter(item => item.title.toLowerCase().includes('[activation]') && item.title.toLowerCase().includes('[windows]'));
+  const macActivation = allLinksCombined.filter(item => item.title.toLowerCase().includes('[activation]') && item.title.toLowerCase().includes('[mac]'));
+  const untaggedActivation = allLinksCombined.filter(item => item.title.toLowerCase().includes('[activation]') && !item.title.toLowerCase().includes('[windows]') && !item.title.toLowerCase().includes('[mac]'));
+
   const block5OtherSites = allLinksCombined.filter(item => item.title.toLowerCase().includes('[othersite]'));
   const block6Tutorials = allLinksCombined.filter(item => item.title.toLowerCase().includes('[lowertutorial]'));
 
@@ -207,7 +212,7 @@ export default function Home() {
         </div>
 
         {/* ========================================================
-            ROW MATRIX GRID 1: THE DYNAMIC UPPER THREE COLS (1, 2, 3)
+            ROW MATRIX GRID 1: THE PRIMARY UPPER THREE COLS (1, 2, 3)
            ======================================================== */}
         <div className="matrix-row-wrapper">
           
@@ -275,24 +280,68 @@ export default function Home() {
            ======================================================== */}
         <div className="matrix-row-wrapper">
           
-          {/* BLOCK 4 */}
+          {/* BLOCK 4: ACTIVATION CARD MODULE (SPLIT INTO WIN & MAC SUBROWS) */}
           <div className="animate-fade-in column-delay-1 grid-block-panel" style={{ borderLeft: '3px solid #7c3aed' }}>
             <h3 style={{ margin: '0 0 20px 0', fontSize: '14px', color: '#7c3aed', letterSpacing: '1px', textTransform: 'uppercase', fontWeight: '700' }}>{profile.block4Name}</h3>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-              {block4Activation.length === 0 ? <p style={{ color: '#64748b', fontSize: '12px' }}>Empty Block node.</p> : block4Activation.map(item => (
-                <div key={item._id}>
-                  {isUrl(item.url) ? (
-                    <a href={item.url} target="_blank" rel="noreferrer" className="particle-btn" style={{ padding: '14px 18px', borderRadius: '10px', color: '#fff', textDecoration: 'none', fontWeight: '600', fontSize: '14px', display: 'block' }}>
-                      {cleanTitle(item.title)}
-                    </a>
-                  ) : (
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                      <div style={{ fontSize: '12px', color: '#a855f7', fontWeight: 'bold' }}>📌 {cleanTitle(item.title)}</div>
-                      <div className="markdown-doc-card">{item.url}</div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+              
+              {/* Windows Activation Subrow */}
+              <div>
+                <div style={{ fontSize: '11px', color: '#38bdf8', fontWeight: 'bold', letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '10px' }}>🪟 Windows Setup</div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                  {windowsActivation.map(item => (
+                    <div key={item._id}>
+                      {isUrl(item.url) ? (
+                        <a href={item.url} target="_blank" rel="noreferrer" className="particle-btn" style={{ padding: '12px 16px', borderRadius: '8px', color: '#fff', textDecoration: 'none', fontWeight: '600', fontSize: '13px', display: 'block' }}>
+                          {cleanTitle(item.title)}
+                        </a>
+                      ) : (
+                        <div className="markdown-doc-card"><strong>{cleanTitle(item.title)}</strong>\n{item.url}</div>
+                      )}
                     </div>
-                  )}
+                  ))}
+                  {windowsActivation.length === 0 && <p style={{ color: '#444855', fontSize: '12px', margin: 0 }}>Empty.</p>}
                 </div>
-              ))}
+              </div>
+
+              {/* Mac OS Activation Subrow */}
+              <div>
+                <div style={{ fontSize: '11px', color: '#fb7185', fontWeight: 'bold', letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '10px' }}>🍎 Mac OS Setup</div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                  {macActivation.map(item => (
+                    <div key={item._id}>
+                      {isUrl(item.url) ? (
+                        <a href={item.url} target="_blank" rel="noreferrer" className="particle-btn" style={{ padding: '12px 16px', borderRadius: '8px', color: '#fff', textDecoration: 'none', fontWeight: '600', fontSize: '13px', display: 'block' }}>
+                          {cleanTitle(item.title)}
+                        </a>
+                      ) : (
+                        <div className="markdown-doc-card"><strong>{cleanTitle(item.title)}</strong>\n{item.url}</div>
+                      )}
+                    </div>
+                  ))}
+                  {macActivation.length === 0 && <p style={{ color: '#444855', fontSize: '12px', margin: 0 }}>Empty.</p>}
+                </div>
+              </div>
+
+              {/* Untagged Lower row 4 items container fallback */}
+              {untaggedActivation.length > 0 && (
+                <div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                    {untaggedActivation.map(item => (
+                      <div key={item._id}>
+                        {isUrl(item.url) ? (
+                          <a href={item.url} target="_blank" rel="noreferrer" className="particle-btn" style={{ padding: '12px 16px', borderRadius: '8px', color: '#fff', textDecoration: 'none', fontWeight: '600', fontSize: '13px', display: 'block' }}>
+                            {cleanTitle(item.title)}
+                          </a>
+                        ) : (
+                          <div className="markdown-doc-card"><strong>{cleanTitle(item.title)}</strong>\n{item.url}</div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
             </div>
           </div>
 
