@@ -1,6 +1,6 @@
 {
-  "name": "sh1vx-biolink",
-  "version": "1.0.0",
+  "name": "sh1vx-premium-portfolio",
+  "version": "1.1.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
