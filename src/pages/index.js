@@ -36,7 +36,6 @@ export default function Home() {
 
   const { profile, socials, assets, myWork } = data;
 
-  // Combine arrays to seamlessly scan sorting filters across all items
   const allLinksCombined = [...(socials || []), ...(assets || []), ...(myWork || [])];
 
   // ================= GRID ROW 1 FILTERS (THE UPPER THREE BLOCKS) =================
@@ -55,6 +54,12 @@ export default function Home() {
 
   const cleanTitle = (title) => {
     return title.replace(/\[windows\]/i, '').replace(/\[mac\]/i, '').replace(/\[note\]/i, '').replace(/\[password\]/i, '').replace(/\[activation\]/i, '').replace(/\[othersite\]/i, '').replace(/\[lowertutorial\]/i, '').trim();
+  };
+
+  // Verifies if string value is a clickable link or copyable procedural guide documentation text
+  const isUrl = (string) => {
+    try { return string.startsWith('http://') || string.startsWith('https://'); } 
+    catch (_) { return false; }
   };
 
   return (
@@ -148,14 +153,21 @@ export default function Home() {
           border-radius: 10px; padding: 14px; margin-top: 15px; box-shadow: inset 0 0 15px rgba(168, 85, 247, 0.05);
         }
 
-        /* Standard responsive container card base used across both matrix layouts */
         .grid-block-panel {
           background: rgba(15,15,20,0.4); border: 1px solid rgba(255,255,255,0.05);
           border-radius: 16px; padding: 20px; backdrop-filter: blur(12px);
         }
         .matrix-row-wrapper {
           display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-          gap: 25px; alignItems: 'start';
+          gap: 25px; align-items: start;
+        }
+        
+        /* Pro-procedural text styling wrapper for firewall guides */
+        .markdown-doc-card {
+          background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.05);
+          padding: 14px 16px; border-radius: 10px; font-family: monospace;
+          font-size: 12.5px; line-height: 1.6; color: #cbd5e1;
+          white-space: pre-wrap; word-break: break-word; text-align: left;
         }
       `}</style>
       
@@ -173,23 +185,23 @@ export default function Home() {
         </div>
       )}
       
-      {/* LIVE VIDEO WALLPAPER */}
+      {/* BACKGROUND VIDEO */}
       {profile.bgVideoUrl && (
         <video src={profile.bgVideoUrl} autoPlay loop muted playsInline style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', objectFit: 'cover', zIndex: -3, pointerEvents: 'none' }} />
       )}
       <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(10, 10, 15, 0.55)', backdropFilter: 'blur(8px)', zIndex: -2, pointerEvents: 'none' }} />
 
-      {/* AUDIO LOADER */}
+      {/* AUDIO ELEMENT */}
       {profile.audioBgUrl && <audio ref={audioRef} src={profile.audioBgUrl} loop />}
 
-      {/* FLOAT CONTROLLER MIX VALVE */}
+      {/* FLOATING CONTROLLER WIDGET */}
       {profile.audioBgUrl && hasEntered && (
         <button onClick={toggleAudioPlayback} style={{ position: 'fixed', bottom: '25px', right: '25px', zIndex: 100, background: 'rgba(15, 15, 20, 0.6)', border: '1px solid rgba(168, 85, 247, 0.4)', borderRadius: '50%', width: '46px', height: '46px', color: '#fff', cursor: 'pointer', display: 'flex', justifyContent: 'center', alignItems: 'center', backdropFilter: 'blur(10px)', boxShadow: '0 4px 20px rgba(0,0,0,0.6)' }}>
           {isPlaying ? '⏸️' : '🎵'}
         </button>
       )}
 
-      {/* MASTER SYSTEM FRAME PORTAL */}
+      {/* MASTER LAYER VIEW */}
       <div style={{ maxWidth: '1200px', margin: '0 auto', position: 'relative', zIndex: 1 }}>
         
         {/* BRAND HEADER DISPLAY ACCENT */}
@@ -266,7 +278,7 @@ export default function Home() {
 
         </div>
 
-        {/* Clean Spacing Break Divider Between Row 1 and Row 2 Grid Levels */}
+        {/* Clean Margin Split Between Layout Rows */}
         <div style={{ margin: '40px 0' }} />
 
         {/* ========================================================
@@ -274,30 +286,50 @@ export default function Home() {
            ======================================================== */}
         <div className="matrix-row-wrapper">
           
-          {/* BLOCK 4: ACTIVATION CARD MODULE */}
+          {/* BLOCK 4: ACTIVATION CARD MODULE (SUPPORT TEXT INSTRUCTIONS AND PROCEDURAL LINKS) */}
           <div className="animate-fade-in column-delay-1 grid-block-panel" style={{ borderLeft: '3px solid #7c3aed' }}>
             <h3 style={{ margin: '0 0 20px 0', fontSize: '14px', color: '#7c3aed', letterSpacing: '1px', textTransform: 'uppercase', fontWeight: '700' }}>System Activation</h3>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
               {block4Activation.length === 0 ? <p style={{ color: '#64748b', fontSize: '12px' }}>Empty Block node.</p> : block4Activation.map(item => (
-                <a key={item._id} href={item.url} target="_blank" rel="noreferrer" className="particle-btn" style={{ padding: '14px 18px', borderRadius: '10px', color: '#fff', textDecoration: 'none', fontWeight: '600', fontSize: '14px', display: 'block' }}>
-                  {cleanTitle(item.title)}
-                </a>
+                <div key={item._id}>
+                  {isUrl(item.url) ? (
+                    // Renders standard clickable hyperlinks
+                    <a href={item.url} target="_blank" rel="noreferrer" className="particle-btn" style={{ padding: '14px 18px', borderRadius: '10px', color: '#fff', textDecoration: 'none', fontWeight: '600', fontSize: '14px', display: 'block' }}>
+                      {cleanTitle(item.title)}
+                    </a>
+                  ) : (
+                    // Renders beautiful markdown/text documentation blocks for firewall rules setup instructions
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                      <div style={{ fontSize: '12px', color: '#a855f7', fontWeight: 'bold', letterSpacing: '0.5px' }}>📌 {cleanTitle(item.title)}</div>
+                      <div className="markdown-doc-card">{item.url}</div>
+                    </div>
+                  )}
+                </div>
               ))}
             </div>
           </div>
 
-          {/* BLOCK 5: OTHER SITES / DIRECTORY CHANNELS */}
+          {/* BLOCK 5: OTHER SITES */}
           <div className="animate-fade-in column-delay-2 grid-block-panel" style={{ borderLeft: '3px solid #0ea5e9' }}>
             <h3 style={{ margin: '0 0 20px 0', fontSize: '14px', color: '#0ea5e9', letterSpacing: '1px', textTransform: 'uppercase', fontWeight: '700' }}>Other Sites</h3>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
               {block5OtherSites.length === 0 ? <p style={{ color: '#64748b', fontSize: '12px' }}>Empty Block node.</p> : block5OtherSites.map(item => (
-                <a key={item._id} href={item.url} target="_blank" rel="noreferrer" className="particle-btn" style={{ padding: '14px 18px', borderRadius: '10px', color: '#fff', textDecoration: 'none', fontWeight: '600', fontSize: '14px', display: 'block' }}>
-                  {cleanTitle(item.title)}
-                </a>
+                <div key={item._id}>
+                  {isUrl(item.url) ? (
+                    <a href={item.url} target="_blank" rel="noreferrer" className="particle-btn" style={{ padding: '14px 18px', borderRadius: '10px', color: '#fff', textDecoration: 'none', fontWeight: '600', fontSize: '14px', display: 'block' }}>
+                      {cleanTitle(item.title)}
+                    </a>
+                  ) : (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                      <div style={{ fontSize: '12px', color: '#0ea5e9', fontWeight: 'bold' }}>📌 {cleanTitle(item.title)}</div>
+                      <div className="markdown-doc-card">{item.url}</div>
+                    </div>
+                  )}
+                </div>
               ))}
             </div>
 
-            {/* BLOCK 2 EXTRA NOTES HOOK: MOUNTS PASSWORDS CLEANLY AT THE BASE OF COLUMN 5 GRID BALANCING */}
+            {/* LOWER PASSWORDS SUB-BLOCK INDEX */}
             {block2Notes.length > 0 && (
               <div className="secure-data-info-box">
                 <div style={{ fontSize: '11px', color: '#a855f7', fontWeight: 'bold', letterSpacing: '1.5px', textTransform: 'uppercase', marginBottom: '8px', fontFamily: 'monospace' }}>🔑 Passwords Index</div>
@@ -312,16 +344,27 @@ export default function Home() {
             )}
           </div>
 
-          {/* BLOCK 6: TUTORIAL CHANNELS */}
+          {/* BLOCK 6: TUTORIALS */}
           <div className="animate-fade-in column-delay-3 grid-block-panel" style={{ borderLeft: '3px solid #059669' }}>
             <h3 style={{ margin: '0 0 20px 0', fontSize: '14px', color: '#059669', letterSpacing: '1px', textTransform: 'uppercase', fontWeight: '700' }}>Tutorials</h3>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
               {block6Tutorials.length === 0 ? <p style={{ color: '#64748b', fontSize: '12px' }}>Empty Block node.</p> : block6Tutorials.map(item => (
-                <div key={item._id} className="video-card-container" style={{ borderStyle: 'dashed' }}>
-                  <div style={{ width: '100%', aspectRatio: '16/9', background: '#000', position: 'relative' }}>
-                    <video src={item.url} controls muted playsInline style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
-                  </div>
-                  <div style={{ padding: '10px', background: 'rgba(20,20,25,0.4)', fontSize: '13px' }}>{cleanTitle(item.title)}</div>
+                <div key={item._id}>
+                  {isUrl(item.url) && (item.url.endsWith('.mp4') || item.url.includes('raw.githubusercontent.com')) ? (
+                    // Video Tutorials format
+                    <div className="video-card-container" style={{ borderStyle: 'dashed' }}>
+                      <div style={{ width: '100%', aspectRatio: '16/9', background: '#000', position: 'relative' }}>
+                        <video src={item.url} controls muted playsInline style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
+                      </div>
+                      <div style={{ padding: '10px', background: 'rgba(20,20,25,0.4)', fontSize: '13px' }}>{cleanTitle(item.title)}</div>
+                    </div>
+                  ) : (
+                    // Text Guide / Instructions formats
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                      <div style={{ fontSize: '12px', color: '#059669', fontWeight: 'bold' }}>📌 {cleanTitle(item.title)}</div>
+                      <div className="markdown-doc-card">{item.url}</div>
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
