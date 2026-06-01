@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
+import { upload } from '@vercel/blob/client/upload';
 
 export default function Admin() {
   const [password, setPassword] = useState('');
@@ -6,7 +7,7 @@ export default function Admin() {
   const [links, setLinks] = useState([]);
   const [videoProjects, setVideoProjects] = useState([]);
   
-  // Custom Settings State Matrix Setup
+  // Settings Form States
   const [username, setUsername] = useState('');
   const [bio, setBio] = useState('');
   const [avatarUrl, setAvatarUrl] = useState('');
@@ -16,10 +17,18 @@ export default function Admin() {
   const [audioBgUrl, setAudioBgUrl] = useState('');
   const [audioHoverUrl, setAudioHoverUrl] = useState('');
 
-  // Creation State Controls
+  // Creation Form States
   const [title, setTitle] = useState('');
   const [url, setUrl] = useState('');
   const [entryType, setEntryType] = useState('standard');
+
+  // File Upload Interface UI Tracking States
+  const [uploadingTarget, setUploadingTarget] = useState(null); // 'hero_video', 'bg_audio', 'portfolio_unit'
+  const [uploadProgress, setUploadProgress] = useState(0);
+
+  const heroVideoInputRef = useRef(null);
+  const bgAudioInputRef = useRef(null);
+  const portfolioUnitInputRef = useRef(null);
 
   const fetchDashboardData = async () => {
     try {
@@ -49,6 +58,34 @@ export default function Admin() {
     fetchDashboardData();
   }, []);
 
+  // Universal Direct Binary File Upload Engine Handler
+  const processFileUploadAction = async (file, targetContext) => {
+    if (!file) return;
+    setUploadingTarget(targetContext);
+    setUploadProgress(10);
+
+    try {
+      const newBlob = await upload(file.name, file, {
+        access: 'public',
+        handleUploadUrl: '/api/links?type=blob_upload_handshake',
+        onUploadProgress: (progressEvent) => {
+          setUploadProgress(Math.round(progressEvent.percentage));
+        }
+      });
+
+      // Map upload URLs directly to the right form field
+      if (targetContext === 'hero_video') setVideoUrl(newBlob.url);
+      if (targetContext === 'bg_audio') setAudioBgUrl(newBlob.url);
+      if (targetContext === 'portfolio_unit') setUrl(newBlob.url);
+
+      setUploadProgress(100);
+      setTimeout(() => setUploadingTarget(null), 1000);
+    } catch (error) {
+      alert(`File processing structural layout upload failure: ${error.message}`);
+      setUploadingTarget(null);
+    }
+  };
+
   const handleUpdateProfile = async (e) => {
     e.preventDefault();
     const res = await fetch('/api/links', {
@@ -77,6 +114,37 @@ export default function Admin() {
     if (res.ok) fetchDashboardData();
   };
 
+  // Reusable Component UI Drop Zone Constructor
+  const renderFileDropperBox = (targetContext, labelText, acceptedFormats, clickRef) => {
+    const isCurrentUploading = uploadingTarget === targetContext;
+    return (
+      <div 
+        onClick={() => clickRef.current?.click()}
+        onDragOver={(e) => { e.preventDefault(); e.currentTarget.style.borderColor = '#a855f7'; }}
+        onDragLeave={(e) => { e.preventDefault(); e.currentTarget.style.borderColor = '#222'; }}
+        onDrop={(e) => { e.preventDefault(); e.currentTarget.style.borderColor = '#222'; processFileUploadAction(e.dataTransfer.files[0], targetContext); }}
+        style={{
+          border: '2px dashed #222', padding: '20px', borderRadius: '8px', textAlign: 'center', cursor: 'pointer', background: '#0a0a0f', transition: 'all 0.2s', position: 'relative', overflow: 'hidden', minHeight: '60px', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center'
+        }}
+      >
+        <input type="file" ref={clickRef} accept={acceptedFormats} style={{ display: 'none' }} onChange={(e) => processFileUploadAction(e.target.files[0], targetContext)} />
+        {isCurrentUploading ? (
+          <div style={{ width: '100%' }}>
+            <span style={{ fontSize: '12px', color: '#a855f7', fontWeight: '600' }}>Uploading Asset: {uploadProgress}%</span>
+            <div style={{ width: '100%', height: '4px', background: '#222', borderRadius: '2px', marginTop: '8px', overflow: 'hidden' }}>
+              <div style={{ width: `${uploadProgress}%`, height: '100%', background: '#a855f7', transition: 'width 0.1s' }} />
+            </div>
+          </div>
+        ) : (
+          <div>
+            <span style={{ fontSize: '13px', color: '#64748b', display: 'block' }}>{labelText}</span>
+            <span style={{ fontSize: '11px', color: '#444' }}>Drag file from desktop or click here</span>
+          </div>
+        )}
+      </div>
+    );
+  };
+
   if (!isAuthorized) {
     return (
       <div style={{ background: '#0a0a0f', color: '#fff', height: '100vh', display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column', fontFamily: 'sans-serif' }}>
@@ -91,10 +159,10 @@ export default function Admin() {
     <div style={{ background: '#0a0a0f', color: '#fff', minHeight: '100vh', padding: '40px', boxSizing: 'border-box', fontFamily: 'sans-serif' }}>
       <h2 style={{ marginBottom: '30px' }}>Global Customizer Dash</h2>
       
-      {/* CORE DESIGN AND AUDIO VARIABLE CONTROL CONTAINER */}
+      {/* CORE BRANDING SETTINGS FORM FRAME */}
       <div style={{ background: '#13131a', padding: '25px', borderRadius: '12px', border: '1px solid #1e1e24', marginBottom: '40px' }}>
         <h3 style={{ margin: '0 0 20px 0', color: '#a855f7' }}>Branding, Presets & Audio System Variables</h3>
-        <form onSubmit={handleUpdateProfile} style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+        <form onSubmit={handleUpdateProfile} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
           
           <div style={{ display: 'flex', gap: '15px' }}>
             <div style={{ flex: 1 }}>
@@ -123,19 +191,22 @@ export default function Admin() {
               <input type="url" value={avatarUrl} onChange={(e) => setAvatarUrl(e.target.value)} required style={{ padding: '12px', width: '100%', boxSizing: 'border-box', background: '#0a0a0f', border: '1px solid #222', color: '#fff', borderRadius: '6px' }} />
             </div>
             <div style={{ flex: 1 }}>
-              <label style={{ display: 'block', fontSize: '12px', color: '#64748b', marginBottom: '5px' }}>Main Intro Showreel Video URL (.mp4)</label>
-              <input type="url" value={videoUrl} onChange={(e) => setVideoUrl(e.target.value)} placeholder="Leave empty to turn off top hero player" style={{ padding: '12px', width: '100%', boxSizing: 'border-box', background: '#0a0a0f', border: '1px solid #222', color: '#fff', borderRadius: '6px' }} />
+              <label style={{ display: 'block', fontSize: '12px', color: '#64748b', marginBottom: '5px' }}>Link Interface Hover Sound Action Effect URL (.wav / .mp3)</label>
+              <input type="url" value={audioHoverUrl} onChange={(e) => setAudioHoverUrl(e.target.value)} style={{ padding: '12px', width: '100%', boxSizing: 'border-box', background: '#0a0a0f', border: '1px solid #222', color: '#fff', borderRadius: '6px' }} />
             </div>
           </div>
 
-          <div style={{ display: 'flex', gap: '15px' }}>
+          {/* MAIN HERO ASSETS PIPELINE SLOTS DROP ZONES */}
+          <div style={{ display: 'flex', gap: '15px', background: '#0a0a0f', padding: '15px', borderRadius: '8px' }}>
             <div style={{ flex: 1 }}>
-              <label style={{ display: 'block', fontSize: '12px', color: '#64748b', marginBottom: '5px' }}>Looping Background Music Track URL (.mp3 / direct stream link)</label>
-              <input type="url" value={audioBgUrl} onChange={(e) => setAudioBgUrl(e.target.value)} placeholder="Paste direct streamable sound link (Leave empty to disable)" style={{ padding: '12px', width: '100%', boxSizing: 'border-box', background: '#0a0a0f', border: '1px solid #222', color: '#fff', borderRadius: '6px' }} />
+              <label style={{ display: 'block', fontSize: '12px', color: '#a855f7', marginBottom: '5px', fontWeight: '600' }}>1. Main Intro Showreel Video (.mp4)</label>
+              {renderFileDropperBox('hero_video', 'Drop Hero Video Edit', 'video/mp4,video/webm', heroVideoInputRef)}
+              {videoUrl && <video src={videoUrl} controls style={{ width: '100%', borderRadius: '6px', marginTop: '10px', height: '100px', objectFit: 'cover' }} />}
             </div>
             <div style={{ flex: 1 }}>
-              <label style={{ display: 'block', fontSize: '12px', color: '#64748b', marginBottom: '5px' }}>Link Interface Hover Sound Action Effect URL (.wav / .mp3)</label>
-              <input type="url" value={audioHoverUrl} onChange={(e) => setAudioHoverUrl(e.target.value)} placeholder="Defaults to premium UI audio tap snippet if left empty" style={{ padding: '12px', width: '100%', boxSizing: 'border-box', background: '#0a0a0f', border: '1px solid #222', color: '#fff', borderRadius: '6px' }} />
+              <label style={{ display: 'block', fontSize: '12px', color: '#a855f7', marginBottom: '5px', fontWeight: '600' }}>2. Looping Background Music Track (.mp3)</label>
+              {renderFileDropperBox('bg_audio', 'Drop Loop Background Sound', 'audio/mpeg,audio/mp3,audio/wav', bgAudioInputRef)}
+              {audioBgUrl && <audio src={audioBgUrl} controls style={{ width: '100%', marginTop: '10px' }} />}
             </div>
           </div>
 
@@ -148,32 +219,39 @@ export default function Admin() {
         </form>
       </div>
 
-      {/* CREATE ELEMENT PORTFOLIO MANAGER FORM */}
+      {/* RECENT PORTFOLIO LOG ENTRIES MANAGER FORM */}
       <h3 style={{ margin: '0 0 15px 0', color: '#6366f1' }}>Publish Portfolio Content Units</h3>
       <form onSubmit={handleCreateElement} style={{ display: 'flex', flexDirection: 'column', gap: '15px', background: '#13131a', padding: '25px', borderRadius: '12px', border: '1px solid #1e1e24', marginBottom: '40px' }}>
         <div style={{ display: 'flex', gap: '15px' }}>
           <div style={{ flex: 1 }}>
             <label style={{ display: 'block', fontSize: '12px', color: '#64748b', marginBottom: '5px' }}>Content Entry Category</label>
             <select value={entryType} onChange={(e) => setEntryType(e.target.value)} style={{ padding: '12px', width: '100%', boxSizing: 'border-box', background: '#0a0a0f', border: '1px solid #222', color: '#fff', borderRadius: '6px' }}>
-              <option value="standard">Standard Hyperlink Button Link</option>
-              <option value="video_project">Embedded Video Portfolio Edit Card Sample</option>
+              <option value="standard">Standard Hyperlink Button Link (Text URL Input)</option>
+              <option value="video_project">Embedded Video Portfolio Edit Card Sample (File Drag-and-Drop)</option>
             </select>
           </div>
           <div style={{ flex: 1 }}>
             <label style={{ display: 'block', fontSize: '12px', color: '#64748b', marginBottom: '5px' }}>Title Label / Edit Caption Description</label>
-            <input type="text" placeholder="e.g., After Effects Presets Pack or TikTok Edit" value={title} onChange={(e) => setTitle(e.target.value)} required style={{ padding: '12px', width: '100%', boxSizing: 'border-box', background: '#0a0a0f', border: '1px solid #222', color: '#fff', borderRadius: '6px' }} />
+            <input type="text" placeholder="e.g., Glitch Transition Pack or Edits Showreel" value={title} onChange={(e) => setTitle(e.target.value)} required style={{ padding: '12px', width: '100%', boxSizing: 'border-box', background: '#0a0a0f', border: '1px solid #222', color: '#fff', borderRadius: '6px' }} />
           </div>
         </div>
 
         <div>
-          <label style={{ display: 'block', fontSize: '12px', color: '#64748b', marginBottom: '5px' }}>Destination Direct Link (.mp4 for videos, regular link for buttons)</label>
-          <input type="url" placeholder="https://..." value={url} onChange={(e) => setUrl(e.target.value)} required style={{ padding: '12px', width: '100%', boxSizing: 'border-box', background: '#0a0a0f', border: '1px solid #222', color: '#fff', borderRadius: '6px' }} />
+          <label style={{ display: 'block', fontSize: '12px', color: '#64748b', marginBottom: '5px' }}>Asset Location Target URL (Populated automatically if file is dropped below)</label>
+          <input type="url" placeholder="https://..." value={url} onChange={(setUrlValue) => setUrl(setUrlValue.target.value)} required style={{ padding: '12px', width: '100%', boxSizing: 'border-box', background: '#0a0a0f', border: '1px solid #222', color: '#fff', borderRadius: '6px', marginBottom: '10px' }} />
+          
+          {entryType === 'video_project' && (
+            <div>
+              {renderFileDropperBox('portfolio_unit', 'Drop Portfolio Work Video File Here (.mp4)', 'video/mp4,video/webm', portfolioUnitInputRef)}
+              {url && <video src={url} controls style={{ width: '100%', borderRadius: '12px', marginTop: '12px', aspectRatio: '16/9', objectFit: 'cover' }} />}
+            </div>
+          )}
         </div>
 
         <button type="submit" style={{ padding: '14px', background: '#6366f1', color: '#fff', border: 'none', cursor: 'pointer', borderRadius: '8px', fontWeight: '600' }}>Publish Content Unit Asset</button>
       </form>
 
-      {/* ELEMENT RENDER MAP COMPONENT */}
+      {/* RENDER ACTIVE DATABASE RECORD ENTRIES COMPONENTS */}
       <h3 style={{ borderBottom: '1px solid #222', paddingBottom: '10px', marginBottom: '15px' }}>Active Portfolio Elements</h3>
       
       <h4 style={{ color: '#a855f7', margin: '0 0 10px 0' }}>Embedded Video Projects</h4>
