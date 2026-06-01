@@ -45,7 +45,12 @@ export default function Admin() {
       headers: { 'Content-Type': 'application/json', 'admin-password': password },
       body: JSON.stringify({ type: 'update_profile', username, bio, avatarUrl, videoUrl }),
     });
-    if (res.ok) alert('Core layout profiles modified successfully!');
+    
+    if (res.ok) {
+      alert('Core layout profiles modified successfully!');
+    } else {
+      alert('Failed to update profile settings. Try logging in again.');
+    }
   };
 
   const handleAddLink = async (e) => {
