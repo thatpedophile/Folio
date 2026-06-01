@@ -4,7 +4,8 @@ export default function Home() {
   const [data, setData] = useState(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [hasEntered, setHasEntered] = useState(false);
-  const [isModalOpen, setIsModalOpen] = useState(false); {/* Manages the full-screen cinematic overlay portal */}
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [activeModalTab, setActiveModalTab] = useState('win'); {/* Controls full-screen tab views ('win' or 'mac') */}
   const audioRef = useRef(null);
 
   useEffect(() => {
@@ -74,7 +75,7 @@ export default function Home() {
     );
   };
 
-  {/* ================= MATRIX DATA SET ARRAYS GRID FILTERS ================= */}
+  {/* ================= LAYOUT FILTERS MATRIX ================= */}
   const block1Socials = socials?.filter(item => !item.title.toLowerCase().match(/\[activation\]|\[othersite\]|\[lowertutorial\]/) && !item.parentId) || [];
   
   const windowsAssets = assets?.filter(item => item.title.toLowerCase().includes('[windows]') && !item.parentId) || [];
@@ -190,50 +191,67 @@ export default function Home() {
           gap: 25px; align-items: start;
         }
         
-        /* --- ADVANCED MODAL HUD INTERFACE LAYOUT STYLES --- */
+        /* --- ADVANCED FULL-SCREEN OVERLAY STYLES --- */
         .cinematic-modal-overlay {
           position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-          background: rgba(6, 6, 10, 0.82); backdrop-filter: blur(28px);
+          background: rgba(5, 5, 8, 0.88); backdrop-filter: blur(30px);
           z-index: 5000; display: flex; justify-content: center; align-items: center;
           opacity: 0; visibility: hidden; pointer-events: none;
-          transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-          padding: 20px; box-sizing: border-box;
+          transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+          padding: 30px; box-sizing: border-box;
         }
         .cinematic-modal-overlay.active {
           opacity: 1; visibility: visible; pointer-events: auto;
         }
         .modal-inner-card-matrix {
-          width: 100%; max-width: 1100px; height: 85vh;
-          background: rgba(18, 18, 26, 0.65); border: 1px solid rgba(255,255,255,0.08);
-          border-radius: 24px; padding: 35px; box-sizing: border-box;
+          width: 100%; max-width: 900px; height: 80vh;
+          background: rgba(15, 15, 22, 0.7); border: 1px solid rgba(255,255,255,0.08);
+          border-radius: 20px; padding: 35px; box-sizing: border-box;
           display: flex; flex-direction: column; position: relative;
-          box-shadow: 0 30px 70px rgba(0,0,0,0.8);
-          transform: translateY(30px) scale(0.97); transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+          box-shadow: 0 30px 80px rgba(0,0,0,0.9);
+          transform: translateY(20px) scale(0.98); transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
         }
         .cinematic-modal-overlay.active .modal-inner-card-matrix {
           transform: translateY(0) scale(1);
         }
-        .modal-split-panels-grid {
-          display: grid; grid-template-columns: repeat(2, 1fr); gap: 30px;
-          flex: 1; min-height: 0; margin-top: 25px;
+        
+        /* --- PREMIUM TAB CHANGER NAVIGATION MATRIX BAR --- */
+        .modal-tabs-navbar {
+          display: flex; gap: 10px; margin-top: 20px;
+          border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 15px;
         }
-        @media (max-width: 800px) {
-          .modal-split-panels-grid { grid-template-columns: 1fr; }
+        .navbar-tab-toggle-btn {
+          padding: 12px 28px; background: rgba(255,255,255,0.02);
+          border: 1px solid rgba(255,255,255,0.05); color: #888; font-weight: 700;
+          font-size: 12px; text-transform: uppercase; letter-spacing: 1.5px;
+          border-radius: 6px; cursor: pointer; transition: all 0.3s ease;
+          font-family: monospace;
         }
-        .modal-scroll-pane-card {
-          background: rgba(0,0,0,0.25); border: 1px solid rgba(255,255,255,0.03);
-          border-radius: 16px; padding: 20px; overflow-y: auto; box-sizing: border-box;
-          display: flex; flexDirection: column; gap: 18px;
+        .navbar-tab-toggle-btn.active-win {
+          color: #fff; background: rgba(2, 132, 199, 0.15); border-color: #0284c7;
+          box-shadow: 0 0 20px rgba(2, 132, 199, 0.2);
         }
-        .modal-scroll-pane-card::-webkit-scrollbar { width: 5px; }
-        .modal-scroll-pane-card::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
+        .navbar-tab-toggle-btn.active-mac {
+          color: #fff; background: rgba(190, 18, 60, 0.15); border-color: #be123c;
+          box-shadow: 0 0 20px rgba(190, 18, 60, 0.2);
+        }
+        .navbar-tab-toggle-btn:hover:not(.active-win):not(.active-mac) {
+          background: rgba(255,255,255,0.05); color: #fff;
+        }
+
+        .modal-full-screen-scroll-pane {
+          flex: 1; min-height: 0; margin-top: 20px; overflow-y: auto;
+          display: flex; flex-direction: column; gap: 16px; padding-right: 5px;
+        }
+        .modal-full-screen-scroll-pane::-webkit-scrollbar { width: 5px; }
+        .modal-full-screen-scroll-pane::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 10px; }
 
         .pro-doc-guide-card {
-          background: rgba(15, 15, 22, 0.7); border: 1px solid rgba(255,255,255,0.04);
-          padding: 18px; border-radius: 12px; font-family: monospace;
-          font-size: 12.5px; line-height: 1.65; color: #cbd5e1;
+          background: rgba(7, 7, 12, 0.5); border: 1px solid rgba(255,255,255,0.04);
+          padding: 22px; border-radius: 12px; font-family: monospace;
+          font-size: 13px; line-height: 1.7; color: #cbd5e1;
           white-space: pre-wrap; word-break: break-word; text-align: left;
-          box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+          box-shadow: 0 4px 25px rgba(0,0,0,0.3);
         }
         .individual-pass-box {
           display: block; font-size: 11.5px; color: #a855f7; font-family: monospace;
@@ -257,16 +275,16 @@ export default function Home() {
         </div>
       )}
       
-      {/* BACKGROUND BG VIDEO */}
+      {/* BACKGROUND VIDEO SYSTEM */}
       {profile.bgVideoUrl && (
         <video src={profile.bgVideoUrl} autoPlay loop muted playsInline style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', objectFit: 'cover', zIndex: -3, pointerEvents: 'none' }} />
       )}
       <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(10, 10, 15, 0.55)', backdropFilter: 'blur(8px)', zIndex: -2, pointerEvents: 'none' }} />
 
-      {/* AUDIO PLAYER */}
+      {/* AUDIO COMPONENT */}
       {profile.audioBgUrl && <audio ref={audioRef} src={profile.audioBgUrl} loop />}
 
-      {/* AUDIO FLIP ACTION FLOATER */}
+      {/* ACTION CORNER FLOATER */}
       {profile.audioBgUrl && hasEntered && (
         <button onClick={toggleAudioPlayback} style={{ position: 'fixed', bottom: '25px', right: '25px', zIndex: 100, background: 'rgba(15, 15, 20, 0.6)', border: '1px solid rgba(168, 85, 247, 0.4)', borderRadius: '50%', width: '46px', height: '46px', color: '#fff', cursor: 'pointer', display: 'flex', justifyContent: 'center', alignItems: 'center', backdropFilter: 'blur(10px)', boxShadow: '0 4px 20px rgba(0,0,0,0.6)' }}>
           {isPlaying ? '⏸️' : '🎵'}
@@ -274,58 +292,70 @@ export default function Home() {
       )}
 
       {/* ======================================================================
-          THE CINEMATIC FULL-SCREEN OVERLAY PORTAL SCREEN (FOR BLOCK 4 ACTIVATION)
+          THE CINEMATIC TAB-SWITCHING INTERACTIVE FULL-SCREEN OVERLAY DECK
          ====================================================================== */}
       <div className={`cinematic-modal-overlay ${isModalOpen ? 'active' : ''}`} onClick={() => setIsModalOpen(false)}>
         <div className="modal-inner-card-matrix" onClick={(e) => e.stopPropagation()}>
           
-          {/* TOP HEADER CONTROLS INSIDE MODAL */}
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(255,255,255,0.08)', paddingBottom: '15px' }}>
+          {/* HEADER CONTROLS INSIDE MODAL */}
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start' }}>
             <div>
-              <h2 style={{ margin: 0, fontSize: '20px', letterSpacing: '1.5px', color: '#a855f7', textTransform: 'uppercase', fontWeight: '800' }}>⚡ {profile.block4Name} Gateway</h2>
-              <p style={{ margin: '4px 0 0 0', fontSize: '11px', color: '#64748b', fontFamily: 'monospace' }}>SECURE ACCESS CONSOLE SYSTEM ACTIVE</p>
+              <h2 style={{ margin: 0, fontSize: '20px', letterSpacing: '1.5px', color: '#a855f7', textTransform: 'uppercase', fontWeight: '800' }}>⚡ {profile.block4Name} Console</h2>
+              <p style={{ margin: '4px 0 0 0', fontSize: '11px', color: '#444855', fontFamily: 'monospace' }}>TABULAR_EXPANSE_ENGINE // OPERATIONAL</p>
             </div>
-            <button onClick={() => setIsModalOpen(false)} style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', padding: '10px 18px', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold', fontSize: '12px', transition: 'all 0.2s' }} onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(239,68,68,0.2)'} onMouseLeave={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.03)'}>CLOSE ESC</button>
+            <button onClick={() => setIsModalOpen(false)} style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', padding: '10px 18px', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold', fontSize: '12px' }} onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(239,68,68,0.2)'} onMouseLeave={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.03)'}>CLOSE ESC</button>
           </div>
 
-          {/* SPLIT HUB COLUMNS: HORIZONTAL PANELS MATRIX SIDE-BY-SIDE */}
-          <div className="modal-split-panels-grid">
-            
-            {/* WINDOWS ACTIVATION DECK */}
-            <div className="modal-scroll-pane-card" style={{ borderTop: '3px solid #38bdf8' }}>
-              <div style={{ fontSize: '12px', color: '#38bdf8', fontWeight: 'bold', letterSpacing: '1px', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '6px' }}>🪟 Windows Setup Panel</div>
+          {/* --- THE INTERACTIVE TAB SELECT NAVIGATION SYSTEM BAR --- */}
+          <div className="modal-tabs-navbar">
+            <button 
+              className={`navbar-tab-toggle-btn ${activeModalTab === 'win' ? 'active-win' : ''}`}
+              onClick={() => setActiveModalTab('win')}
+            >
+              🪟 Windows Setup Scripts
+            </button>
+            <button 
+              className={`navbar-tab-toggle-btn ${activeModalTab === 'mac' ? 'active-mac' : ''}`}
+              onClick={() => setActiveModalTab('mac')}
+            >
+              🍎 Mac OS Setup Scripts
+            </button>
+          </div>
+
+          {/* --- THE FULL SCREEN CONDITIONAL PORTAL MATRIX INTERFACE VIEW --- */}
+          {activeModalTab === 'win' ? (
+            // WINDOWS TAB CONTENT PANELS (Mac panels are closed and wiped cleanly from view)
+            <div className="modal-full-screen-scroll-pane" style={{ animation: 'fadeInUp 0.4s ease forwards' }}>
               {windowsActivation.map(item => (
-                <div key={item._id} className="pro-doc-guide-card">
+                <div key={item._id} className="pro-doc-guide-card" style={{ borderLeft: '3px solid #38bdf8' }}>
                   <div style={{ color: '#38bdf8', fontWeight: 'bold', marginBottom: '8px', fontSize: '13px', borderBottom: '1px solid rgba(255,255,255,0.04)', paddingBottom: '6px' }}>{cleanTitle(item.title)}</div>
                   <div style={{ color: '#e2e8f0' }}>{renderTextWithLinks(item.url)}</div>
                   <RenderAttachedSubNodes parentId={item._id} />
                 </div>
               ))}
-              {windowsActivation.length === 0 && <p style={{ color: '#444855', fontSize: '12px', textAlign: 'center', marginTop: '20px' }}>No active setups cataloged.</p>}
+              {windowsActivation.length === 0 && <p style={{ color: '#444855', fontSize: '12px', textAlign: 'center', marginTop: '40px' }}>No active setups cataloged.</p>}
             </div>
-
-            {/* MAC OS ACTIVATION DECK */}
-            <div className="modal-scroll-pane-card" style={{ borderTop: '3px solid #fb7185' }}>
-              <div style={{ fontSize: '12px', color: '#fb7185', fontWeight: 'bold', letterSpacing: '1px', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '6px' }}>🍎 Mac OS Setup Panel</div>
+          ) : (
+            // MAC OS TAB CONTENT PANELS (Windows panels are closed and wiped cleanly from view)
+            <div className="modal-full-screen-scroll-pane" style={{ animation: 'fadeInUp 0.4s ease forwards' }}>
               {macActivation.map(item => (
-                <div key={item._id} className="pro-doc-guide-card">
+                <div key={item._id} className="pro-doc-guide-card" style={{ borderLeft: '3px solid #fb7185' }}>
                   <div style={{ color: '#fb7185', fontWeight: 'bold', marginBottom: '8px', fontSize: '13px', borderBottom: '1px solid rgba(255,255,255,0.04)', paddingBottom: '6px' }}>{cleanTitle(item.title)}</div>
                   <div style={{ color: '#e2e8f0' }}>{renderTextWithLinks(item.url)}</div>
                   <RenderAttachedSubNodes parentId={item._id} />
                 </div>
               ))}
-              {macActivation.length === 0 && <p style={{ color: '#444855', fontSize: '12px', textAlign: 'center', marginTop: '20px' }}>No active setups cataloged.</p>}
+              {macActivation.length === 0 && <p style={{ color: '#444855', fontSize: '12px', textAlign: 'center', marginTop: '40px' }}>No active setups cataloged.</p>}
             </div>
-
-          </div>
+          )}
 
         </div>
       </div>
 
-      {/* CORE FRAME LAYOUT WRAPPER CONTENT BOUNDS */}
+      {/* CORE LINK PAGES INTERFACE GRID HOUSING */}
       <div style={{ maxWidth: '1200px', margin: '0 auto', position: 'relative', zIndex: 1 }}>
         
-        {/* BRAND TITLE LOG */}
+        {/* BRAND CARD BIO BLOCK */}
         <div className="animate-fade-in" style={{ textAlign: 'center', marginBottom: '50px' }}>
           {profile.avatarUrl && (
             <div className="pfp-wrapper">
@@ -342,7 +372,6 @@ export default function Home() {
            ======================================================== */}
         <div className="matrix-row-wrapper">
           
-          {/* BLOCK 1 */}
           <div className="animate-fade-in column-delay-1 grid-block-panel" style={{ borderLeft: '3px solid #6366f1' }}>
             <h3 style={{ margin: '0 0 20px 0', fontSize: '14px', color: '#6366f1', letterSpacing: '1px', textTransform: 'uppercase', fontWeight: '700' }}>{profile.block1Name}</h3>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
@@ -357,11 +386,9 @@ export default function Home() {
             </div>
           </div>
 
-          {/* BLOCK 2 */}
           <div className="animate-fade-in column-delay-2 grid-block-panel" style={{ borderLeft: '3px solid #a855f7' }}>
             <h3 style={{ margin: '0 0 20px 0', fontSize: '14px', color: '#a855f7', letterSpacing: '1px', textTransform: 'uppercase', fontWeight: '700' }}>{profile.block2Name}</h3>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-              
               <div>
                 <div style={{ fontSize: '11px', color: '#38bdf8', fontWeight: 'bold', letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '10px' }}>🪟 Windows System Apps</div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
@@ -375,7 +402,6 @@ export default function Home() {
                   ))}
                 </div>
               </div>
-
               <div>
                 <div style={{ fontSize: '11px', color: '#fb7185', fontWeight: 'bold', letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '10px' }}>🍎 Mac OS System Apps</div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
@@ -389,11 +415,9 @@ export default function Home() {
                   ))}
                 </div>
               </div>
-
             </div>
           </div>
 
-          {/* BLOCK 3 */}
           <div className="animate-fade-in column-delay-3 grid-block-panel" style={{ borderLeft: '3px solid #10b981' }}>
             <h3 style={{ margin: '0 0 20px 0', fontSize: '14px', color: '#10b981', letterSpacing: '1px', textTransform: 'uppercase', fontWeight: '700' }}>{profile.block3Name}</h3>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
@@ -416,11 +440,11 @@ export default function Home() {
         <div style={{ margin: '40px 0' }} />
 
         {/* ========================================================
-            ROW MATRIX GRID 2: LOWER INTERACTIVE MATRIC MATRIX SLOTS
+            ROW MATRIX GRID 2: THE SECURE LOWER THREE COLS (4, 5, 6)
            ======================================================== */}
         <div className="matrix-row-wrapper">
           
-          {/* BLOCK 4: ACTIVATION (TRIGGER FULL-SCREEN DUAL OVERLAY GATE ON CLICK) */}
+          {/* BLOCK 4: ACTIVATION ACCORDION PANEL ACCENT */}
           <div className="animate-fade-in column-delay-1 grid-block-panel" style={{ borderLeft: '3px solid #7c3aed' }}>
             <h3 style={{ margin: '0 0 25px 0', fontSize: '14px', color: '#7c3aed', letterSpacing: '1px', textTransform: 'uppercase', fontWeight: '700' }}>{profile.block4Name}</h3>
             <button className="particle-btn" onClick={() => setIsModalOpen(true)} style={{ width: '100%', padding: '16px', borderRadius: '12px', color: '#fff', border: 'none', fontWeight: '700', fontSize: '13.5px', cursor: 'pointer', textAlign: 'center', letterSpacing: '1.5px', textTransform: 'uppercase', background: 'linear-gradient(135deg, rgba(124,58,237,0.3) 0%, rgba(168,85,247,0.1) 100%)' }}>
@@ -460,7 +484,7 @@ export default function Home() {
                   {isUrlOnly(item.url) && (item.url.endsWith('.mp4') || item.url.includes('raw.githubusercontent.com')) ? (
                     <div className="video-card-container" style={{ borderStyle: 'dashed' }}>
                       <div style={{ width: '100%', aspectRatio: '16/9', background: '#000', position: 'relative' }}>
-                        <video src={item.url} controls muted playsInline style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
+                        <video src={item.url} controls muted playsInline style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                       </div>
                       <div style={{ padding: '10px', background: 'rgba(20,20,25,0.4)', fontSize: '13px' }}>{cleanTitle(item.title)}</div>
                     </div>
