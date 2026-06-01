@@ -41,17 +41,21 @@ export default function Home() {
   // ================= GRID ROW 1 FILTERS (THE UPPER THREE BLOCKS) =================
   const block1Socials = socials?.filter(item => !item.title.toLowerCase().match(/\[activation\]|\[othersite\]|\[lowertutorial\]/)) || [];
   
-  const windowsAssets = assets?.filter(item => item.title.toLowerCase().includes('[windows]') && !item.title.toLowerCase().includes('[activation]')) || [];
-  const macAssets = assets?.filter(item => item.title.toLowerCase().includes('[mac]') && !item.title.toLowerCase().includes('[activation]')) || [];
+  const windowsAssets = assets?.filter(item => item.title.toLowerCase().includes('[windows]')) || [];
+  const macAssets = assets?.filter(item => item.title.toLowerCase().includes('[mac]')) || [];
   const block2Notes = assets?.filter(item => item.title.toLowerCase().match(/\[password\]|\[note\]/)) || [];
 
   const block3Work = myWork?.filter(item => !item.title.toLowerCase().match(/\[activation\]|\[othersite\]|\[lowertutorial\]/)) || [];
 
   // ================= GRID ROW 2 FILTERS (THE LOWER THREE BLOCKS) =================
-  // FIXED: Activatons now cleanly sort into Windows and Mac categories
-  const windowsActivation = allLinksCombined.filter(item => item.title.toLowerCase().includes('[activation]') && item.title.toLowerCase().includes('[windows]'));
-  const macActivation = allLinksCombined.filter(item => item.title.toLowerCase().includes('[activation]') && item.title.toLowerCase().includes('[mac]'));
-  const untaggedActivation = allLinksCombined.filter(item => item.title.toLowerCase().includes('[activation]') && !item.title.toLowerCase().includes('[windows]') && !item.title.toLowerCase().includes('[mac]'));
+  // FIXED: Targets any items with the [Activation] tag, then cleanly parses them by title context keywords
+  const totalActivationNodes = allLinksCombined.filter(item => item.title.toLowerCase().includes('[activation]'));
+  
+  const windowsActivation = totalActivationNodes.filter(item => item.title.toLowerCase().includes('windows'));
+  const macActivation = totalActivationNodes.filter(item => item.title.toLowerCase().includes('mac'));
+  
+  // Captures items inside Block 4 if they don't explicitly mention Windows or Mac in the text label
+  const untaggedActivation = totalActivationNodes.filter(item => !item.title.toLowerCase().includes('windows') && !item.title.toLowerCase().includes('mac'));
 
   const block5OtherSites = allLinksCombined.filter(item => item.title.toLowerCase().includes('[othersite]'));
   const block6Tutorials = allLinksCombined.filter(item => item.title.toLowerCase().includes('[lowertutorial]'));
@@ -199,7 +203,7 @@ export default function Home() {
 
       <div style={{ maxWidth: '1200px', margin: '0 auto', position: 'relative', zIndex: 1 }}>
         
-        {/* PROFILE CARD */}
+        {/* BRAND HEADER */}
         <div className="animate-fade-in" style={{ textAlign: 'center', marginBottom: '50px' }}>
           {profile.avatarUrl && (
             <div className="pfp-wrapper">
@@ -216,7 +220,7 @@ export default function Home() {
            ======================================================== */}
         <div className="matrix-row-wrapper">
           
-          {/* BLOCK 1 */}
+          {/* BLOCK 1: SOCIALS */}
           <div className="animate-fade-in column-delay-1 grid-block-panel" style={{ borderLeft: '3px solid #6366f1' }}>
             <h3 style={{ margin: '0 0 20px 0', fontSize: '14px', color: '#6366f1', letterSpacing: '1px', textTransform: 'uppercase', fontWeight: '700' }}>{profile.block1Name}</h3>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
@@ -228,7 +232,7 @@ export default function Home() {
             </div>
           </div>
 
-          {/* BLOCK 2 */}
+          {/* BLOCK 2: ASSETS & PRESETS */}
           <div className="animate-fade-in column-delay-2 grid-block-panel" style={{ borderLeft: '3px solid #a855f7' }}>
             <h3 style={{ margin: '0 0 20px 0', fontSize: '14px', color: '#a855f7', letterSpacing: '1px', textTransform: 'uppercase', fontWeight: '700' }}>{profile.block2Name}</h3>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
@@ -256,7 +260,7 @@ export default function Home() {
             </div>
           </div>
 
-          {/* BLOCK 3 */}
+          {/* BLOCK 3: MY WORK */}
           <div className="animate-fade-in column-delay-3 grid-block-panel" style={{ borderLeft: '3px solid #10b981' }}>
             <h3 style={{ margin: '0 0 20px 0', fontSize: '14px', color: '#10b981', letterSpacing: '1px', textTransform: 'uppercase', fontWeight: '700' }}>{profile.block3Name}</h3>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
@@ -280,7 +284,7 @@ export default function Home() {
            ======================================================== */}
         <div className="matrix-row-wrapper">
           
-          {/* BLOCK 4: ACTIVATION CARD MODULE (SPLIT INTO WIN & MAC SUBROWS) */}
+          {/* BLOCK 4: SYSTEM ACTIVATION SPLIT */}
           <div className="animate-fade-in column-delay-1 grid-block-panel" style={{ borderLeft: '3px solid #7c3aed' }}>
             <h3 style={{ margin: '0 0 20px 0', fontSize: '14px', color: '#7c3aed', letterSpacing: '1px', textTransform: 'uppercase', fontWeight: '700' }}>{profile.block4Name}</h3>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
@@ -296,7 +300,7 @@ export default function Home() {
                           {cleanTitle(item.title)}
                         </a>
                       ) : (
-                        <div className="markdown-doc-card"><strong>{cleanTitle(item.title)}</strong>\n{item.url}</div>
+                        <div className="markdown-doc-card"><strong>{cleanTitle(item.title)}</strong><br/>{item.url}</div>
                       )}
                     </div>
                   ))}
@@ -315,7 +319,7 @@ export default function Home() {
                           {cleanTitle(item.title)}
                         </a>
                       ) : (
-                        <div className="markdown-doc-card"><strong>{cleanTitle(item.title)}</strong>\n{item.url}</div>
+                        <div className="markdown-doc-card"><strong>{cleanTitle(item.title)}</strong><br/>{item.url}</div>
                       )}
                     </div>
                   ))}
@@ -323,7 +327,7 @@ export default function Home() {
                 </div>
               </div>
 
-              {/* Untagged Lower row 4 items container fallback */}
+              {/* General Fallback Activation Row */}
               {untaggedActivation.length > 0 && (
                 <div>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
@@ -334,7 +338,7 @@ export default function Home() {
                             {cleanTitle(item.title)}
                           </a>
                         ) : (
-                          <div className="markdown-doc-card"><strong>{cleanTitle(item.title)}</strong>\n{item.url}</div>
+                          <div className="markdown-doc-card"><strong>{cleanTitle(item.title)}</strong><br/>{item.url}</div>
                         )}
                       </div>
                     ))}
@@ -345,7 +349,7 @@ export default function Home() {
             </div>
           </div>
 
-          {/* BLOCK 5 */}
+          {/* BLOCK 5: OTHER SITES */}
           <div className="animate-fade-in column-delay-2 grid-block-panel" style={{ borderLeft: '3px solid #0ea5e9' }}>
             <h3 style={{ margin: '0 0 20px 0', fontSize: '14px', color: '#0ea5e9', letterSpacing: '1px', textTransform: 'uppercase', fontWeight: '700' }}>{profile.block5Name}</h3>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
@@ -379,7 +383,7 @@ export default function Home() {
             )}
           </div>
 
-          {/* BLOCK 6 */}
+          {/* BLOCK 6: LOWER TUTORIALS */}
           <div className="animate-fade-in column-delay-3 grid-block-panel" style={{ borderLeft: '3px solid #059669' }}>
             <h3 style={{ margin: '0 0 20px 0', fontSize: '14px', color: '#059669', letterSpacing: '1px', textTransform: 'uppercase', fontWeight: '700' }}>{profile.block6Name}</h3>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
@@ -388,7 +392,7 @@ export default function Home() {
                   {isUrl(item.url) && (item.url.endsWith('.mp4') || item.url.includes('raw.githubusercontent.com')) ? (
                     <div className="video-card-container" style={{ borderStyle: 'dashed' }}>
                       <div style={{ width: '100%', aspectRatio: '16/9', background: '#000', position: 'relative' }}>
-                        <video src={item.url} controls muted playsInline style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
+                        <video src={item.url} controls muted playsInline style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                       </div>
                       <div style={{ padding: '10px', background: 'rgba(20,20,25,0.4)', fontSize: '13px' }}>{cleanTitle(item.title)}</div>
                     </div>
