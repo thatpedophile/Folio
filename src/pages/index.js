@@ -5,7 +5,14 @@ export default function Home() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [hasEntered, setHasEntered] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [activeModalTab, setActiveModalTab] = useState('win'); {/* Controls full-screen tab views ('win' or 'mac') */}
+  const [activeModalTab, setActiveModalTab] = useState('win');
+  
+  {/* NEW: Independent state hooks to control accordion collapsing for your 4 custom grid panels */}
+  const [isBlock2Open, setIsBlock2Open] = useState(true);
+  const [isBlock3Open, setIsBlock3Open] = useState(true);
+  const [isBlock5Open, setIsBlock5Open] = useState(true);
+  const [isBlock6Open, setIsBlock6Open] = useState(true);
+
   const audioRef = useRef(null);
 
   useEffect(() => {
@@ -75,7 +82,7 @@ export default function Home() {
     );
   };
 
-  {/* ================= LAYOUT FILTERS MATRIX ================= */}
+  // ================= LAYOUT FILTERS MATRIX =================
   const block1Socials = socials?.filter(item => !item.title.toLowerCase().match(/\[activation\]|\[othersite\]|\[lowertutorial\]/) && !item.parentId) || [];
   
   const windowsAssets = assets?.filter(item => item.title.toLowerCase().includes('[windows]') && !item.parentId) || [];
@@ -156,7 +163,7 @@ export default function Home() {
           border-color: rgba(168, 85, 247, 0.5) !important; box-shadow: 0 8px 24px rgba(168, 85, 247, 0.2);
         }
         .particle-btn:hover::before { opacity: 1; animation: floatParticles 2s infinite linear; }
-        .particle-btn:hover::after { opacity: 1; animation: floatParticles 2.5s infinite linear 0.7s; }
+        .particle-btn:hover::after { opacity: 1; animation: floatParticles 2.5s infinite linear 0.8s; }
 
         .video-card-container {
           background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.05);
@@ -185,13 +192,31 @@ export default function Home() {
         .grid-block-panel {
           background: rgba(15,15,20,0.4); border: 1px solid rgba(255,255,255,0.05);
           border-radius: 16px; padding: 20px; backdrop-filter: blur(12px);
+          position: relative;
         }
         .matrix-row-wrapper {
           display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
           gap: 25px; align-items: start;
         }
         
-        /* --- ADVANCED FULL-SCREEN OVERLAY STYLES --- */
+        /* --- DYNAMIC HEADER BUTTON STYLING FOR DUAL ACCORDION CHANNELS --- */
+        .panel-header-row {
+          display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;
+        }
+        .panel-accordion-arrow-btn {
+          background: none; border: none; color: rgba(255, 255, 255, 0.4); 
+          font-size: 12px; cursor: pointer; transition: all 0.2s ease; padding: 4px;
+        }
+        .panel-accordion-arrow-btn:hover { color: #a855f7; transform: scale(1.1); }
+
+        .panel-collapsible-content-trunk {
+          max-height: 0; overflow: hidden; opacity: 0;
+          transition: max-height 0.45s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
+        }
+        .panel-collapsible-content-trunk.active-open {
+          max-height: 1200px; opacity: 1;
+        }
+        
         .cinematic-modal-overlay {
           position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
           background: rgba(5, 5, 8, 0.88); backdrop-filter: blur(30px);
@@ -215,7 +240,6 @@ export default function Home() {
           transform: translateY(0) scale(1);
         }
         
-        /* --- PREMIUM TAB CHANGER NAVIGATION MATRIX BAR --- */
         .modal-tabs-navbar {
           display: flex; gap: 10px; margin-top: 20px;
           border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 15px;
@@ -235,10 +259,6 @@ export default function Home() {
           color: #fff; background: rgba(190, 18, 60, 0.15); border-color: #be123c;
           box-shadow: 0 0 20px rgba(190, 18, 60, 0.2);
         }
-        .navbar-tab-toggle-btn:hover:not(.active-win):not(.active-mac) {
-          background: rgba(255,255,255,0.05); color: #fff;
-        }
-
         .modal-full-screen-scroll-pane {
           flex: 1; min-height: 0; margin-top: 20px; overflow-y: auto;
           display: flex; flex-direction: column; gap: 16px; padding-right: 5px;
@@ -251,7 +271,6 @@ export default function Home() {
           padding: 22px; border-radius: 12px; font-family: monospace;
           font-size: 13px; line-height: 1.7; color: #cbd5e1;
           white-space: pre-wrap; word-break: break-word; text-align: left;
-          box-shadow: 0 4px 25px rgba(0,0,0,0.3);
         }
         .individual-pass-box {
           display: block; font-size: 11.5px; color: #a855f7; font-family: monospace;
@@ -261,12 +280,10 @@ export default function Home() {
         }
       `}</style>
       
-      {/* 0. INTRO CURTAIN GATE */}
       <div className={`intro-curtain ${hasEntered ? 'hidden' : ''}`}>
         <button className="entry-glow-btn" onClick={handleSystemEntry}>DOMAIN EXPANSION</button>
       </div>
 
-      {/* ANNOUNCEMENT TICKER */}
       {profile.announcement && hasEntered && (
         <div className="marquee-strip-line">
           <div className="marquee-inner-scroll">
@@ -275,87 +292,61 @@ export default function Home() {
         </div>
       )}
       
-      {/* BACKGROUND VIDEO SYSTEM */}
       {profile.bgVideoUrl && (
         <video src={profile.bgVideoUrl} autoPlay loop muted playsInline style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', objectFit: 'cover', zIndex: -3, pointerEvents: 'none' }} />
       )}
       <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(10, 10, 15, 0.55)', backdropFilter: 'blur(8px)', zIndex: -2, pointerEvents: 'none' }} />
 
-      {/* AUDIO COMPONENT */}
       {profile.audioBgUrl && <audio ref={audioRef} src={profile.audioBgUrl} loop />}
 
-      {/* ACTION CORNER FLOATER */}
       {profile.audioBgUrl && hasEntered && (
         <button onClick={toggleAudioPlayback} style={{ position: 'fixed', bottom: '25px', right: '25px', zIndex: 100, background: 'rgba(15, 15, 20, 0.6)', border: '1px solid rgba(168, 85, 247, 0.4)', borderRadius: '50%', width: '46px', height: '46px', color: '#fff', cursor: 'pointer', display: 'flex', justifyContent: 'center', alignItems: 'center', backdropFilter: 'blur(10px)', boxShadow: '0 4px 20px rgba(0,0,0,0.6)' }}>
           {isPlaying ? '⏸️' : '🎵'}
         </button>
       )}
 
-      {/* ======================================================================
-          THE CINEMATIC TAB-SWITCHING INTERACTIVE FULL-SCREEN OVERLAY DECK
-         ====================================================================== */}
+      {/* OVERLAY MODAL FOR ACTIVATION CHANNELS */}
       <div className={`cinematic-modal-overlay ${isModalOpen ? 'active' : ''}`} onClick={() => setIsModalOpen(false)}>
         <div className="modal-inner-card-matrix" onClick={(e) => e.stopPropagation()}>
-          
-          {/* HEADER CONTROLS INSIDE MODAL */}
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start' }}>
             <div>
               <h2 style={{ margin: 0, fontSize: '20px', letterSpacing: '1.5px', color: '#a855f7', textTransform: 'uppercase', fontWeight: '800' }}>⚡ {profile.block4Name} Console</h2>
-              <p style={{ margin: '4px 0 0 0', fontSize: '11px', color: '#444855', fontFamily: 'monospace' }}>TABULAR_EXPANSE_ENGINE // OPERATIONAL</p>
             </div>
-            <button onClick={() => setIsModalOpen(false)} style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', padding: '10px 18px', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold', fontSize: '12px' }} onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(239,68,68,0.2)'} onMouseLeave={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.03)'}>CLOSE ESC</button>
+            <button onClick={() => setIsModalOpen(false)} style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', padding: '10px 18px', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold', fontSize: '12px' }}>CLOSE ESC</button>
           </div>
 
-          {/* --- THE INTERACTIVE TAB SELECT NAVIGATION SYSTEM BAR --- */}
           <div className="modal-tabs-navbar">
-            <button 
-              className={`navbar-tab-toggle-btn ${activeModalTab === 'win' ? 'active-win' : ''}`}
-              onClick={() => setActiveModalTab('win')}
-            >
-              🪟 Windows Setup Scripts
-            </button>
-            <button 
-              className={`navbar-tab-toggle-btn ${activeModalTab === 'mac' ? 'active-mac' : ''}`}
-              onClick={() => setActiveModalTab('mac')}
-            >
-              🍎 Mac OS Setup Scripts
-            </button>
+            <button className={`navbar-tab-toggle-btn ${activeModalTab === 'win' ? 'active-win' : ''}`} onClick={() => setActiveModalTab('win')}>🪟 Windows Setup Scripts</button>
+            <button className={`navbar-tab-toggle-btn ${activeModalTab === 'mac' ? 'active-mac' : ''}`} onClick={() => setActiveModalTab('mac')}>🍎 Mac OS Setup Scripts</button>
           </div>
 
-          {/* --- THE FULL SCREEN CONDITIONAL PORTAL MATRIX INTERFACE VIEW --- */}
           {activeModalTab === 'win' ? (
-            // WINDOWS TAB CONTENT PANELS (Mac panels are closed and wiped cleanly from view)
-            <div className="modal-full-screen-scroll-pane" style={{ animation: 'fadeInUp 0.4s ease forwards' }}>
+            <div className="modal-full-screen-scroll-pane">
               {windowsActivation.map(item => (
                 <div key={item._id} className="pro-doc-guide-card" style={{ borderLeft: '3px solid #38bdf8' }}>
-                  <div style={{ color: '#38bdf8', fontWeight: 'bold', marginBottom: '8px', fontSize: '13px', borderBottom: '1px solid rgba(255,255,255,0.04)', paddingBottom: '6px' }}>{cleanTitle(item.title)}</div>
+                  <div style={{ color: '#38bdf8', fontWeight: 'bold', marginBottom: '8px', fontSize: '13px' }}>{cleanTitle(item.title)}</div>
                   <div style={{ color: '#e2e8f0' }}>{renderTextWithLinks(item.url)}</div>
                   <RenderAttachedSubNodes parentId={item._id} />
                 </div>
               ))}
-              {windowsActivation.length === 0 && <p style={{ color: '#444855', fontSize: '12px', textAlign: 'center', marginTop: '40px' }}>No active setups cataloged.</p>}
             </div>
           ) : (
-            // MAC OS TAB CONTENT PANELS (Windows panels are closed and wiped cleanly from view)
-            <div className="modal-full-screen-scroll-pane" style={{ animation: 'fadeInUp 0.4s ease forwards' }}>
+            <div className="modal-full-screen-scroll-pane">
               {macActivation.map(item => (
                 <div key={item._id} className="pro-doc-guide-card" style={{ borderLeft: '3px solid #fb7185' }}>
-                  <div style={{ color: '#fb7185', fontWeight: 'bold', marginBottom: '8px', fontSize: '13px', borderBottom: '1px solid rgba(255,255,255,0.04)', paddingBottom: '6px' }}>{cleanTitle(item.title)}</div>
+                  <div style={{ color: '#fb7185', fontWeight: 'bold', marginBottom: '8px', fontSize: '13px' }}>{cleanTitle(item.title)}</div>
                   <div style={{ color: '#e2e8f0' }}>{renderTextWithLinks(item.url)}</div>
                   <RenderAttachedSubNodes parentId={item._id} />
                 </div>
               ))}
-              {macActivation.length === 0 && <p style={{ color: '#444855', fontSize: '12px', textAlign: 'center', marginTop: '40px' }}>No active setups cataloged.</p>}
             </div>
           )}
-
         </div>
       </div>
 
-      {/* CORE LINK PAGES INTERFACE GRID HOUSING */}
       <div style={{ maxWidth: '1200px', margin: '0 auto', position: 'relative', zIndex: 1 }}>
         
-        {/* BRAND CARD BIO BLOCK */}
+        {/* HERO CARD HEADER */}
         <div className="animate-fade-in" style={{ textAlign: 'center', marginBottom: '50px' }}>
           {profile.avatarUrl && (
             <div className="pfp-wrapper">
@@ -367,11 +358,10 @@ export default function Home() {
           <p style={{ fontSize: '14px', color: '#cbd5e1', maxWidth: '500px', margin: '0 auto', lineHeight: '1.6' }}>{profile.bio}</p>
         </div>
 
-        {/* ========================================================
-            ROW MATRIX GRID 1: THE PRIMARY UPPER THREE COLS (1, 2, 3)
-           ======================================================== */}
+        {/* ROW 1: TRI-COLUMNS GRID SPLIT LAYOUT */}
         <div className="matrix-row-wrapper">
           
+          {/* BLOCK 1: SOCIALS */}
           <div className="animate-fade-in column-delay-1 grid-block-panel" style={{ borderLeft: '3px solid #6366f1' }}>
             <h3 style={{ margin: '0 0 20px 0', fontSize: '14px', color: '#6366f1', letterSpacing: '1px', textTransform: 'uppercase', fontWeight: '700' }}>{profile.block1Name}</h3>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
@@ -386,52 +376,70 @@ export default function Home() {
             </div>
           </div>
 
+          {/* BLOCK 2: ASSETS & PRESETS (WITH GLOWING TOGGLE ARROW) */}
           <div className="animate-fade-in column-delay-2 grid-block-panel" style={{ borderLeft: '3px solid #a855f7' }}>
-            <h3 style={{ margin: '0 0 20px 0', fontSize: '14px', color: '#a855f7', letterSpacing: '1px', textTransform: 'uppercase', fontWeight: '700' }}>{profile.block2Name}</h3>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-              <div>
-                <div style={{ fontSize: '11px', color: '#38bdf8', fontWeight: 'bold', letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '10px' }}>🪟 Windows System Apps</div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                  {windowsAssets.map(item => (
-                    <div key={item._id}>
-                      <a href={item.url} target="_blank" rel="noreferrer" className="particle-btn" style={{ padding: '12px 16px', borderRadius: '8px', color: '#fff', textDecoration: 'none', fontWeight: '600', fontSize: '13px', display: 'block' }}>
-                        {cleanTitle(item.title)}
-                      </a>
-                      <RenderAttachedSubNodes parentId={item._id} />
-                    </div>
-                  ))}
+            <div className="panel-header-row">
+              <h3 style={{ margin: 0, fontSize: '14px', color: '#a855f7', letterSpacing: '1px', textTransform: 'uppercase', fontWeight: '700' }}>{profile.block2Name}</h3>
+              <button className="panel-accordion-arrow-btn" onClick={() => setIsBlock2Open(!isBlock2Open)}>
+                {isBlock2Open ? '▲ COLLAPSE' : '▼ EXPAND'}
+              </button>
+            </div>
+            
+            <div className={`panel-collapsible-content-trunk ${isBlock2Open ? 'active-open' : ''}`}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+                <div>
+                  <div style={{ fontSize: '11px', color: '#38bdf8', fontWeight: 'bold', letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '10px' }}>🪟 Windows System Apps</div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                    {windowsAssets.map(item => (
+                      <div key={item._id}>
+                        <a href={item.url} target="_blank" rel="noreferrer" className="particle-btn" style={{ padding: '12px 16px', borderRadius: '8px', color: '#fff', textDecoration: 'none', fontWeight: '600', fontSize: '13px', display: 'block' }}>
+                          {cleanTitle(item.title)}
+                        </a>
+                        <RenderAttachedSubNodes parentId={item._id} />
+                      </div>
+                    ))}
+                  </div>
                 </div>
-              </div>
-              <div>
-                <div style={{ fontSize: '11px', color: '#fb7185', fontWeight: 'bold', letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '10px' }}>🍎 Mac OS System Apps</div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                  {macAssets.map(item => (
-                    <div key={item._id}>
-                      <a href={item.url} target="_blank" rel="noreferrer" className="particle-btn" style={{ padding: '12px 16px', borderRadius: '8px', color: '#fff', textDecoration: 'none', fontWeight: '600', fontSize: '13px', display: 'block' }}>
-                        {cleanTitle(item.title)}
-                      </a>
-                      <RenderAttachedSubNodes parentId={item._id} />
-                    </div>
-                  ))}
+                <div>
+                  <div style={{ fontSize: '11px', color: '#fb7185', fontWeight: 'bold', letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '10px' }}>🍎 Mac OS System Apps</div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                    {macAssets.map(item => (
+                      <div key={item._id}>
+                        <a href={item.url} target="_blank" rel="noreferrer" className="particle-btn" style={{ padding: '12px 16px', borderRadius: '8px', color: '#fff', textDecoration: 'none', fontWeight: '600', fontSize: '13px', display: 'block' }}>
+                          {cleanTitle(item.title)}
+                        </a>
+                        <RenderAttachedSubNodes parentId={item._id} />
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
             </div>
           </div>
 
+          {/* BLOCK 3: MY WORK (WITH GLOWING TOGGLE ARROW) */}
           <div className="animate-fade-in column-delay-3 grid-block-panel" style={{ borderLeft: '3px solid #10b981' }}>
-            <h3 style={{ margin: '0 0 20px 0', fontSize: '14px', color: '#10b981', letterSpacing: '1px', textTransform: 'uppercase', fontWeight: '700' }}>{profile.block3Name}</h3>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-              {block3Work.map(item => (
-                <div key={item._id}>
-                  <div className="video-card-container">
-                    <div style={{ width: '100%', aspectRatio: '16/9', background: '#000', position: 'relative' }}>
-                      <video src={item.url} controls muted playsInline style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
+            <div className="panel-header-row">
+              <h3 style={{ margin: 0, fontSize: '14px', color: '#10b981', letterSpacing: '1px', textTransform: 'uppercase', fontWeight: '700' }}>{profile.block3Name}</h3>
+              <button className="panel-accordion-arrow-btn" onClick={() => setIsBlock3Open(!isBlock3Open)}>
+                {isBlock3Open ? '▲ COLLAPSE' : '▼ EXPAND'}
+              </button>
+            </div>
+            
+            <div className={`panel-collapsible-content-trunk ${isBlock3Open ? 'active-open' : ''}`}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                {block3Work.map(item => (
+                  <div key={item._id}>
+                    <div className="video-card-container">
+                      <div style={{ width: '100%', aspectRatio: '16/9', background: '#000', position: 'relative' }}>
+                        <video src={item.url} controls muted playsInline style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
+                      </div>
+                      <div style={{ padding: '10px', background: 'rgba(20,20,25,0.4)', fontSize: '13px' }}>{cleanTitle(item.title)}</div>
                     </div>
-                    <div style={{ padding: '10px', background: 'rgba(20,20,25,0.4)', fontSize: '13px' }}>{cleanTitle(item.title)}</div>
+                    <RenderAttachedSubNodes parentId={item._id} />
                   </div>
-                  <RenderAttachedSubNodes parentId={item._id} />
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
           </div>
 
@@ -439,12 +447,10 @@ export default function Home() {
 
         <div style={{ margin: '40px 0' }} />
 
-        {/* ========================================================
-            ROW MATRIX GRID 2: THE SECURE LOWER THREE COLS (4, 5, 6)
-           ======================================================== */}
+        {/* ROW 2: TRI-COLUMNS LOWER BLOCK CHANNELS */}
         <div className="matrix-row-wrapper">
           
-          {/* BLOCK 4: ACTIVATION ACCORDION PANEL ACCENT */}
+          {/* BLOCK 4: ADOBE ACTIVATION GATE MODAL HUB */}
           <div className="animate-fade-in column-delay-1 grid-block-panel" style={{ borderLeft: '3px solid #7c3aed' }}>
             <h3 style={{ margin: '0 0 25px 0', fontSize: '14px', color: '#7c3aed', letterSpacing: '1px', textTransform: 'uppercase', fontWeight: '700' }}>{profile.block4Name}</h3>
             <button className="particle-btn" onClick={() => setIsModalOpen(true)} style={{ width: '100%', padding: '16px', borderRadius: '12px', color: '#fff', border: 'none', fontWeight: '700', fontSize: '13.5px', cursor: 'pointer', textAlign: 'center', letterSpacing: '1.5px', textTransform: 'uppercase', background: 'linear-gradient(135deg, rgba(124,58,237,0.3) 0%, rgba(168,85,247,0.1) 100%)' }}>
@@ -452,52 +458,66 @@ export default function Home() {
             </button>
           </div>
 
-          {/* BLOCK 5 */}
+          {/* BLOCK 5: OTHER SITES (WITH GLOWING TOGGLE ARROW) */}
           <div className="animate-fade-in column-delay-2 grid-block-panel" style={{ borderLeft: '3px solid #0ea5e9' }}>
-            <h3 style={{ margin: '0 0 20px 0', fontSize: '14px', color: '#0ea5e9', letterSpacing: '1px', textTransform: 'uppercase', fontWeight: '700' }}>{profile.block5Name}</h3>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-              {block5OtherSites.map(item => (
-                <div key={item._id}>
-                  {isUrlOnly(item.url) ? (
-                    <a href={item.url} target="_blank" rel="noreferrer" className="particle-btn" style={{ padding: '14px 18px', borderRadius: '10px', color: '#fff', textDecoration: 'none', fontWeight: '600', fontSize: '14px', display: 'block' }}>
-                      {cleanTitle(item.title)}
-                    </a>
-                  ) : (
-                    <div className="markdown-doc-card" style={{ padding: '14px', margin: 0 }}>
-                      <div style={{ color: '#0ea5e9', fontWeight: 'bold', marginBottom: '6px' }}>{cleanTitle(item.title)}</div>
-                      <div>{renderTextWithLinks(item.url)}</div>
-                    </div>
-                  )}
-                  <RenderAttachedSubNodes parentId={item._id} />
-                </div>
-              ))}
-              {block5OtherSites.length === 0 && <p style={{ color: '#64748b', fontSize: '12px' }}>Empty.</p>}
+            <div className="panel-header-row">
+              <h3 style={{ margin: 0, fontSize: '14px', color: '#0ea5e9', letterSpacing: '1px', textTransform: 'uppercase', fontWeight: '700' }}>{profile.block5Name}</h3>
+              <button className="panel-accordion-arrow-btn" onClick={() => setIsBlock5Open(!isBlock5Open)}>
+                {isBlock5Open ? '▲ COLLAPSE' : '▼ EXPAND'}
+              </button>
+            </div>
+            
+            <div className={`panel-collapsible-content-trunk ${isBlock5Open ? 'active-open' : ''}`}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                {block5OtherSites.map(item => (
+                  <div key={item._id}>
+                    {isUrlOnly(item.url) ? (
+                      <a href={item.url} target="_blank" rel="noreferrer" className="particle-btn" style={{ padding: '14px 18px', borderRadius: '10px', color: '#fff', textDecoration: 'none', fontWeight: '600', fontSize: '14px', display: 'block' }}>
+                        {cleanTitle(item.title)}
+                      </a>
+                    ) : (
+                      <div className="markdown-doc-card" style={{ padding: '14px', margin: 0 }}>
+                        <div style={{ color: '#0ea5e9', fontWeight: 'bold', marginBottom: '6px' }}>{cleanTitle(item.title)}</div>
+                        <div>{renderTextWithLinks(item.url)}</div>
+                      </div>
+                    )}
+                    <RenderAttachedSubNodes parentId={item._id} />
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
 
-          {/* BLOCK 6 */}
+          {/* BLOCK 6: TUTORIALS (WITH GLOWING TOGGLE ARROW) */}
           <div className="animate-fade-in column-delay-3 grid-block-panel" style={{ borderLeft: '3px solid #059669' }}>
-            <h3 style={{ margin: '0 0 20px 0', fontSize: '14px', color: '#059669', letterSpacing: '1px', textTransform: 'uppercase', fontWeight: '700' }}>{profile.block6Name}</h3>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-              {block6Tutorials.map(item => (
-                <div key={item._id}>
-                  {isUrlOnly(item.url) && (item.url.endsWith('.mp4') || item.url.includes('raw.githubusercontent.com')) ? (
-                    <div className="video-card-container" style={{ borderStyle: 'dashed' }}>
-                      <div style={{ width: '100%', aspectRatio: '16/9', background: '#000', position: 'relative' }}>
-                        <video src={item.url} controls muted playsInline style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+            <div className="panel-header-row">
+              <h3 style={{ margin: 0, fontSize: '14px', color: '#059669', letterSpacing: '1px', textTransform: 'uppercase', fontWeight: '700' }}>{profile.block6Name}</h3>
+              <button className="panel-accordion-arrow-btn" onClick={() => setIsBlock6Open(!isBlock6Open)}>
+                {isBlock6Open ? '▲ COLLAPSE' : '▼ EXPAND'}
+              </button>
+            </div>
+            
+            <div className={`panel-collapsible-content-trunk ${isBlock6Open ? 'active-open' : ''}`}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                {block6Tutorials.map(item => (
+                  <div key={item._id}>
+                    {isUrlOnly(item.url) && (item.url.endsWith('.mp4') || item.url.includes('raw.githubusercontent.com')) ? (
+                      <div className="video-card-container" style={{ borderStyle: 'dashed' }}>
+                        <div style={{ width: '100%', aspectRatio: '16/9', background: '#000', position: 'relative' }}>
+                          <video src={item.url} controls muted playsInline style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
+                        </div>
+                        <div style={{ padding: '10px', background: 'rgba(20,20,25,0.4)', fontSize: '13px' }}>{cleanTitle(item.title)}</div>
                       </div>
-                      <div style={{ padding: '10px', background: 'rgba(20,20,25,0.4)', fontSize: '13px' }}>{cleanTitle(item.title)}</div>
-                    </div>
-                  ) : (
-                    <div className="markdown-doc-card" style={{ padding: '14px', margin: 0 }}>
-                      <div style={{ color: '#059669', fontWeight: 'bold', marginBottom: '6px' }}>{cleanTitle(item.title)}</div>
-                      <div>{renderTextWithLinks(item.url)}</div>
-                    </div>
-                  )}
-                  <RenderAttachedSubNodes parentId={item._id} />
-                </div>
-              ))}
-              {block6Tutorials.length === 0 && <p style={{ color: '#64748b', fontSize: '12px' }}>Empty.</p>}
+                    ) : (
+                      <div className="markdown-doc-card" style={{ padding: '14px', margin: 0 }}>
+                        <div style={{ color: '#059669', fontWeight: 'bold', marginBottom: '6px' }}>{cleanTitle(item.title)}</div>
+                        <div>{renderTextWithLinks(item.url)}</div>
+                      </div>
+                    )}
+                    <RenderAttachedSubNodes parentId={item._id} />
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
 
