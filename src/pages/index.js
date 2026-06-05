@@ -7,7 +7,6 @@ export default function Home() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [activeModalTab, setActiveModalTab] = useState('win');
   
-  {/* NEW: Independent state hooks to control accordion collapsing for your 4 custom grid panels */}
   const [isBlock2Open, setIsBlock2Open] = useState(true);
   const [isBlock3Open, setIsBlock3Open] = useState(true);
   const [isBlock5Open, setIsBlock5Open] = useState(true);
@@ -199,7 +198,6 @@ export default function Home() {
           gap: 25px; align-items: start;
         }
         
-        /* --- DYNAMIC HEADER BUTTON STYLING FOR DUAL ACCORDION CHANNELS --- */
         .panel-header-row {
           display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;
         }
@@ -284,10 +282,11 @@ export default function Home() {
         <button className="entry-glow-btn" onClick={handleSystemEntry}>DOMAIN EXPANSION</button>
       </div>
 
+      {/* FIXED CHANNELS CLASSIFICATION: Stripped out labels and dots to run plain raw values */}
       {profile.announcement && hasEntered && (
         <div className="marquee-strip-line">
           <div className="marquee-inner-scroll">
-            ⚡ NOTIFICATION_CHANNEL // {profile.announcement} &nbsp;&nbsp;••••&nbsp;&nbsp;
+            {profile.announcement}
           </div>
         </div>
       )}
@@ -305,7 +304,6 @@ export default function Home() {
         </button>
       )}
 
-      {/* OVERLAY MODAL FOR ACTIVATION CHANNELS */}
       <div className={`cinematic-modal-overlay ${isModalOpen ? 'active' : ''}`} onClick={() => setIsModalOpen(false)}>
         <div className="modal-inner-card-matrix" onClick={(e) => e.stopPropagation()}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start' }}>
@@ -346,7 +344,6 @@ export default function Home() {
 
       <div style={{ maxWidth: '1200px', margin: '0 auto', position: 'relative', zIndex: 1 }}>
         
-        {/* HERO CARD HEADER */}
         <div className="animate-fade-in" style={{ textAlign: 'center', marginBottom: '50px' }}>
           {profile.avatarUrl && (
             <div className="pfp-wrapper">
@@ -358,10 +355,9 @@ export default function Home() {
           <p style={{ fontSize: '14px', color: '#cbd5e1', maxWidth: '500px', margin: '0 auto', lineHeight: '1.6' }}>{profile.bio}</p>
         </div>
 
-        {/* ROW 1: TRI-COLUMNS GRID SPLIT LAYOUT */}
         <div className="matrix-row-wrapper">
           
-          {/* BLOCK 1: SOCIALS */}
+          {/* BLOCK 1 */}
           <div className="animate-fade-in column-delay-1 grid-block-panel" style={{ borderLeft: '3px solid #6366f1' }}>
             <h3 style={{ margin: '0 0 20px 0', fontSize: '14px', color: '#6366f1', letterSpacing: '1px', textTransform: 'uppercase', fontWeight: '700' }}>{profile.block1Name}</h3>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
@@ -376,7 +372,7 @@ export default function Home() {
             </div>
           </div>
 
-          {/* BLOCK 2: ASSETS & PRESETS (WITH GLOWING TOGGLE ARROW) */}
+          {/* BLOCK 2 */}
           <div className="animate-fade-in column-delay-2 grid-block-panel" style={{ borderLeft: '3px solid #a855f7' }}>
             <div className="panel-header-row">
               <h3 style={{ margin: 0, fontSize: '14px', color: '#a855f7', letterSpacing: '1px', textTransform: 'uppercase', fontWeight: '700' }}>{profile.block2Name}</h3>
@@ -417,7 +413,7 @@ export default function Home() {
             </div>
           </div>
 
-          {/* BLOCK 3: MY WORK (WITH GLOWING TOGGLE ARROW) */}
+          {/* BLOCK 3 */}
           <div className="animate-fade-in column-delay-3 grid-block-panel" style={{ borderLeft: '3px solid #10b981' }}>
             <div className="panel-header-row">
               <h3 style={{ margin: 0, fontSize: '14px', color: '#10b981', letterSpacing: '1px', textTransform: 'uppercase', fontWeight: '700' }}>{profile.block3Name}</h3>
@@ -447,10 +443,9 @@ export default function Home() {
 
         <div style={{ margin: '40px 0' }} />
 
-        {/* ROW 2: TRI-COLUMNS LOWER BLOCK CHANNELS */}
         <div className="matrix-row-wrapper">
           
-          {/* BLOCK 4: ADOBE ACTIVATION GATE MODAL HUB */}
+          {/* BLOCK 4 */}
           <div className="animate-fade-in column-delay-1 grid-block-panel" style={{ borderLeft: '3px solid #7c3aed' }}>
             <h3 style={{ margin: '0 0 25px 0', fontSize: '14px', color: '#7c3aed', letterSpacing: '1px', textTransform: 'uppercase', fontWeight: '700' }}>{profile.block4Name}</h3>
             <button className="particle-btn" onClick={() => setIsModalOpen(true)} style={{ width: '100%', padding: '16px', borderRadius: '12px', color: '#fff', border: 'none', fontWeight: '700', fontSize: '13.5px', cursor: 'pointer', textAlign: 'center', letterSpacing: '1.5px', textTransform: 'uppercase', background: 'linear-gradient(135deg, rgba(124,58,237,0.3) 0%, rgba(168,85,247,0.1) 100%)' }}>
@@ -458,7 +453,7 @@ export default function Home() {
             </button>
           </div>
 
-          {/* BLOCK 5: OTHER SITES (WITH GLOWING TOGGLE ARROW) */}
+          {/* BLOCK 5 */}
           <div className="animate-fade-in column-delay-2 grid-block-panel" style={{ borderLeft: '3px solid #0ea5e9' }}>
             <div className="panel-header-row">
               <h3 style={{ margin: 0, fontSize: '14px', color: '#0ea5e9', letterSpacing: '1px', textTransform: 'uppercase', fontWeight: '700' }}>{profile.block5Name}</h3>
@@ -488,7 +483,7 @@ export default function Home() {
             </div>
           </div>
 
-          {/* BLOCK 6: TUTORIALS (WITH GLOWING TOGGLE ARROW) */}
+          {/* BLOCK 6 */}
           <div className="animate-fade-in column-delay-3 grid-block-panel" style={{ borderLeft: '3px solid #059669' }}>
             <div className="panel-header-row">
               <h3 style={{ margin: 0, fontSize: '14px', color: '#059669', letterSpacing: '1px', textTransform: 'uppercase', fontWeight: '700' }}>{profile.block6Name}</h3>
