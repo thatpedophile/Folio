@@ -29,6 +29,9 @@ export default function Admin() {
   const [url, setUrl] = useState('');
   const [targetBlock, setTargetBlock] = useState('socials');
   const [parentId, setParentId] = useState('');
+  
+  // Magic flag handler for matching native 9:16 vertical edits automatically
+  const [isVertical, setIsVertical] = useState(false);
 
   const [rawInputUrl, setRawInputUrl] = useState('');
   const [draggedItemId, setDraggedItemId] = useState(null);
@@ -121,9 +124,9 @@ export default function Admin() {
     await fetch('/api/links', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'admin-password': password },
-      body: JSON.stringify({ title, url: url || '', blockType: targetBlock, parentId: parentId || null }),
+      body: JSON.stringify({ title, url: url || '', blockType: targetBlock, parentId: parentId || null, isVertical }),
     });
-    setTitle(''); setUrl(''); setParentId(''); fetchDashboardData(password);
+    setTitle(''); setUrl(''); setParentId(''); setIsVertical(false); fetchDashboardData(password);
   };
 
   const handleDelete = async (id) => {
@@ -288,6 +291,22 @@ export default function Admin() {
           </div>
         </div>
 
+        {/* INTEGRATED DYNAMIC VERTICAL FORMAT ASPECT RATIO SELECTION OPTION TOGGLE */}
+        {targetBlock === 'my_work' && (
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', background: '#0a0a0f', padding: '14px', borderRadius: '8px', border: '1px dashed #10b981', margin: '5px 0' }}>
+            <input 
+              type="checkbox" 
+              id="isVertical" 
+              checked={isVertical} 
+              onChange={(e) => setIsVertical(e.target.checked)} 
+              style={{ width: '18px', height: '18px', cursor: 'pointer', accentColor: '#10b981' }} 
+            />
+            <label htmlFor="isVertical" style={{ color: '#e2e8f0', fontSize: '13px', fontWeight: '600', cursor: 'pointer', userSelect: 'none' }}>
+              Format as Vertical Video Layout Grid Card (9:16 Shorts / Instagram Reels format)
+            </label>
+          </div>
+        )}
+
         <div>
           <label style={{ display: 'block', fontSize: '12px', color: '#a855f7', marginBottom: '5px', fontWeight: 'bold' }}>🔗 Attach Directly to Parent App Link (Optional)</label>
           <select value={parentId || ''} onChange={(e) => setParentId(e.target.value)} style={{ padding: '12px', width: '100%', background: '#0a0a0f', border: '1px solid #a855f7', color: '#fff', borderRadius: '6px', fontWeight: 'bold' }}>
@@ -372,7 +391,7 @@ export default function Admin() {
                 onDragOver={(e) => handleDragOver(e, item._id, 'my_work', myWork)}
                 onDragEnd={() => handleDragEnd('my_work', myWork)}
               >
-                <div><strong>{item.parentId ? '↳ ' : ''}{item.title}</strong><br/><span style={{ fontSize: '11px', color: '#64748b' }}>{item.url.substring(0, 60)}</span></div>
+                <div><strong>{item.parentId ? '↳ ' : ''}{item.title} {item.isVertical ? <span style={{ fontSize: '10px', padding: '2px 6px', background: '#059669', color: '#fff', borderRadius: '4px', marginLeft: '6px' }}>9:16 Vertical</span> : ''}</strong><br/><span style={{ fontSize: '11px', color: '#64748b' }}>{item.url.substring(0, 60)}</span></div>
                 <button onClick={() => handleDelete(item._id)} style={{ background: '#ef4444', color: '#fff', border: 'none', padding: '6px 12px', cursor: 'pointer', borderRadius: '4px' }}>Delete</button>
               </div>
             ))}
