@@ -6,7 +6,7 @@ export default function Home() {
   const [hasEntered, setHasEntered] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [activeModalTab, setActiveModalTab] = useState('win');
-    
+  
   const [isBlock2Open, setIsBlock2Open] = useState(true);
   const [isBlock3Open, setIsBlock3Open] = useState(true);
   const [isBlock5Open, setIsBlock5Open] = useState(true);
@@ -212,7 +212,7 @@ export default function Home() {
           transition: max-height 0.45s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
         }
         .panel-collapsible-content-trunk.active-open {
-          max-height: 2000px; opacity: 1; /* Increased height to give plenty of room for vertical embeds */
+          max-height: 3000px; opacity: 1;
         }
         
         .cinematic-modal-overlay {
@@ -426,10 +426,9 @@ export default function Home() {
               <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                 {block3Work.map(item => (
                   <div key={item._id}>
-                    <div className="video-card-container">
+                    <div className="video-card-container" style={{ width: '100%', overflow: 'hidden', borderRadius: '12px' }}>
                       <div style={{ 
                         width: '100%', 
-                        // Dynamically sets container frame to vertical 9:16 if flagged, else standard landscape 16:9
                         aspectRatio: item.isVertical ? '9/16' : '16/9', 
                         background: '#000', 
                         position: 'relative' 
@@ -516,10 +515,9 @@ export default function Home() {
                 {block6Tutorials.map(item => (
                   <div key={item._id}>
                     {isUrlOnly(item.url) && (item.url.endsWith('.mp4') || item.url.includes('raw.githubusercontent.com')) ? (
-                      <div className="video-card-container" style={{ borderStyle: 'dashed' }}>
+                      <div className="video-card-container" style={{ width: '100%', overflow: 'hidden', borderRadius: '12px', borderStyle: 'dashed' }}>
                         <div style={{ 
                           width: '100%', 
-                          // Dynamically sets container frame to vertical 9:16 if flagged, else standard landscape 16:9
                           aspectRatio: item.isVertical ? '9/16' : '16/9', 
                           background: '#000', 
                           position: 'relative' 
