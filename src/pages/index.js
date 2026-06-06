@@ -6,7 +6,7 @@ export default function Home() {
   const [hasEntered, setHasEntered] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [activeModalTab, setActiveModalTab] = useState('win');
-  
+    
   const [isBlock2Open, setIsBlock2Open] = useState(true);
   const [isBlock3Open, setIsBlock3Open] = useState(true);
   const [isBlock5Open, setIsBlock5Open] = useState(true);
@@ -212,7 +212,7 @@ export default function Home() {
           transition: max-height 0.45s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
         }
         .panel-collapsible-content-trunk.active-open {
-          max-height: 1200px; opacity: 1;
+          max-height: 2000px; opacity: 1; /* Increased height to give plenty of room for vertical embeds */
         }
         
         .cinematic-modal-overlay {
@@ -282,7 +282,7 @@ export default function Home() {
         <button className="entry-glow-btn" onClick={handleSystemEntry}>DOMAIN EXPANSION</button>
       </div>
 
-      {/* FIXED CHANNELS CLASSIFICATION: Stripped out labels and dots to run plain raw values */}
+      {/* FIXED CHANNELS CLASSIFICATION */}
       {profile.announcement && hasEntered && (
         <div className="marquee-strip-line">
           <div className="marquee-inner-scroll">
@@ -413,7 +413,7 @@ export default function Home() {
             </div>
           </div>
 
-          {/* BLOCK 3 */}
+          {/* BLOCK 3 (DYNAMIC PORTRAIT COMPONENT ADAPTATION ENGINES) */}
           <div className="animate-fade-in column-delay-3 grid-block-panel" style={{ borderLeft: '3px solid #10b981' }}>
             <div className="panel-header-row">
               <h3 style={{ margin: 0, fontSize: '14px', color: '#10b981', letterSpacing: '1px', textTransform: 'uppercase', fontWeight: '700' }}>{profile.block3Name}</h3>
@@ -427,8 +427,27 @@ export default function Home() {
                 {block3Work.map(item => (
                   <div key={item._id}>
                     <div className="video-card-container">
-                      <div style={{ width: '100%', aspectRatio: '16/9', background: '#000', position: 'relative' }}>
-                        <video src={item.url} controls muted playsInline style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
+                      <div style={{ 
+                        width: '100%', 
+                        // Dynamically sets container frame to vertical 9:16 if flagged, else standard landscape 16:9
+                        aspectRatio: item.isVertical ? '9/16' : '16/9', 
+                        background: '#000', 
+                        position: 'relative' 
+                      }}>
+                        <video 
+                          src={item.url} 
+                          controls 
+                          muted 
+                          playsInline 
+                          style={{ 
+                            position: 'absolute', 
+                            top: 0, 
+                            left: 0, 
+                            width: '100%', 
+                            height: '100%', 
+                            objectFit: 'cover' 
+                          }} 
+                        />
                       </div>
                       <div style={{ padding: '10px', background: 'rgba(20,20,25,0.4)', fontSize: '13px' }}>{cleanTitle(item.title)}</div>
                     </div>
@@ -483,7 +502,7 @@ export default function Home() {
             </div>
           </div>
 
-          {/* BLOCK 6 */}
+          {/* BLOCK 6 (DYNAMIC PORTRAIT COMPONENT ADAPTATION ENGINES) */}
           <div className="animate-fade-in column-delay-3 grid-block-panel" style={{ borderLeft: '3px solid #059669' }}>
             <div className="panel-header-row">
               <h3 style={{ margin: 0, fontSize: '14px', color: '#059669', letterSpacing: '1px', textTransform: 'uppercase', fontWeight: '700' }}>{profile.block6Name}</h3>
@@ -498,8 +517,27 @@ export default function Home() {
                   <div key={item._id}>
                     {isUrlOnly(item.url) && (item.url.endsWith('.mp4') || item.url.includes('raw.githubusercontent.com')) ? (
                       <div className="video-card-container" style={{ borderStyle: 'dashed' }}>
-                        <div style={{ width: '100%', aspectRatio: '16/9', background: '#000', position: 'relative' }}>
-                          <video src={item.url} controls muted playsInline style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
+                        <div style={{ 
+                          width: '100%', 
+                          // Dynamically sets container frame to vertical 9:16 if flagged, else standard landscape 16:9
+                          aspectRatio: item.isVertical ? '9/16' : '16/9', 
+                          background: '#000', 
+                          position: 'relative' 
+                        }}>
+                          <video 
+                            src={item.url} 
+                            controls 
+                            muted 
+                            playsInline 
+                            style={{ 
+                              position: 'absolute', 
+                              top: 0, 
+                              left: 0, 
+                              width: '100%', 
+                              height: '100%', 
+                              objectFit: 'cover' 
+                            }} 
+                          />
                         </div>
                         <div style={{ padding: '10px', background: 'rgba(20,20,25,0.4)', fontSize: '13px' }}>{cleanTitle(item.title)}</div>
                       </div>
